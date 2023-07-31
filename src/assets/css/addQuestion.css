@@ -1,0 +1,31 @@
+.upload-outer {
+  width: 100%;
+  max-width: 300px;
+  margin-top: 50px;
+}
+.upload label{
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 150px;
+  font-family: "Arial";
+  cursor: pointer;
+}
+.add-question-form label {
+  font-family: "Arial";
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+.add-file {
+  margin-bottom: 20px;
+}
+.add-file strong {
+  width: 100%;
+  display: inline-block;
+  font-family: "Arial";
+  margin-top: 20px;
+  font-weight: 300;
+}
+.add-file span {
+  font-family: "Arial";
+}

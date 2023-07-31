@@ -1,0 +1,181 @@
+@font-face {
+  font-family: 'NSR';
+  src: url('./assets/fonts/noto-sans.regular.woff2') format('woff2'),
+    url('./assets/fonts/noto-sans.regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'NSB';
+  src: url('./assets/fonts/noto-sans.bold.woff2') format('woff2'),
+    url('./assets/fonts/noto-sans.bold.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'RPM';
+  src: url('./assets/fonts/ReadexProMed/readexpro-medium-webfont.woff2') format('woff2'),
+       url('./assets/fonts/ReadexProMed/readexpro-medium-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'RPL';
+  src: url('./assets/fonts/ReadexProLight/readexpro-light.woff2') format('woff2'),
+       url('./assets/fonts/ReadexProLight/readexpro-light.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'RPB';
+  src: url('./assets/fonts/ReadexProBold/readexpro-bold.woff2') format('woff2'),
+       url('./assets/fonts/ReadexProBold/readexpro-bold.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.App {
+  text-align: center;
+}
+
+body {
+  background-color: "#F5F5F5";
+  font-family: 'RPM' !important;
+}
+body .css-eyu1w7-MuiPaper-root-MuiPopover-paper-MuiMenu-paper {
+	box-shadow: 0px 0px 3px -2px rgba(0,0,0,1);
+}
+body .listing{
+  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.4) !important;
+}
+
+body main {
+  margin-top: 64px;
+}
+
+body {
+  background-color: #F5F5F5 !important;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+body .no-pd{
+  padding: 5px !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.test-instruction li span.list-order {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #EAC43D;
+  color: #fff;
+  margin-right: 20px;
+  border-radius: 50px;
+}
+
+/* Css For User Listing Page */
+
+.user-logo .active-status {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 99;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+.user-role {
+  display: flex;
+  align-items: center;
+}
+
+.user-role-class {
+  display: flex;
+  width: 25px;
+  height: 25px;
+  margin-top: 2px;
+  margin-left: 20px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  font-size: 12px;
+  color: #fff;
+  align-items:center;
+  justify-content:center;
+}
+
+.pagination-button .active {
+  color: #fff;
+}
+.user-items .user-listing{
+  border-radius: 0;
+  margin: 0;
+}
+.user-selection {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+@media (min-width:992px){
+ .user-list-details {
+    display: flex;
+    align-items: center;
+  }
+  .user-data{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+.user-items .action-btn{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.mySwiper {
+  width: 100%;
+}
+
+
+.custom-swiper.MuiBox-root.css-0 {
+  display: grid;
+  width: 100%;
+  
+}

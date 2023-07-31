@@ -1,0 +1,5 @@
+@media (min-width:0){
+  .course-image img{
+    width: 75px;
+  }
+}

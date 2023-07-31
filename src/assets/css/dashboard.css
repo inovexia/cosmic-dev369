@@ -1,0 +1,107 @@
+.dashboard .rating-star {
+  font-size: 20px;
+}
+
+.dashboard .rating-box {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard .chip-badge {
+  font-size: 12px;
+  line-height: 16px;
+  width: 69px;
+  height: 25px;
+}
+
+.dashboard .course-image img {
+  width: 100%;
+}
+.dashboard .test-tab-content .tab-content{
+  border-radius: 0px;
+}
+@media (min-width:0){
+  .dashboard button,body .custom-button{
+    padding: 10px;
+  }
+  .dashboard .online-students .student-status {
+    width: 55px;
+    height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 22px;
+    line-height: 28px;
+  }
+  .dashboard .online-students{
+    display: flex;
+    align-items: center;
+  }
+  .dashboard .online-students h5{
+    margin-left: 30px;
+  }
+  .dashboard .student-status{
+    position: relative;
+  }
+  .dashboard .student-status span {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    top: 1px;
+    right: 4px;
+  }
+  .dashboard .user-detail h5 {
+    position: relative;
+    display: block;
+    width: max-content;
+  }
+  .dashboard .user-detail h5 span {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: green;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    right: -30px;
+  }
+  .dashboard .widget-card {
+    background-color: #EFF0FE;
+    padding: 20px 30px;
+    min-height: 175px;
+    display: flex;
+    align-items: center;
+  }
+  .dashboard .widget-icon {
+    display: flex;
+    align-items: baseline;
+    margin-top: -25px;
+  }
+}
+@media (min-width:768px){
+  button, body .custom-button{
+    padding: 10px 20px;
+  }
+  .dashboard .new-student-action {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+  }
+}
+@media (min-width:1200px){
+  .dashboard button,body .custom-button{
+    padding: 10px 30px;
+  }
+}
+@media (min-width:1400px){
+  .dashboard button, body .custom-button{
+    padding: 10px 50px;
+  }
+}
