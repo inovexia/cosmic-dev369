@@ -28,4 +28,5 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/97e43686-82ca-43f1-936d-041f4e4bda55/deploy-status)](https://app.netlify.com/sites/cosmic-academy/deploys)
+Staging URL
+[![Netlify Status](https://api.netlify.com/api/v1/badges/97e43686-82ca-43f1-936d-041f4e4bda55/deploy-status)](https://cosmic-academy.netlify.app)
