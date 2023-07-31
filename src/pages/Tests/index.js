@@ -42,7 +42,7 @@ const Tests = () => {
         }
       );
       const testData = await response.json();
-      setTests(testData.payload.data);
+      setTests(testData.payload && testData.payload.data);
     };
     fetchTests();
   }, []);
@@ -61,7 +61,7 @@ const Tests = () => {
 
   // Search data here
   const [searchTitle, setSearchTitle] = useState("");
-  const filteredTests = tests.filter(
+  const filteredTests = tests && tests.filter(
     (test) =>
       test.title.toLowerCase().includes(searchTitle.toLowerCase()) ||
       test.details.toLowerCase().includes(searchTitle.toLowerCase())

@@ -22,10 +22,12 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
-import {
-  TextField,
-} from "@mui/material";
+import { TextField, Snackbar, Alert } from "@mui/material";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import { serialize } from "object-to-formdata";
+import { useNavigate } from "react-router-dom";
+import Network from "../../Utils/network";
+import BASE_URL from "../../Utils/baseUrl";
 
 const drawerWidth = 240;
 
@@ -95,6 +97,7 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function SidebarLeft() {
+  const navigate = useNavigate();
   const theme = useTheme();
   const [open, setOpen] = useState(true);
 
@@ -152,16 +155,56 @@ export default function SidebarLeft() {
       link: "/auth/settings",
       menuIcon: <SettingsIcon />,
     },
-    {
-      label: "Logout",
-      link: "/",
-      menuIcon: <LogoutIcon />,
-    },
   ]);
   const [searchTitle, setSearchTitle] = useState("");
 
+  const myHeaders = new Headers();
+  myHeaders.append("Network", `${Network}`);
+  const [token, setToken] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [isUserloggedOut, setIsUserloggedOut] = useState(null);
+
+  const submitLogoutForm = async (data) => {
+    //const recaptchaValue = await recaptchaRef.current.executeAsync();
+    try {
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        redirect: "follow",
+      };
+      const response = await fetch(`${BASE_URL}/auth/logout`, requestOptions);
+      const result = await response.json();
+      console.log(result);
+      setIsOpen(true);
+      if (result.success === true) {
+        localStorage.setItem("token", "");
+        setIsUserloggedOut(true);
+        setTimeout(() => {
+          navigate(`/auth/login`);
+        }, 3000);
+      } else {
+        setIsUserloggedOut(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setIsUserloggedOut(false);
+    }
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
+      <Snackbar
+        open={isOpen}
+        autoHideDuration={3000}
+        onClose={() => setIsOpen(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert severity={isUserloggedOut === true ? "success" : "warning"}>
+          {isUserloggedOut === true
+            ? "User Logged out Successfully"
+            : "Something went wrong"}
+        </Alert>
+      </Snackbar>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
         <Toolbar>
@@ -181,7 +224,7 @@ export default function SidebarLeft() {
             Cosmic Academy
           </Typography>
           <TextField
-            sx={{ml:3}}
+            sx={{ ml: 3 }}
             label="Search"
             placeholder="Search"
             value={searchTitle}
@@ -234,6 +277,27 @@ export default function SidebarLeft() {
               </ListItemButton>
             </ListItem>
           ))}
+          <ListItem disablePadding sx={{ display: "block" }}>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+              onClick={submitLogoutForm}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <LogoutIcon />
+              </ListItemIcon>
+              <ListItemText primary="Logout" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
         </List>
       </Drawer>
     </Box>

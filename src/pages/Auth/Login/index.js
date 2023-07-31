@@ -1,8 +1,7 @@
-import React, { useEffect,useRef, useState } from "react";
-import axios from "axios";
+import React, {useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { serialize } from "object-to-formdata";
-import { useParams, useNavigate } from "react-router-dom";
+import {useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import {
   TextField,
@@ -15,6 +14,7 @@ import {
 } from "@mui/material";
 import illustartion from "../../../assets/images/Illustration.png";
 import BASE_URL from "../../../Utils/baseUrl";
+import Network from "../../../Utils/network";
 import Recaptchav3 from "../../../Utils/reCaptchav3"
 
 export default function Login() {
@@ -29,24 +29,28 @@ export default function Login() {
       device_name: "device",
     },
   });
+  const myHeaders = new Headers();
+  myHeaders.append("Network", `${Network}`);
   const [token, setToken] = useState('');
   const [open, setOpen] = useState(false);
   const [isUserloggedIn, setIsUserloggedIn] = useState(null);
 
   const submitLoginForm = async (data) => {
-    const recaptchaValue = await recaptchaRef.current.executeAsync();
+    //const recaptchaValue = await recaptchaRef.current.executeAsync();
     try {
       const formData = serialize(data);
       const requestOptions = {
-        method: "POST",
+        method: 'POST',
+        headers: myHeaders,
         body: formData,
-        redirect: "follow",
+        redirect: 'follow'
       };
       const response = await fetch(
         `${BASE_URL}/auth/login`,
         requestOptions
       );
       const result = await response.json();
+      console.log(result)
       setOpen(true)
       if (result.success === true) {
         localStorage.setItem('token', result.payload.token);
@@ -116,6 +120,7 @@ export default function Login() {
             </Grid>
             <Button
               type="submit"
+              className="custom-button"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
@@ -140,7 +145,7 @@ export default function Login() {
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
           <Alert severity={isUserloggedIn === true ? "success" : "warning"}>
-            {isUserloggedIn === true ? "Login Successfull" : "Login Failed"}
+            {isUserloggedIn === true ? "Login Successfull" : "Invalid Credential"}
           </Alert>
         </Snackbar>
       </Grid>
