@@ -14,23 +14,20 @@ import { useParams,useLocation } from "react-router-dom";
 import BASE_URL from "../../Utils/baseUrl";
 import token from "../../Utils/token";
 import Network from "../../Utils/network";
-import CreatedBy from "../../Utils/createdBy";
 import SummaryReport from "../../components/Test/SummaryReport";
 import DetailsReport from "../../components/Test/DetailsReport";
 import SidebarLeft from "../../components/Sidebar/SidebarLeft";
 import { Helmet } from 'react-helmet';
 
-const SubmissionReports = () => {
+const Report = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const user_guid = params.get("userId");
   const ses_id = params.get("ses_id");
-  console.log(`user id: ${user_guid}, ses id: ${ses_id}`)
   const { guid } = useParams();
   const sidebarVisible = true;
   const [selectedTab, setSelectedTab] = useState(0);
   const [testResult, setTestResult] = useState("");
-  const current_sessionId = localStorage.getItem("set_session");
 
   // Authorization Setup
   const myHeaders = new Headers();
@@ -40,9 +37,8 @@ const SubmissionReports = () => {
   // Get Reports
   useEffect(() => {
     const formdata = new FormData();
-    formdata.append("user_guid", CreatedBy);
-    formdata.append("session_id", current_sessionId);
-
+    formdata.append("user_guid", user_guid );
+    formdata.append("session_id", ses_id);
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
@@ -74,15 +70,11 @@ const SubmissionReports = () => {
         requestOption
       );
       const testresults = await result.json();
-      //console.log(testresult)
       setTestDetails(testresults.payload);
     };
     fetchTestDetails();
   }, []);
 
-  // const incorrect = (testResult && testResult.num_wrong * 100)/(testDetails && testDetails.stats.questions)
-  // const correct = (testResult && testResult.num_correct * 100)/(testDetails && testDetails.stats.questions)
-  // const unanswered = (testResult && testResult.num_not_attempted * 100)/(testDetails && testDetails.stats.questions)
   const incorrect = (testResult && testResult.num_wrong)
   const correct = (testResult && testResult.num_correct)
   const unanswered = (testResult && testResult.num_not_attempted)
@@ -108,7 +100,7 @@ const SubmissionReports = () => {
   return (
     <>
     <Helmet>
-        <title>Test Report</title>
+        <title>Submission Report</title>
     </Helmet>
     <Box sx={{ display: "flex" }}>
       {sidebarVisible && <SidebarLeft />}
@@ -119,7 +111,7 @@ const SubmissionReports = () => {
               variant="h1"
               sx={{ fontSize: 30, fontWeight: 600, textAlign: "left" }}
             >
-              Test Report
+                Test Report {testResult.result}
             </Typography>
           </Grid>
           <Grid item xs={6} sx={{textAlign:"right"}}>
@@ -145,4 +137,4 @@ const SubmissionReports = () => {
   );
 };
 
-export default SubmissionReports;
+export default Report;

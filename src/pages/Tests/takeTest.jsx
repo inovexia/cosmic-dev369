@@ -51,15 +51,15 @@ const TakeTest = () => {
   var myHeaders = new Headers();
   myHeaders.append("Authorization", `Bearer ${token}`);
   myHeaders.append("Network", `${Network}`);
-  const requestOption = {
-    method: "GET",
-    headers: myHeaders,
-    redirect: "follow",
-  };
   // Fetch Test Details
   const [test, setTest] = useState([]);
   useEffect(() => {
     const fetchTest = async () => {
+      const requestOption = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow",
+      };
       const response = await fetch(
         `${BASE_URL}/tests/view/${guid}`,
         requestOption
@@ -76,6 +76,11 @@ const TakeTest = () => {
   const [testData, setTestData] = useState([]);
   useEffect(() => {
     const fetchQuestion = async () => {
+      const requestOption = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow",
+      };
       const response = await fetch(
         `${BASE_URL}/tests/preview/${guid}/1`,
         requestOption
@@ -89,18 +94,18 @@ const TakeTest = () => {
   const startTestSubmit = () => {
     alert("Test started");
   };
-  function generateToken(length) {
+  function generateSessionID(length) {
     const characters =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let token = "";
+    let sessionID = "";
     for (let i = 0; i < length; i++) {
       const randomIndex = Math.floor(Math.random() * characters.length);
-      token += characters[randomIndex];
+      sessionID += characters[randomIndex];
     }
-    return token;
+    return sessionID;
   }
   const handleClickStart = () => {
-    const set_Session = generateToken(36);
+    const set_Session = generateSessionID(36);
     setShowInstruction(false);
     setShowQuestions(true);
     localStorage.setItem("set_session", set_Session);
@@ -131,27 +136,28 @@ const TakeTest = () => {
   const onSubmit = async () => {
     const formData = new FormData();
     testData.forEach((item, index) => {
-      const answerKey = `answer[${item.ID}]`;
+      const answerKey = `answer[${item.guid}]`;
       const choices = selectedOptions && selectedOptions[index];
-
-      if (!choices) {
-        formData.append(answerKey, "");
-      } else {
+      if (choices) {
         const choiceValues = Object.entries(choices)
           .filter(([key, value]) => value)
           .map(([key]) => `choice_${key}`)
           .join(",");
-        formData.append(answerKey, choiceValues);
+
+        if (choiceValues) {
+          formData.append(answerKey, choiceValues);
+        }
       }
     });
     formData.append("set_session", session);
     formData.append("user_guid", CreatedBy);
-    var requestOptions = {
+    const requestOptions = {
       method: "POST",
       headers: myHeaders,
       body: formData,
       redirect: "follow",
     };
+
     try {
       const response = await fetch(
         `${BASE_URL}/tests/submit_test/${guid}`,
@@ -386,6 +392,7 @@ const TakeTest = () => {
                 </span>
                 <Grid item xs={12} sx={{ mt: 5 }}>
                   <Button
+                    className="custom-button"
                     variant="contained"
                     color="primary"
                     onClick={handleClickStart}
@@ -419,6 +426,7 @@ const TakeTest = () => {
                 >
                   {currentQuestion > 0 && (
                     <Button
+                      className="custom-button"
                       type="button"
                       variant="contained"
                       color="primary"
@@ -429,6 +437,7 @@ const TakeTest = () => {
                   )}
                   {currentQuestion < testData.length - 1 ? (
                     <Button
+                      className="custom-button"
                       type="button"
                       variant="contained"
                       color="primary"
@@ -440,7 +449,12 @@ const TakeTest = () => {
                   ) : (
                     ""
                   )}
-                  <Button variant="contained" color="success" type="submit">
+                  <Button
+                    className="custom-button"
+                    variant="contained"
+                    color="success"
+                    type="submit"
+                  >
                     Submit
                   </Button>
                 </Grid>

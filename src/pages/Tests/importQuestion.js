@@ -18,7 +18,7 @@ import EditQuestionPopup from "../../components/Test/editQuestionPopup";
 import BASE_URL from "../../Utils/baseUrl";
 import token from "../../Utils/token";
 import Network from "../../Utils/network";
-import CreatedBy from "../../Utils/createdBy"
+import CreatedBy from "../../Utils/createdBy";
 import SidebarLeft from "../../components/Sidebar/SidebarLeft";
 
 const ImportQuestion = () => {
@@ -42,6 +42,7 @@ const ImportQuestion = () => {
   const [openEditQuestion, setOpenEditQuestion] = useState(false);
   const [selectedQuestionId, setSelectedQuestionId] = useState("");
   const [questionDetails, setQuestionDetails] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
   const handleOpen = (index, question) => {
     setOpenEditQuestion(true);
     setSelectedQuestionId(index);
@@ -52,6 +53,7 @@ const ImportQuestion = () => {
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     setValueStep1("userfile", selectedFile);
+    setSelectedFile(selectedFile.name);
   };
   // End Upload file
 
@@ -59,10 +61,7 @@ const ImportQuestion = () => {
   const [importedQuestion, setImportedQuestion] = useState();
   const [isQuestionsSaved, setIsQuestionsSaved] = useState(null);
   const [testGuid, setTestGuid] = useState("");
-  myHeaders.append(
-    "Authorization",
-    `Bearer ${token}`
-  );
+  myHeaders.append("Authorization", `Bearer ${token}`);
   myHeaders.append("Network", `${Network}`);
 
   // Save questions
@@ -177,6 +176,7 @@ const ImportQuestion = () => {
                   />
                   Import File
                 </label>
+                <Box sx={{mt:1}}>{selectedFile ? selectedFile : "No file selected"}</Box>
                 <Box
                   sx={{
                     minWidth: "150px",
@@ -193,10 +193,10 @@ const ImportQuestion = () => {
                       </Grid>
                     ) : (
                       <Grid item>
-                      <Button variant="contained" type="submit">
-                        Upload & Preview
-                      </Button>
-                    </Grid>
+                        <Button variant="contained" type="submit">
+                          Upload & Preview
+                        </Button>
+                      </Grid>
                     )}
                   </Grid>
                 </Box>

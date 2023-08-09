@@ -114,7 +114,7 @@ const Tests = () => {
             </Typography>
           </Grid>
           <Grid item xs={6} sx={{ textAlign: "right" }}>
-            <Button variant="contained">
+            <Button variant="contained" className="custom-button">
               <Link href="/test/create" color="inherit" underline="none">
                 Create Test
               </Link>

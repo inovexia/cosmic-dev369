@@ -232,7 +232,7 @@ export default function SidebarLeft() {
             Cosmic Academy
           </Typography>
           <TextField
-            sx={{ ml: 3 }}
+            sx={{ ml: 3, display:"none" }}
             label="Search"
             placeholder="Search"
             value={searchTitle}

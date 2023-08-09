@@ -3,18 +3,7 @@ import {
   Box,
   Typography,
   Grid,
-  ButtonGroup,
-  Button,
-  Tabs,
-  Tab,
-  Link,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Card,
-  CardContent,
 } from "@mui/material";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
@@ -25,12 +14,31 @@ const SummaryReport = ({ incorrectColor, correctColor, noansweredColor, incorrec
     labels: ['Incorrect', 'Correct', 'Unanswerd'],
     datasets: [
       {
+        label: 'Total',
         data: [incorrectValue, correctValue, unansweredValue],
         backgroundColor: [incorrectColor, correctColor, noansweredColor],
+        hoverOffset: 4
       },
     ],
   };
-
+console.log(correctValue)
+  // const data = {
+  //   labels: [
+  //     'Red',
+  //     'Blue',
+  //     'Yellow'
+  //   ],
+  //   datasets: [{
+  //     label: 'My First Dataset',
+  //     data: [300, 50, 100],
+  //     backgroundColor: [
+  //       'rgb(255, 99, 132)',
+  //       'rgb(54, 162, 235)',
+  //       'rgb(255, 205, 86)'
+  //     ],
+  //     hoverOffset: 4
+  //   }]
+  // };
   return (
     <>
       <Grid container spacing={3} sx={{ mt: 5 }}>

@@ -19,6 +19,7 @@ import Enrollments from "../pages/Tests/enrollments";
 import TakeTest from "../pages/Tests/takeTest";
 import TestSetting from "../pages/Tests/testSetting";
 import SubmissionReports from "../pages/Tests/submissionReports";
+import Report from "../pages/Tests/Report";
 import AllSubmissions from "../pages/Tests/AllSubmissions"
 import OnlineClasses from "../pages/Classroom";
 import CreateMeeting from "../pages/Classroom/CreateMeeting";
@@ -77,6 +78,7 @@ const AppRouter = () => {
         <Route path={"/test/take-test/:guid"} element={<TakeTest />} />
         <Route path={"/test/setting/:guid"} element={<TestSetting />} />
         <Route path={"/test/report/:guid"} element={<SubmissionReports />} />
+        <Route path={"/test/submission-report/:guid"} element={<Report />} />
         <Route path={"/test/all-submissions/:guid"} element={<AllSubmissions />} />
         <Route path={"/online-classes"} element={<OnlineClasses />} />
         <Route path={"/meeting/create"} element={<CreateMeeting />} />

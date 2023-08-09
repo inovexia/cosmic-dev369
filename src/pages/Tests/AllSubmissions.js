@@ -52,7 +52,7 @@ const AllSubmissions = () => {
     success: { main: successColor },
   } = theme.palette;
   // State Manage
-  const [courses, setCourses] = useState("");
+  const [submissions, setSubmissions] = useState("");
   const [loading, setLoading] = useState(true);
   const [searchTitle, setSearchTitle] = useState("");
   // Authorization
@@ -60,44 +60,49 @@ const AllSubmissions = () => {
   myHeaders.append("Authorization", `Bearer ${token}`);
   myHeaders.append("Network", `${Network}`);
 
-  // Fetch Course list
+  // Fetch All Submissions
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchSubmissions = async () => {
+      const formdata = new FormData();
+      formdata.append("user_guid", "");
+      formdata.append("test_guid", guid);
+      formdata.append("session_id", "");  
       const requestOptions = {
-        method: "GET",
+        method: "POST",
         headers: myHeaders,
         redirect: "follow",
       };
       try {
-        const response = await fetch(`${BASE_URL}/course/list`, requestOptions);
+        const response = await fetch(`${BASE_URL}/tests/submissions`, requestOptions);
         const result = await response.json();
-        setCourses(result.payload.data);
+        setSubmissions(result.payload);
         setLoading(false);
       } catch (error) {
         console.log("error", error);
         setLoading(false);
       }
     };
-    fetchCourses();
+    fetchSubmissions();
   }, []);
+  console.log(submissions)
 
   // Search Users
-  const filteredCourse =
-    courses &&
-    courses.filter((course) => {
-      const searchVal = `${course.title} ${course.description}`.toLowerCase();
+  const filteredResult =
+  submissions &&
+  submissions.filter((item) => {
+      const searchVal = `${item.first_name} ${item.middle_name} ${item.last_name} ${item.guid} ${item.session_id}`.toLowerCase();
       const searchValue = searchTitle.toLowerCase();
       return searchVal.includes(searchValue);
     });
 
   // Pagination here
   const [currentPage, setCurrentPage] = useState(1);
-  const [coursePerPage] = useState(10);
-  const lastIndex = currentPage * coursePerPage;
-  const firstIndex = lastIndex - coursePerPage;
-  const currentCourse = filteredCourse.slice(firstIndex, lastIndex);
+  const [itemPerPage] = useState(10);
+  const lastIndex = currentPage * itemPerPage;
+  const firstIndex = lastIndex - itemPerPage;
+  const currentItem = filteredResult.slice(firstIndex, lastIndex);
   const totalPages = Math.ceil(
-    filteredCourse && filteredCourse.length / coursePerPage
+    filteredResult && filteredResult.length / itemPerPage
   );
   const numbers = [...Array(totalPages + 1).keys()].slice(1);
 
@@ -115,62 +120,6 @@ const AllSubmissions = () => {
     }
   }
 
-  // Action Button
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [currentCourseGuid, setCurrentCourseGuid] = useState(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event, id) => {
-    setAnchorEl(event.currentTarget);
-    setCurrentCourseGuid(id);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  // Delete
-  const [alertOpen, setAlertOpen] = useState(null);
-  const [isActionSuccess, setIsActionSuccess] = useState(null);
-  const [actionConfirmOpen, setActionConfirmOpen] = useState(false);
-  const handleConfirmOpen = () => {
-    setActionConfirmOpen(true);
-  };
-  const actionConfirmClose = () => {
-    setActionConfirmOpen(false);
-  };
-  // Delete function on submit
-  const handleBulkDeleteUser = async () => {
-    setActionConfirmOpen(false);
-    const requestOptions = {
-      method: "DELETE",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-    try {
-      const res = await fetch(
-        `${BASE_URL}/course/delete/${currentCourseGuid}`,
-        requestOptions
-      );
-      const result = await res.json();
-      setAlertOpen(true);
-      if (result.success === true) {
-        setIsActionSuccess(true);
-        setTimeout(() => {
-          setAlertOpen(false);
-          window.location.reload(true);
-        }, 1000);
-      } else {
-        setTimeout(() => {
-          setAlertOpen(false);
-        }, 3000);
-      }
-      setActionConfirmOpen(false);
-    } catch (error) {
-      console.error(error);
-      throw new Error(`Failed to post status: ${error.message}`);
-    }
-  };
   return (
     <>
       <Helmet>
@@ -178,39 +127,6 @@ const AllSubmissions = () => {
       </Helmet>
       <Box sx={{ display: "flex" }}>
         <SidebarLeft />
-        <Dialog
-          open={actionConfirmOpen}
-          onClose={actionConfirmClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">Confirm Delete</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              Are you sure you want to delete this course?
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={actionConfirmClose} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={handleBulkDeleteUser} color="primary" autoFocus>
-              Confirm
-            </Button>
-          </DialogActions>
-        </Dialog>
-        <Snackbar
-          open={alertOpen}
-          autoHideDuration={3000}
-          onClose={() => setIsActionSuccess(false)}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        >
-          <Alert severity={isActionSuccess === true ? "success" : "warning"}>
-            {isActionSuccess === true
-              ? "Course Deleted Successfully"
-              : "Course not deleted."}
-          </Alert>
-        </Snackbar>
         <Box sx={{ flexGrow: 1, p: 3, mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
@@ -231,12 +147,12 @@ const AllSubmissions = () => {
             <Box sx={{ textAlign: "center", mt: 5 }}>
               <CircularProgress />
             </Box>
-          ) : courses && courses.length !== 0 ? (
+          ) : submissions && submissions.length !== 0 ? (
             <>
               <Grid container spacing={2} sx={{ mt: 3 }}>
                 <Grid item xs={12} md={4}>
                   <TextField
-                    label="Search by title and description"
+                    label="Search by name, guid and session id"
                     placeholder="Search by title"
                     value={searchTitle}
                     onChange={(e) => setSearchTitle(e.target.value)}
@@ -251,7 +167,7 @@ const AllSubmissions = () => {
                 className="manage-course"
               >
                 <Grid item xs={12}>
-                  {currentCourse && currentCourse.length !== 0 ? (
+                  {currentItem && currentItem.length !== 0 ? (
                       <Card>
                         <Box sx={{ px: 3, display:{ xs: "none", md:"block" } }} >
                             <Grid
@@ -266,14 +182,14 @@ const AllSubmissions = () => {
                               <Grid
                                 item
                                 xs={1}
-                                md={1}
+                                md={0.5}
                                 sx={{
                                   display: { xs: "flex", md: "block" },
                                   justifyContent: { xs: "space-between" },
                                 }}
                               >
                                 <Box className="course-image">
-                                 <h4>Sr. No</h4>
+                                 <h4 style={{color:primaryColor}}>Sr. No</h4>
                                 </Box>
                                 <Grid
                                   item
@@ -281,24 +197,24 @@ const AllSubmissions = () => {
                                 >
                                 </Grid>
                               </Grid>
-                              <Grid item xs={11} md={4}>
-                                <h4>
+                              <Grid item xs={11} md={4.5}>
+                                <h4 style={{color:primaryColor}}>
                                   Name
                                 </h4>
                               </Grid>
                               <Grid item xs={12} md={3}>
-                                <h4>User ID</h4>
+                                <h4 style={{color:primaryColor}}>User ID</h4>
                               </Grid>
                               <Grid item xs={12} md={2}>
-                               <h4>Last Attempted at</h4>
+                               <h4 style={{color:primaryColor}}>Last Attempted at</h4>
                               </Grid>
                               <Grid item xs={12} md={1}>
                                 
                               </Grid>
                             </Grid>
                           </Box>
-                      {currentCourse &&
-                        currentCourse.map((course, index) => (
+                      {currentItem &&
+                        currentItem.map((item, index) => (
                           <Box sx={{ px: 3 }} key={index}>
                             <Grid
                               container
@@ -312,37 +228,38 @@ const AllSubmissions = () => {
                               <Grid
                                 item
                                 xs={1}
+                                md={0.5}
                                 sx={{
                                   display: { xs: "flex", md: "block" },
                                   justifyContent: { xs: "space-between" },
                                 }}
                               >
                                 <Box className="course-image">
-                                 {index+1}-
+                                {index + 1 + (currentPage - 1) * itemPerPage}-
                                 </Box>
                               </Grid>
-                              <Grid item xs={11} md={4}>
+                              <Grid item xs={11} md={4.5}>
                                 <h4>
                                   <Link
-                                    href={`/course/manage/${course.guid}`}
+                                    href={`/test/submission-report/${guid}?userId=${item.guid}&ses_id=${item.session_id}`}
                                     sx={{
                                       textDecoration: "none",
                                       color: "inherit",
                                     }}
                                   >
-                                    {course.title}
+                                    {item.first_name} {item.last_name}
                                   </Link>
                                 </h4>
                               </Grid>
                               <Grid item xs={12} md={3}>
-                                <span>User ID</span>
+                                <span>{item.guid}</span>
                               </Grid>
                               <Grid item xs={12} md={2} sx={{
                                   display: { xs: "flex", md: "block" },alignItems:"center"
                                 }}>
                               <Typography component="h4" variant="strong" sx={{
                                   display: { xs: "block", md: "none" }, marginRight:"5px"
-                                }}>Last Attempted:</Typography> 2023-06-30 11:02:07
+                                }}>Last Attempted:</Typography> {item.submit_time && item.submit_time ? item.submit_time : "Not Available"}
                               </Grid>
                               <Grid item xs={12} md={1}>
         
@@ -353,7 +270,7 @@ const AllSubmissions = () => {
                     </Card>
                   ) : (
                     <Alert sx={{ mt: 5 }} severity="error">
-                      Course not found!
+                      Submission not found!
                     </Alert>
                   )}
                 </Grid>
@@ -364,7 +281,7 @@ const AllSubmissions = () => {
                 sx={{ mt: 5, justifyContent: "center" }}
               >
                 <Grid item>
-                  {filteredCourse && filteredCourse.length > coursePerPage ? (
+                  {filteredResult && filteredResult.length > itemPerPage ? (
                     <Grid container spacing={2}>
                       <Grid
                         item
