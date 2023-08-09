@@ -74,15 +74,14 @@ const NewStudents = () => {
       formdata.append("role", "student");
       formdata.append("order_by", "newest_first");
       const requestOptions = {
-        method: "POST",
+        method: "GET",
         headers: myHeaders,
-        body: formdata,
         redirect: "follow",
       };
       try {
-        const response = await fetch(`${BASE_URL}/users/list`, requestOptions);
+        const response = await fetch(`${BASE_URL}/users/list?role=student`, requestOptions);
         const result = await response.json();
-        setNewStudents(result.payload.data);
+        setNewStudents(result.payload);
       } catch (error) {
         console.log("error", error);
       }
@@ -153,9 +152,9 @@ const NewStudents = () => {
               Action
             </Grid>
           </Grid>
-          {newStudents && newStudents.length !== 0 ? (
+          {newStudents && newStudents.data.length !== 0 ? (
             newStudents &&
-            newStudents.map((user, index) => {
+            newStudents.data.map((user, index) => {
               const firstInitial = user.first_name ? user.first_name[0] : "";
               const lastInitial = user.last_name ? user.last_name[0] : "";
               const bgColor = generateColorCode(firstInitial + lastInitial);

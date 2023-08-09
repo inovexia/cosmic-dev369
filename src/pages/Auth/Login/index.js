@@ -50,15 +50,15 @@ export default function Login() {
         requestOptions
       );
       const result = await response.json();
-      console.log(result)
       setOpen(true)
       if (result.success === true) {
         localStorage.setItem('token', result.payload.token);
         setToken(data.token);
         setIsUserloggedIn(true);
+        const redirectUrl = '/';
         setTimeout(() => {
-          navigate(`/`);
-        }, 3000);
+          window.location.href = redirectUrl; 
+        }, 2000);
       } else {
         setIsUserloggedIn(false);
       }

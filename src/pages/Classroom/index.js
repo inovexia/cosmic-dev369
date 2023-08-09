@@ -17,6 +17,7 @@ import ZoomMeeting from "../../components/Classroom/ZoomMeeting";
 import { Helmet } from "react-helmet";
 import theme from "../../configs/theme";
 import SidebarLeft from "../../components/Sidebar/SidebarLeft";
+import CheckTokenValid from "../../components/Redirect/CheckTokenValid"
 
 
 const OnlineClasses = () => {
@@ -90,6 +91,7 @@ const OnlineClasses = () => {
 
   return (
     <>
+      <CheckTokenValid/>
       <Helmet>
         <title>Meetings</title>
       </Helmet>

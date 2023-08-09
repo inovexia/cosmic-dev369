@@ -21,7 +21,7 @@ import { Editor } from "@tinymce/tinymce-react";
 import { useForm } from "react-hook-form";
 import BASE_URL from "../../Utils/baseUrl";
 import CreatedBy from "../../Utils/createdBy"
-import token from "../../Utils/token";
+//import token from "../../Utils/token";
 import Network from "../../Utils/network";
 import SidebarLeft from "../../components/Sidebar/SidebarLeft";
 
@@ -30,6 +30,7 @@ const StyledFormControl = styled(FormControl)({
 });
 
 const CreateTest = () => {
+  const token = '726ea82af534eb4b12e63fc1594bd2abd35f0ee2036b6bc38d57b5f769d6601f';
   const {
     control,
     handleSubmit,
@@ -56,7 +57,7 @@ const CreateTest = () => {
   formdata.append("title", formData.title);
   formdata.append("type", formData.type);
   formdata.append("details", formData.details);
-  formdata.append("created_by", formData.created_by);
+  formdata.append("created_by",CreatedBy );
   var requestOptions = {
     method: "POST",
     headers: myHeaders,
@@ -101,6 +102,35 @@ const CreateTest = () => {
       setIsTestCreated(false);
     }
   };
+
+  // Fetch Category List
+  React.useEffect(() => {
+    const fetchCategoryList = async () => {
+      const myHeaders = new Headers();
+      myHeaders.append(
+        "Authorization",
+        `Bearer ${token}`
+      );
+      const requestOptions = {
+        method: 'POST',
+    headers: myHeaders,
+    redirect: 'follow'
+      };
+      try {
+        const response = await fetch(
+          `${BASE_URL}/tests/categories`,
+          requestOptions
+        );
+        const result = await response.json();
+        console.log(result);
+      } catch (error) {
+        console.log("error", error);
+      }
+    }
+    fetchCategoryList();
+    
+  }, []);
+  
   
   return (
     <>

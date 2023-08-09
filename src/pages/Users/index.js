@@ -31,6 +31,7 @@ import { Helmet } from "react-helmet";
 import UserList from "../../components/Users";
 import theme from "../../configs/theme";
 import SidebarLeft from "../../components/Sidebar/SidebarLeft";
+import CheckTokenValid from "../../components/Redirect/CheckTokenValid"
 
 const Users = () => {
   const {
@@ -289,6 +290,7 @@ const Users = () => {
   };
   return (
     <>
+      <CheckTokenValid/>
       <Helmet>
         <title>Users</title>
       </Helmet>

@@ -41,7 +41,7 @@ const OnlineUser = () => {
       try {
         const response = await fetch(`${BASE_URL}/users/list`, requestOptions);
         const result = await response.json();
-        setUsers(result.payload.data);
+        setUsers(result.payload);
         setLoading(false);
       } catch (error) {
         console.log("error", error);
@@ -73,9 +73,9 @@ const OnlineUser = () => {
             <Box sx={{ textAlign: "center", mt: 5 }}>
               <CircularProgress />
             </Box>
-          ) : users && users.length !== 0 ? (
+          ) : users && users.data.length !== 0 ? (
             users &&
-            users.map((user, index) => {
+            users.data.map((user, index) => {
               const firstInitial = user.first_name ? user.first_name[0] : "";
               const lastInitial = user.last_name ? user.last_name[0] : "";
               const bgColor = generateColorCode(firstInitial + lastInitial);

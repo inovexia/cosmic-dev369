@@ -1,5 +1,5 @@
-import React, { useRef, useState,useEffect } from "react";
-import { useParams, useNavigate,useLocation } from "react-router-dom";
+import React, { useRef, useState, useEffect } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   TextField,
   FormControl,
@@ -23,6 +23,7 @@ import {
   RadioGroup,
   Radio,
   Snackbar,
+  Alert,
 } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 import { styled } from "@mui/material/styles";
@@ -40,7 +41,7 @@ import FormTextField from "../../components/Common/formTextField";
 import BASE_URL from "../../Utils/baseUrl";
 import token from "../../Utils/token";
 import Network from "../../Utils/network";
-import CreatedBy from "../../Utils/createdBy"
+import CreatedBy from "../../Utils/createdBy";
 import { Helmet } from "react-helmet";
 import SidebarLeft from "../../components/Sidebar/SidebarLeft";
 
@@ -55,23 +56,50 @@ const AddQuestion = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const mtValue = params.get("mt");
-  console.log(mtValue)
   const { guid } = useParams();
-  const { register, handleSubmit, control, setValue, watch, reset, formState: { errors } } = useForm({
+  const [options, setOptions] = useState(["Choice1", "Choice2"]);
+  const {
+    handleSubmit,
+    control,
+    setValue,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
+      choice: {
+        0: "0",
+        1: "0",
+        2: "0",
+        3: "0",
+        4: "0",
+        5: "0",
+      },
+      correct_answer: {
+        0: "0",
+        1: "0",
+        2: "0",
+        3: "0",
+        4: "0",
+        5: "0",
+      },
+      order: {
+        0: "0",
+        1: "0",
+        2: "0",
+        3: "0",
+        4: "0",
+        5: "0",
+      },
       userfile: undefined,
       question: "",
       question_type: "mcmc",
-      choice: [],
-      correct_answer: [],
-      order: [0],
-      order: [1],
-      order: [2],
-      order: [3],
-      order: [4],
+      // correct_answer: [],
+      // choice: [],
+      // order: [],
       feedback: "",
       answer_feedback: "",
-      created_by:{CreatedBy},
+      created_by: CreatedBy,
       parent_id: undefined,
       marks: "1",
       neg_marks: "0",
@@ -84,7 +112,7 @@ const AddQuestion = () => {
   const [file, setFile] = useState(null);
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    setValue("userfile",selectedFile);
+    setValue("userfile", selectedFile);
   };
   // End Upload file
   // Search Parent ID
@@ -93,7 +121,7 @@ const AddQuestion = () => {
   };
 
   //Multiple Checkbox creation
-  const [options, setOptions] = useState(["Choice1", "Choice2", "Choice3"]); // Array of data for checkboxes
+  // Array of data for checkboxes
   const [errorcheck, setErrorcheck] = useState(null);
   const [checkedItems, setCheckedItems] = useState({}); // useState hook to manage checked state
   const handleCheckboxChange = (event) => {
@@ -107,15 +135,6 @@ const AddQuestion = () => {
     setOptions([...options, newOption]); // Add new option to the options array
     setCheckedItems({ ...checkedItems, [newOption]: false }); // Add new option to the checkedItems object with false value
   };
-
-  // const handleDeleteOption = (optionToDelete) => {
-  //   const newOptions = options.filter((option) => option !== optionToDelete);
-  //   const newCheckedItems = { ...checkedItems };
-  //   delete newCheckedItems[optionToDelete];
-  //   setOptions(newOptions);
-  //   setCheckedItems(newCheckedItems);
-  // };
-  // End Multiple Checkbox creation
 
   // Search value
   const handleSearch = (event) => {
@@ -133,19 +152,24 @@ const AddQuestion = () => {
   const [isTestCreated, setIsTestCreated] = useState(null);
 
   var myHeaders = new Headers();
-  myHeaders.append(
-    "Authorization",
-    `Bearer ${token}`
-  );
+  myHeaders.append("Authorization", `Bearer ${token}`);
   myHeaders.append("Network", `${Network}`);
 
   const navigate = useNavigate();
   const handleFormSubmit = async (data) => {
-    const formData = serialize(data);
+    //const formData = serialize(data);
+    const formdata = new FormData();
+    formdata.append("question", data.question);
+    formdata.append("question_type", data.question_type);
+    for (let i = 0; i < options.length; i++) {
+      formdata.append(`choice[${i}]`, data.choice[i]);
+      formdata.append(`correct_answer[${i}]`, data.correct_answer[i]);
+    }
+    formdata.append("created_by", CreatedBy);
     var requestOptions = {
       method: "POST",
       headers: myHeaders,
-      body: formData,
+      body: formdata,
       redirect: "follow",
     };
     const content = editorRef.current.getContent();
@@ -161,6 +185,7 @@ const AddQuestion = () => {
         setIsTestCreated(true);
         setTimeout(() => {
           setIsTestCreated(false);
+          window.location.reload();
         }, 1000);
         reset();
       } catch (error) {
@@ -171,12 +196,12 @@ const AddQuestion = () => {
     // console.log(formData);
   };
 
-// Get parent question
-var requestOption = {
-  method: "GET",
-  headers: myHeaders,
-  redirect: "follow",
-};
+  // Get parent question
+  var requestOption = {
+    method: "GET",
+    headers: myHeaders,
+    redirect: "follow",
+  };
   const [parentQues, setPatentQues] = useState("");
   useEffect(() => {
     const fetchQuestion = async () => {
@@ -190,7 +215,7 @@ var requestOption = {
     };
     fetchQuestion();
   }, []);
-  const filename = watch('userfile');
+  const filename = watch("userfile");
   return (
     <>
       <Helmet>
@@ -198,7 +223,7 @@ var requestOption = {
       </Helmet>
       <Box sx={{ display: "flex" }}>
         <SidebarLeft />
-        <Box sx={{ flexGrow: 1, p: 3}}>
+        <Box sx={{ flexGrow: 1, p: 3 }}>
           <Grid container spacing={2} sx={{ mt: 3 }}>
             <Grid item xs={6}>
               <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 600 }}>
@@ -206,15 +231,23 @@ var requestOption = {
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
-              {mtValue ?  <Button variant="contained">
-                <Link href={`/course/${mtValue}/test/list`} color="inherit" underline="none">
-                  Cancel
-                </Link>
-              </Button> :  <Button variant="contained">
-                <Link href="/test/list" color="inherit" underline="none">
-                  Cancel
-                </Link>
-              </Button>}
+              {mtValue ? (
+                <Button variant="contained">
+                  <Link
+                    href={`/course/${mtValue}/test/list`}
+                    color="inherit"
+                    underline="none"
+                  >
+                    Cancel
+                  </Link>
+                </Button>
+              ) : (
+                <Button variant="contained">
+                  <Link href="/test/list" color="inherit" underline="none">
+                    Cancel
+                  </Link>
+                </Button>
+              )}
             </Grid>
           </Grid>
           <Grid
@@ -225,22 +258,20 @@ var requestOption = {
           >
             <Grid item>
               <Snackbar
-                severity="success"
+                //severity={isTestCreated === true ? "success" : "warning"}
                 open={isTestCreated}
                 anchorOrigin={{ vertical: "top", horizontal: "center" }}
-                autoHideDuration={50000}
+                autoHideDuration={1000}
                 onClose={() => setIsTestCreated(false)}
-                sx={{
-                  backgroundColor: `${
-                    isTestCreated === true ? "#008000" : "#ff0000"
-                  }`,
-                }}
-                message={
-                  isTestCreated === true
-                    ? "Test created successfully!"
-                    : "Failed to create test"
-                }
-              />
+              >
+                <Alert
+                  severity={isTestCreated === true ? "success" : "warning"}
+                >
+                  {isTestCreated === true
+                    ? "Question created successfully."
+                    : "Question cretion failled!"}
+                </Alert>
+              </Snackbar>
             </Grid>
           </Grid>
           <Grid container spacing={2} sx={{ mt: 0 }}>
@@ -293,7 +324,9 @@ var requestOption = {
                             />
                           </IconButton>
                         </label>
-                        <span>{filename ? filename.name : "No file selected"}</span>
+                        <span>
+                          {filename ? filename.name : "No file selected"}
+                        </span>
                       </div>
                       <div className="select-type">
                         <FormControl sx={{ my: 3, width: "100%" }}>
@@ -377,7 +410,32 @@ var requestOption = {
                                     name={`order[${index}]`}
                                     value={`order[${index}]`}
                                   />
-                                  <FormControlLabel
+                                  <Controller
+                                    control={control}
+                                    name={`correct_answer[${index}]`}
+                                    render={({ field }) => (
+                                      <FormControlLabel
+                                        control={
+                                          <Checkbox
+                                            name={`correct_answer[${index}]`}
+                                            control={control}
+                                            onChange={({
+                                              target: { checked },
+                                            }) => {
+                                              setValue(
+                                                `correct_answer[${index}]`,
+                                                checked ? "1" : "0"
+                                              );
+                                            }}
+                                            className="option-label"
+                                            value={option}
+                                          />
+                                        }
+                                        label={option}
+                                      />
+                                    )}
+                                  />
+                                  {/* <FormControlLabel
                                     control={
                                       <Checkbox
                                         name={`correct_answer[${index}]`}
@@ -393,7 +451,7 @@ var requestOption = {
                                       />
                                     }
                                     label={option}
-                                  />
+                                  /> */}
                                   {/* <Button
                                     sx={{ marginTop: "-10px" }}
                                     onClick={() => handleDeleteOption(option)}
@@ -433,7 +491,12 @@ var requestOption = {
                       {question_type !== "comp" ? (
                         <>
                           <StyledFormControl sx={{ width: "100%", mt: 3 }}>
-                          <TextField label="Search" name="parent_id" value={parent_id} onChange={handleSearchChange} />
+                            <TextField
+                              label="Search"
+                              name="parent_id"
+                              value={parent_id}
+                              onChange={handleSearchChange}
+                            />
                             {/* <TextField
                               label="Parent Question Sub Category Of"
                               variant="outlined"

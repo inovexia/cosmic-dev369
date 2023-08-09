@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
+import ReactHtmlParser from "html-react-parser";
 import {
   Box,
   Typography,
@@ -259,7 +260,7 @@ const ManageCourse = () => {
                   <Typography variant="h4">{currentCourse.title}</Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  <Typography>{currentCourse.description}</Typography>
+                  <Typography>{ReactHtmlParser(currentCourse.description)}</Typography>
                 </Grid>
                 {/* Lessons */}
                 <Grid item xs={12} md={6}>

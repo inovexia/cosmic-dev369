@@ -11,6 +11,7 @@ import Widgets from "../components/Dashboard/Widgets";
 import BASE_URL from "../Utils/baseUrl";
 import token from "../Utils/token";
 import Network from "../Utils/network";
+import CheckTokenValid from "../../src/components/Redirect/CheckTokenValid"
 
 const HomePage = () => {
   // States
@@ -34,7 +35,8 @@ const HomePage = () => {
       try {
         const response = await fetch(`${BASE_URL}/course/list`, requestOptions);
         const result = await response.json();
-        setCourses(result.payload.data);
+        console.log(result)
+        setCourses(result.payload);
       } catch (error) {
         console.log("error", error);
       }
@@ -53,7 +55,7 @@ const HomePage = () => {
       try {
         const response = await fetch(`${BASE_URL}/zoom/list`, requestOptions);
         const result = await response.json();
-        setClasses(result.payload.data);
+        setClasses(result.payload);
       } catch (error) {
         console.log("error", error);
       }
@@ -72,7 +74,7 @@ const HomePage = () => {
       try {
         const response = await fetch(`${BASE_URL}/tests/list`, requestOptions);
         const result = await response.json();
-        setTests(result.payload.data);
+        setTests(result.payload);
       } catch (error) {
         console.log("error", error);
       }
@@ -84,17 +86,17 @@ const HomePage = () => {
   useEffect(() => {
     const fetchStudents = async () => {
       var formdata = new FormData();
-      formdata.append("role", "student");
+      //formdata.append("role", "student");
       const requestOptions = {
-        method: "POST",
+        method: "GET",
         headers: myHeaders,
-        body: formdata,
+        //body: formdata,
         redirect: "follow",
       };
       try {
         const response = await fetch(`${BASE_URL}/users/list`, requestOptions);
         const result = await response.json();
-        setStudents(result.payload.data);
+        setStudents(result.payload);
       } catch (error) {
         console.log("error", error);
       }
@@ -104,13 +106,18 @@ const HomePage = () => {
 
   return (
     <>
+      <CheckTokenValid/>
       <Helmet>
         <title>Cosmic Academy</title>
       </Helmet>
       <Box sx={{ display: "flex" }}>
         <SidebarLeft />
         <Box sx={{ flexGrow: 1, px: 3, mt: 5 }} className="dashboard">
-          <AllCourses courses={courses} />
+        <Grid container  sx={{ mt: 5 }}>
+            <Grid item xs={12}>
+            <AllCourses courses={courses && courses} />
+            </Grid>
+          </Grid>
           {/* Test and Online classes */}
           <Grid container spacing={4} sx={{ mt: 5 }}>
             <Grid item xs={12} md={6}>
@@ -132,10 +139,10 @@ const HomePage = () => {
           </Grid>
           {/* Widgets */}
           <Widgets
-            courses={courses}
-            classes={classes}
-            tests={tests}
-            students={students}
+            courses={courses && courses.data}
+            classes={classes && classes.data}
+            tests={tests && tests.data}
+            students={students && students.data}
           />
         </Box>
       </Box>

@@ -19,6 +19,7 @@ import BASE_URL from "../../Utils/baseUrl";
 import token from "../../Utils/token";
 import Network from "../../Utils/network";
 import { Link } from "react-router-dom";
+import CheckTokenValid from "../Redirect/CheckTokenValid";
 
 const AllCourses = () => {
   const ratingValueString = "3.5";
@@ -42,7 +43,7 @@ const AllCourses = () => {
       try {
         const response = await fetch(`${BASE_URL}/course/list`, requestOptions);
         const result = await response.json();
-        setCourses(result.payload.data);
+        setCourses(result.payload);
         setLoading(false);
       } catch (error) {
         console.log("error", error);
@@ -62,7 +63,7 @@ const AllCourses = () => {
         <>
           {/* Entry Title and button */}
           <Grid container spacing={2} sx={{ justifyContent: "space-between" }}>
-            <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={6}>
               <h1>All Courses</h1>
             </Grid>
             <Grid
@@ -113,9 +114,9 @@ const AllCourses = () => {
                 modules={[Pagination]}
                 className="mySwiper"
               >
-                {courses && courses.length !== 0 ? (
+                {courses && courses.data.length !== 0 ? (
                   courses &&
-                  courses.map((course, index) => (
+                  courses.data.map((course, index) => (
                     <SwiperSlide key={index}>
                       <Grid container spacing={2}>
                         <Grid item xs={12} md={6} className="course-image">

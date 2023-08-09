@@ -1,16 +1,12 @@
 import React from 'react';
-import { useNavigate, useLocation  } from 'react-router-dom';
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Register from "../../pages/Auth/Register"
-import ForgotPassword from "../../pages/Auth/ForgotPassword"
-import CreatePassword from '../../pages/Auth/CreatePassword';
+import { useNavigate, useLocation } from 'react-router-dom';
+import token from '../../Utils/token';
 
 const RedirectLogic = () => {
-  const token = localStorage.getItem('token'); // Retrieve token from localStorage
+  //const token = localStorage.getItem('token'); // Retrieve token from localStorage
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
-  console.log(currentPath)
 
   React.useEffect(() => {
     if (token === "") {

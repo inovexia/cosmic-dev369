@@ -25,7 +25,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { TextField, Snackbar, Alert } from "@mui/material";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { serialize } from "object-to-formdata";
-import { useNavigate } from "react-router-dom";
+import { useLocation,useNavigate } from "react-router-dom";
 import Network from "../../Utils/network";
 import BASE_URL from "../../Utils/baseUrl";
 
@@ -97,9 +97,17 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function SidebarLeft() {
+  const location = useLocation();
+  const currentPathname = location.pathname;
+  const pathParts = currentPathname.split('/');
+  const firstPath = pathParts[1];
   const navigate = useNavigate();
   const theme = useTheme();
   const [open, setOpen] = useState(true);
+  const isLinkActive = (link) => {
+    return location.pathname === link;
+  };
+
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -125,11 +133,11 @@ export default function SidebarLeft() {
     };
   }, []);
   const [sidebarMenu, setSidebarMenu] = useState([
-    {
-      label: "Dashboard",
-      link: "/",
-      menuIcon: <DashboardIcon />,
-    },
+    // {
+    //   label: "Dashboard",
+    //   link: "/",
+    //   menuIcon: <DashboardIcon />,
+    // },
     {
       label: "Courses",
       link: "/course/list",
@@ -251,6 +259,31 @@ export default function SidebarLeft() {
         </DrawerHeader>
         <Divider />
         <List>
+        <ListItem disablePadding sx={{ display: "block" }}>
+              <ListItemButton
+                to="/"
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                  backgroundColor:firstPath === "" ? "#f1f1f1" : "transparent"
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
+                >
+                  <DashboardIcon/>
+                </ListItemIcon>
+                <ListItemText
+                  primary="Dashboard"
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+            </ListItem>
           {sidebarMenu.map((item, index) => (
             <ListItem key={index} disablePadding sx={{ display: "block" }}>
               <ListItemButton
@@ -259,6 +292,7 @@ export default function SidebarLeft() {
                   minHeight: 48,
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
+                  backgroundColor:firstPath != "" && item.link.includes(firstPath) ? "#f1f1f1" : "transparent"
                 }}
               >
                 <ListItemIcon

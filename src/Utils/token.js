@@ -1,3 +1,4 @@
-const token = 'fc4dae3f503e4fd99bdfee73bfd5313890d935bdaabaac4151a636e7d20c53f1';
+//const token = '615ddd76af127915f65e4465c15be56d3fae4c021559be968ddaad55b7bc375a38';
+const token = localStorage.getItem('token');
 
 export default  token;

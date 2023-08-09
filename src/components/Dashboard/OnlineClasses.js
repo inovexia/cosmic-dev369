@@ -65,7 +65,7 @@ const OnlineClasses = () => {
       try {
         const response = await fetch(`${BASE_URL}/zoom/list`, requestOptions);
         const result = await response.json();
-        setClasses(result.payload.data);
+        setClasses(result.payload);
         setLoading(false);
       } catch (error) {
         console.log("error", error);
@@ -100,9 +100,9 @@ const OnlineClasses = () => {
             <Box sx={{ textAlign: "center", mt: 5 }}>
               <CircularProgress />
             </Box>
-          ) : classes && classes.length !== 0 ? (
+          ) : classes && classes.data.length !== 0 ? (
             classes &&
-            classes.slice(0, 5).map((item, index) => {
+            classes.data.slice(0, 5).map((item, index) => {
               const title = item.details.split(" ");
               const truncatedTitle = title.slice(0, 5).join(" ");
               return (

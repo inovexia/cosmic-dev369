@@ -33,7 +33,7 @@ const Widgets = ({courses, classes, tests, students}) => {
                   }}
                   component="h2"
                 >
-                 {classes.length}
+                 {classes && classes.length}
                 </Typography>
               </Box>
             </Grid>
@@ -60,7 +60,7 @@ const Widgets = ({courses, classes, tests, students}) => {
                   }}
                   component="h2"
                 >
-                  {tests.length}
+                  {tests && tests.length}
                 </Typography>
               </Box>
             </Grid>
@@ -87,7 +87,7 @@ const Widgets = ({courses, classes, tests, students}) => {
                   }}
                   component="h2"
                 >
-                  {courses.length}
+                  {courses && courses.length}
                 </Typography>
               </Box>
             </Grid>
@@ -114,7 +114,7 @@ const Widgets = ({courses, classes, tests, students}) => {
                   }}
                   component="h2"
                 >
-                  {students.length}
+                  {students && students.length}
                 </Typography>
               </Box>
             </Grid>

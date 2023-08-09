@@ -119,8 +119,6 @@ const TakeTest = () => {
     fetch(`${BASE_URL}/tests/take_test/${guid}`, requestOptions).then(
       (response) => response.text()
     );
-    //.then((result) => console.log(result))
-    //.catch((error) => console.log("error", error));
   };
   const handleChildValueChange = (value) => {
     setCheckConfirmValue(value);
@@ -215,7 +213,6 @@ const TakeTest = () => {
   const handleReviewLater = (event) => {
     setChecked(event.target.checked);
   };
-
   const renderOptions = (choices) => {
     return testData[currentQuestion].question_type === "mcmc" ? (
       <>

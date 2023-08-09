@@ -169,8 +169,9 @@ body .no-pd{
   align-items: center;
   justify-content: space-between;
 }
-.mySwiper {
+body .mySwiper {
   width: 100%;
+  overflow: hidden;
 }
 
 

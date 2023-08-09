@@ -461,14 +461,14 @@ const ManageTest = () => {
                           sx={{ pl: 3 }}
                         />
                       </ListItem>
-                      <Divider variant="" component="li" />
+                        <Divider variant="" component="li" />
                       <ListItem sx={{ pl: 0 }}>
                         <Link
                           href={`/test/take-test/${guid}`}
                           target="_blank"
                           color="inherit"
                           underline="none"
-                          sx={{ display: "flex", alignItems: "center" }}
+                          sx={{ display: "flex", alignItems: "center", pointerEvents:test.stats && test.stats.questions === 0 ? "none" : "auto", opacity:test.stats && test.stats.questions === 0 ? "0.5" : "1" }}
                         >
                           <ListItemIcon>
                             <VisibilityIcon />
@@ -542,7 +542,20 @@ const ManageTest = () => {
                           <ListItemIcon>
                             <CheckCircleIcon />
                           </ListItemIcon>
-                          <ListItemText>Submission Report</ListItemText>
+                          <ListItemText>My Submission Report</ListItemText>
+                        </Link>
+                        </ListItem>
+                        <ListItem sx={{ pl: 0 }}>
+                        <Link
+                          href={`/test/all-submissions/${guid}`}
+                          color="inherit"
+                          underline="none"
+                          sx={{ display: "flex", alignItems: "center" }}
+                        >
+                          <ListItemIcon>
+                            <CheckCircleIcon />
+                          </ListItemIcon>
+                          <ListItemText>All Submission</ListItemText>
                         </Link>
                       </ListItem>
                     </List>

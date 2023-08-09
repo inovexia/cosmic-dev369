@@ -10,7 +10,7 @@ import {
   Snackbar,
   Alert,
   ButtonGroup,
-  TableCell,
+  Link
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet";
@@ -24,6 +24,36 @@ import Network from "../../Utils/network";
 import SidebarLeft from "../../components/Sidebar/SidebarLeft";
 
 const PreviewTest = () => {
+  // State variables for Snackbar
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSuccess, setSnackbarSuccess] = useState(null);
+
+  // Function to show the Snackbar
+  const showSnackbar = (severity, message) => {
+    setSnackbarMessage(message);
+    setSnackbarOpen(true);
+  };
+
+  // Function to hide the Snackbar
+  const hideSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+
+  // UseEffect to close the Snackbar after a certain duration
+  useEffect(() => {
+    if (snackbarOpen) {
+      const snackbarTimeout = setTimeout(() => {
+        hideSnackbar();
+      }, 3000); // Snackbar will be visible for 3 seconds (3000 ms)
+
+      return () => {
+        clearTimeout(snackbarTimeout);
+      };
+    }
+  }, [snackbarOpen]);
+  // Snackbar end
+
   const [isLoading, setIsLoading] = useState(true);
   const { guid } = useParams();
   const { control } = useForm({
@@ -31,34 +61,26 @@ const PreviewTest = () => {
       title: "",
       details: "",
       status: "0",
-      created_by:{CreatedBy},
+      created_by: { CreatedBy },
     },
   });
-  const [isTestCreated, setIsTestCreated] = useState(null);
-  const [testNotFound, setTestNotFound] = useState("");
 
   // Authorization Setup
   var myHeaders = new Headers();
-  myHeaders.append(
-    "Authorization",
-    `Bearer ${token}`
-  );
+  myHeaders.append("Authorization", `Bearer ${token}`);
   myHeaders.append("Network", `${Network}`);
 
   // Get current test details
   const [test, setTest] = useState([]);
   const [questions, setQuestions] = useState([]);
-  const requestOption = {
-    method: "GET",
-    headers: myHeaders,
-    redirect: "follow",
-  };
   useEffect(() => {
+    const requestOption = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
     const fetchTest = async () => {
-      const res = await fetch(
-        `${BASE_URL}/tests/view/${guid}`,
-        requestOption
-      );
+      const res = await fetch(`${BASE_URL}/tests/view/${guid}`, requestOption);
       const testresult = await res.json();
       //console.log(testresult)
       setTest(testresult.payload);
@@ -67,6 +89,11 @@ const PreviewTest = () => {
   }, []);
 
   useEffect(() => {
+    const requestOption = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
     const fetchQuestion = async () => {
       const response = await fetch(
         `${BASE_URL}/tests/preview/${guid}/1`,
@@ -78,12 +105,6 @@ const PreviewTest = () => {
     };
     fetchQuestion();
   }, []);
-  // useEffect(() => {
-  //   fetch(`${BASE_URL}/tests/preview/${guid}/1`, requestOption)
-  // .then(response => response.json())
-  // .then(result => console.log(result))
-  // .catch(error => console.log('error', error));
-  // })
 
   const totalMarks = questions.reduce((acc, curr) => {
     return acc + parseInt(curr.marks);
@@ -124,28 +145,20 @@ const PreviewTest = () => {
       setSelected([]);
     }
   };
-  // const handleDelete = (ids) => {
-  //   const newRows = rows.filter((row) => !ids.includes(row.id));
-  //   setRows(newRows);
-  //   setSelected([]);
-  // };
-
   // Delete Question
   const [isDeleting, setIsDeleting] = useState(null);
-  //const [deleteQuestion, setDeleteQuestion] = useState("");
-  const deleteOption = {
-    method: "DELETE",
-    headers: myHeaders,
-    redirect: "follow",
-  };
-
-
   function handleDelete(id) {
     setIsDeleting(id);
-    fetch(
-      `${BASE_URL}/tests/remove_question/${guid}/${id}`,
-      deleteOption
-    )
+    var formdata = new FormData();
+    formdata.append("questions[0]", id);
+    formdata.append("updated_by", CreatedBy);
+    const deleteOption = {
+      method: "POST",
+      headers: myHeaders,
+      body: formdata,
+      redirect: "follow",
+    };
+    fetch(`${BASE_URL}/tests/remove_question/${guid}`, deleteOption)
       .then((response) => {
         setIsDeleting(null);
         setQuestions(questions.filter((question) => question.guid !== id));
@@ -156,168 +169,222 @@ const PreviewTest = () => {
       });
   }
 
-  console.log(questions);
-
+  const deleteBulkQuestion = async () => {
+    const formdata = new FormData();
+    selected.forEach((item, index) => {
+      formdata.append(`questions[${index}]`, item);
+    });
+    formdata.append("updated_by", CreatedBy);
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: formdata,
+      redirect: "follow",
+    };
+    try {
+      const res = await fetch(
+        `${BASE_URL}/tests/remove_question/${guid}`,
+        requestOptions
+      );
+      const result = await res.json();
+      setSnackbarSuccess(result.success);
+      if (result.success === true) {
+        showSnackbar("success", "Question deleted Successfully");
+        setQuestions((prevQuestions) =>
+          prevQuestions.filter((question) => {
+            if (!selected.includes(question.guid)) {
+              return true; // Keep the question in state if it's not in selected array
+            }
+            return false; // Remove the question from state if it's in selected array
+          })
+        );
+      } else {
+        showSnackbar(
+          "warning",
+          "Question not deleted, At least 1 item should be selected!"
+        );
+        setTimeout(() => {}, 3000);
+      }
+    } catch (error) {
+      console.error(error);
+      throw new Error(`Failed to post status: ${error.message}`);
+    }
+  };
+console.log(questions)
   return (
     <>
-    <Helmet>
+      <Helmet>
         <title>Preview Test</title>
-    </Helmet>
-    <Box sx={{ display: "flex" }}>
-      <SidebarLeft />
-      <Box sx={{ flexGrow: 1, p: 3 }}>
-        <Grid
-          container
-          spacing={2}
-          sx={{ width: "100%" }}
-          alignItems="center"
+      </Helmet>
+      <Box sx={{ display: "flex" }}>
+        <SidebarLeft />
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={3000}
+          onClose={hideSnackbar}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
-          <Grid item>
-            <Snackbar
-              severity="success"
-              open={isTestCreated}
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-              autoHideDuration={50000}
-              onClose={() => setIsTestCreated(false)}
-              sx={{
-                backgroundColor: `${
-                  isTestCreated === true ? "#008000" : "#ff0000"
-                }`,
-              }}
-              message={
-                isTestCreated === true
-                  ? "Test created successfully!"
-                  : "Failed to create test"
-              }
-            />
+          <Alert
+            severity={
+              snackbarSuccess && snackbarSuccess === true
+                ? "success"
+                : "warning"
+            }
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+        <Box sx={{ flexGrow: 1, p: 3 }}>
+          <Grid container spacing={0} sx={{ mt: 5 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 600 }}>
+                  {test && test.title}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} sx={{textAlign:"right"}}>
+                <Button className="custom-button" variant="contained" component={Link} href={`/test/manage/${guid}`}>Back</Button>
+              </Grid>
+            </Grid>
           </Grid>
-        </Grid>
-        <Grid container spacing={0} sx={{ mt: 5 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 600 }}>
-                {test && test.title}
+          <Grid container spacing={0} sx={{ mt: 5 }}>
+            <Grid item xs={6}>
+              <Typography
+                variant="h5"
+                sx={{ fontSize: 18, lineHeight: "22px", fontWeight: 400 }}
+              >
+                Test Duration:{formattedTime}min
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sx={{ textAlign: "right" }}>
+              <Typography
+                variant="h5"
+                sx={{ fontSize: 18, lineHeight: "22px", fontWeight: 400 }}
+              >
+                Test Marks:{totalMarks}
               </Typography>
             </Grid>
           </Grid>
-        </Grid>
-        <Grid container spacing={0} sx={{ mt: 5 }}>
-          <Grid item xs={6}>
-            <Typography
-              variant="h5"
-              sx={{ fontSize: 18, lineHeight: "22px", fontWeight: 400 }}
-            >
-              Test Duration:{formattedTime}min
-            </Typography>
-          </Grid>
-          <Grid item xs={6} sx={{ textAlign: "right" }}>
-            <Typography
-              variant="h5"
-              sx={{ fontSize: 18, lineHeight: "22px", fontWeight: 400 }}
-            >
-              Test Marks:{totalMarks}
-            </Typography>
-          </Grid>
-        </Grid>
-        {isLoading ? (
-          <Grid item xs={12} sx={{ textAlign: "center", py: 5 }}>
-            <CachedIcon />
-          </Grid>
-        ) : (
-          <>
-            <Grid container spacing={2} sx={{ mt: 5 }}>
-              {questions.length > 0 ? (
-                <>
-                  <Grid item xs={12}>
-                    <ButtonGroup
-                      variant="contained"
-                      color="primary"
-                      aria-label="contained primary button group"
-                    >
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            indeterminate={
-                              selected.length > 0 &&
-                              selected.length < questions.length
-                            }
-                            checked={selected.length === questions.length}
-                            onChange={handleSelectAll}
-                            inputProps={{ "aria-label": "select all rows" }}
-                          />
-                        }
-                        label="Check All"
-                      />
-                      <Button startIcon={<DeleteIcon />}>Delete</Button>
-                    </ButtonGroup>
-                  </Grid>
-                  {questions.map((question, index) => (
-                    <Grid item xs={12} key={index}>
-                      <FormControlLabel
-                        control={
-                          // <Checkbox
-                          // checked={checkedQues[question.guid]}
-                          // onChange={(event) => handleCheckboxChange(event, question.guid)}
-                          //   name={question.guid}
-                          //   control={control}
-                          //   //onChange={({ target: { checked } }) => {}}
-                          //   className="option-label"
-                          //   value={question.guid}
-                          // />
-
-                          <Checkbox
-                            checked={selected.indexOf(question.guid) !== -1}
-                            onChange={() => handleSelect(question.guid)}
-                            inputProps={{
-                              "aria-labelledby": `select ${question.question}`,
-                            }}
-                          />
-                        }
-                        label={
-                          <Box sx={{ display: "flex" }}>
-                            {index + 1}. {ReactHtmlParser(question.question)}
-                          </Box>
-                        }
-                      />
-
-                      <Button onClick={() => handleDelete(question.guid)}>
-                        {isDeleting === question.guid ? (
-                          <CachedIcon size={20} color="#fff" />
-                        ) : (
-                          <DeleteIcon />
-                        )}
-                      </Button>
-                      <ol
-                        style={{
-                          listStyleType: "lower-alpha",
-                          paddingLeft: "45px",
-                        }}
-                      >
-                        {question.choices.map((choice, index) => (
-                          <li
-                            style={{
-                              color:
-                                choice.correct_answer === "1" ? "#A6CD4E" : "",
-                            }}
-                            key={index}
-                          >
-                            {ReactHtmlParser(choice.choice)}
-                          </li>
-                        ))}
-                      </ol>
-                    </Grid>
-                  ))}
-                </>
-              ) : (
-                <Grid item xs={12}>
-                  <Alert severity="info">Questions not found!</Alert>
-                </Grid>
-              )}
+          {isLoading ? (
+            <Grid item xs={12} sx={{ textAlign: "center", py: 5 }}>
+              <CachedIcon />
             </Grid>
-          </>
-        )}
+          ) : (
+            <>
+              <Grid container spacing={2} sx={{ mt: 5 }}>
+                {questions.length > 0 ? (
+                  <>
+                    <Grid item xs={12}>
+                      <ButtonGroup
+                        variant="contained"
+                        color="primary"
+                        aria-label="contained primary button group"
+                      >
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              indeterminate={
+                                selected.length > 0 &&
+                                selected.length < questions.length
+                              }
+                              checked={selected.length === questions.length}
+                              onChange={handleSelectAll}
+                              inputProps={{ "aria-label": "select all rows" }}
+                            />
+                          }
+                          label="Check All"
+                        />
+                        <Button
+                          onClick={deleteBulkQuestion}
+                          startIcon={<DeleteIcon />}
+                        >
+                          Delete
+                        </Button>
+                      </ButtonGroup>
+                    </Grid>
+                    {questions.map((question, index) => (
+                      <Grid item xs={12} key={index}>
+                        <FormControlLabel
+                          control={
+                            // <Checkbox
+                            // checked={checkedQues[question.guid]}
+                            // onChange={(event) => handleCheckboxChange(event, question.guid)}
+                            //   name={question.guid}
+                            //   control={control}
+                            //   //onChange={({ target: { checked } }) => {}}
+                            //   className="option-label"
+                            //   value={question.guid}
+                            // />
+
+                            <Checkbox
+                              checked={selected.indexOf(question.guid) !== -1}
+                              onChange={() => handleSelect(question.guid)}
+                              inputProps={{
+                                "aria-labelledby": `select ${question.question}`,
+                              }}
+                            />
+                          }
+                          label={
+                            <Box sx={{ display: "flex" }}>
+                              {index + 1}. {ReactHtmlParser(question.question)}
+                            </Box>
+                          }
+                        />
+
+                        <Button onClick={() => handleDelete(question.guid)}>
+                          {isDeleting === question.guid ? (
+                            <CachedIcon size={20} color="#fff" />
+                          ) : (
+                            <DeleteIcon />
+                          )}
+                        </Button>
+                        <ol
+                          style={{
+                            listStyleType: "lower-alpha",
+                            paddingLeft: "45px",
+                          }}
+                        >
+                          {question.choices.map((choice, index) => {
+                            return (
+                              question.question_type === "tf" ? index < 2 &&(<li
+                              style={{
+                                color:
+                                  choice.correct_answer === "1"
+                                    ? "#A6CD4E"
+                                    : "",
+                              }}
+                              key={index}
+                            >
+                              {ReactHtmlParser(choice.choice)}
+                            </li>) : (<li
+                              style={{
+                                color:
+                                  choice.correct_answer === "1"
+                                    ? "#A6CD4E"
+                                    : "",
+                              }}
+                              key={index}
+                            >
+                              {ReactHtmlParser(choice.choice)}
+                            </li>)
+                              
+                            )
+                            
+                          })}
+                        </ol>
+                      </Grid>
+                    ))}
+                  </>
+                ) : (
+                  <Grid item xs={12}>
+                    <Alert severity="info">Questions not found!</Alert>
+                  </Grid>
+                )}
+              </Grid>
+            </>
+          )}
+        </Box>
       </Box>
-    </Box>
     </>
   );
 };

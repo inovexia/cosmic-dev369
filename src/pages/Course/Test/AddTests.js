@@ -205,7 +205,6 @@ const AddTests = () => {
     }
   };
 
-  console.log(selectedTests);
   return (
     <>
       <Helmet>
@@ -383,7 +382,7 @@ const AddTests = () => {
                                     >
                                       <h3>
                                         <Link
-                                          href={`/course/manage/`}
+                                          href={`/test/manage/${test.guid}`}
                                           sx={{
                                             textDecoration: "none",
                                             color: "inherit",
@@ -402,7 +401,7 @@ const AddTests = () => {
                                     >
                                       <h3>
                                         <Link
-                                          href={`/course/manage/`}
+                                          href={`/test/manage/${test.guid}`}
                                           sx={{
                                             textDecoration: "none",
                                             color: "inherit",

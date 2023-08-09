@@ -21,7 +21,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Helmet } from "react-helmet";
-import { serialize } from "object-to-formdata";
+import { useParams } from "react-router-dom";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
 import SidebarLeft from "../../components/Sidebar/SidebarLeft";
 import Course from "../../assets/images/Course.jpg";
@@ -29,7 +29,6 @@ import BASE_URL from "../../Utils/baseUrl";
 import token from "../../Utils/token";
 import Network from "../../Utils/network";
 import theme from "../../configs/theme";
-import CheckTokenValid from "../../components/Redirect/CheckTokenValid"
 
 const options = [
   {
@@ -44,7 +43,8 @@ const options = [
 
 const ITEM_HEIGHT = 48;
 
-const Courses = () => {
+const AllSubmissions = () => {
+  const { guid } = useParams();
   const {
     primary: { main: primaryColor },
   } = theme.palette;
@@ -173,9 +173,8 @@ const Courses = () => {
   };
   return (
     <>
-      <CheckTokenValid/>
       <Helmet>
-        <title>All Courses</title>
+        <title>All Submissions</title>
       </Helmet>
       <Box sx={{ display: "flex" }}>
         <SidebarLeft />
@@ -212,19 +211,19 @@ const Courses = () => {
               : "Course not deleted."}
           </Alert>
         </Snackbar>
-        
         <Box sx={{ flexGrow: 1, p: 3, mt: 3 }}>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <h1>All Courses</h1>
+            <Grid item xs={12} md={6}>
+              <h1>All Submissions</h1>
             </Grid>
-            <Grid item xs={6} sx={{ display: "flex", justifyContent: "right" }}>
+            <Grid item xs={12} md={6} sx={{ display: "flex", justifyContent: "right" }}>
               <Button
+                className="custom-button"
                 component={Link}
-                href={`/course/create/`}
+                href={`/test/manage/${guid}`}
                 variant="contained"
               >
-                Add Course
+                Back
               </Button>
             </Grid>
           </Grid>
@@ -253,7 +252,51 @@ const Courses = () => {
               >
                 <Grid item xs={12}>
                   {currentCourse && currentCourse.length !== 0 ? (
-                    <Card>
+                      <Card>
+                        <Box sx={{ px: 3, display:{ xs: "none", md:"block" } }} >
+                            <Grid
+                              container
+                              sx={{
+                                borderBottom: "1px solid #B8B8B8",
+                                py: 2,
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Grid
+                                item
+                                xs={1}
+                                md={1}
+                                sx={{
+                                  display: { xs: "flex", md: "block" },
+                                  justifyContent: { xs: "space-between" },
+                                }}
+                              >
+                                <Box className="course-image">
+                                 <h4>Sr. No</h4>
+                                </Box>
+                                <Grid
+                                  item
+                                  sx={{ display: { xs: "block" } }}
+                                >
+                                </Grid>
+                              </Grid>
+                              <Grid item xs={11} md={4}>
+                                <h4>
+                                  Name
+                                </h4>
+                              </Grid>
+                              <Grid item xs={12} md={3}>
+                                <h4>User ID</h4>
+                              </Grid>
+                              <Grid item xs={12} md={2}>
+                               <h4>Last Attempted at</h4>
+                              </Grid>
+                              <Grid item xs={12} md={1}>
+                                
+                              </Grid>
+                            </Grid>
+                          </Box>
                       {currentCourse &&
                         currentCourse.map((course, index) => (
                           <Box sx={{ px: 3 }} key={index}>
@@ -268,83 +311,18 @@ const Courses = () => {
                             >
                               <Grid
                                 item
-                                xs={12}
-                                md={1}
+                                xs={1}
                                 sx={{
                                   display: { xs: "flex", md: "block" },
                                   justifyContent: { xs: "space-between" },
                                 }}
                               >
                                 <Box className="course-image">
-                                  <img
-                                    src={Course}
-                                    alt={course.title}
-                                    loading="lazy"
-                                  />
+                                 {index+1}-
                                 </Box>
-                                <Grid
-                                  item
-                                  sx={{ display: { xs: "block", md: "none" } }}
-                                >
-                                  <IconButton
-                                    aria-label="more"
-                                    id="long-button1"
-                                    aria-controls={
-                                      open ? "long-menu" : undefined
-                                    }
-                                    aria-expanded={open ? "true" : undefined}
-                                    aria-haspopup="true"
-                                    onClick={(event) =>
-                                      handleClick(event, course.guid)
-                                    }
-                                    className="no-pd"
-                                  >
-                                    <MoreVertOutlinedIcon />
-                                  </IconButton>
-                                  <Menu
-                                    sx={{boxShadow: "0px 0px 7px -5px rgba(0,0,0,0.1)"}}
-                                    id="long-menu1"
-                                    MenuListProps={{
-                                      "aria-labelledby": "long-button1",
-                                    }}
-                                    anchorEl={anchorEl}
-                                    open={open}
-                                    onClose={handleClose}
-                                    PaperProps={{
-                                      style: {
-                                        maxHeight: ITEM_HEIGHT * 4.5,
-                                        width: "20ch",
-                                      },
-                                    }}
-                                  >
-                                    {options.map((option, index) => {
-                                      const linkUrl = `${option.link}/${currentCourseGuid}`;
-                                      return (
-                                        <MenuItem
-                                          key={index}
-                                          onClick={handleClose}
-                                        >
-                                          <Link
-                                            href={linkUrl}
-                                            underline="none"
-                                            color="inherit"
-                                          >
-                                            {option.label}
-                                          </Link>
-                                        </MenuItem>
-                                      );
-                                    })}
-                                    <MenuItem
-                                      value="delete"
-                                      onClick={handleConfirmOpen}
-                                    >
-                                      Delete
-                                    </MenuItem>
-                                  </Menu>
-                                </Grid>
                               </Grid>
-                              <Grid item xs={12} md={4}>
-                                <h3>
+                              <Grid item xs={11} md={4}>
+                                <h4>
                                   <Link
                                     href={`/course/manage/${course.guid}`}
                                     sx={{
@@ -354,99 +332,20 @@ const Courses = () => {
                                   >
                                     {course.title}
                                   </Link>
-                                </h3>
+                                </h4>
                               </Grid>
                               <Grid item xs={12} md={3}>
-                                <h4>{course.created_by}</h4>
+                                <span>User ID</span>
                               </Grid>
-                              <Grid item xs={12} md={2}>
-                                {course.status === "0" ? (
-                                  <Typography
-                                    variant="span"
-                                    component="span"
-                                    color="secondary"
-                                  >
-                                    Unpublished
-                                  </Typography>
-                                ) : course.status === "1" ? (
-                                  <Typography
-                                    variant="span"
-                                    component="span"
-                                    color={successColor}
-                                  >
-                                    Published
-                                  </Typography>
-                                ) : (
-                                  <Typography
-                                    variant="span"
-                                    component="span"
-                                    color="primary"
-                                  >
-                                    Archived
-                                  </Typography>
-                                )}
+                              <Grid item xs={12} md={2} sx={{
+                                  display: { xs: "flex", md: "block" },alignItems:"center"
+                                }}>
+                              <Typography component="h4" variant="strong" sx={{
+                                  display: { xs: "block", md: "none" }, marginRight:"5px"
+                                }}>Last Attempted:</Typography> 2023-06-30 11:02:07
                               </Grid>
                               <Grid item xs={12} md={1}>
-                                <Grid
-                                  item
-                                  sx={{ display: { xs: "none", md: "block" } }}
-                                >
-                                  <IconButton
-                                    aria-label="more"
-                                    id="long-button"
-                                    aria-controls={
-                                      open ? "long-menu" : undefined
-                                    }
-                                    aria-expanded={open ? "true" : undefined}
-                                    aria-haspopup="true"
-                                    onClick={(event) =>
-                                      handleClick(event, course.guid)
-                                    }
-                                    className="no-pd"
-                                  >
-                                    <MoreVertOutlinedIcon />
-                                  </IconButton>
-                                  <Menu
-                                    className="demo"
-                                    id="long-menu"
-                                    MenuListProps={{
-                                      "aria-labelledby": "long-button",
-                                    }}
-                                    anchorEl={anchorEl}
-                                    open={open}
-                                    onClose={handleClose}
-                                    PaperProps={{
-                                      style: {
-                                        maxHeight: ITEM_HEIGHT * 4.5,
-                                        width: "20ch",
-                                      },
-                                    }}
-                                  >
-                                    {options.map((option, index) => {
-                                      const linkUrl = `${option.link}/${currentCourseGuid}`;
-                                      return (
-                                        <MenuItem
-                                          key={index}
-                                          onClick={handleClose}
-                                        >
-                                          <Link
-                                            href={linkUrl}
-                                            underline="none"
-                                            color="inherit"
-                                          >
-                                            {option.label}
-                                          </Link>
-                                        </MenuItem>
-                                      );
-                                    })}
-                                    <MenuItem
-                                      value="delete"
-                                      onClick={handleConfirmOpen}
-                                    >
-                                      Delete
-                                    </MenuItem>
-                                  </Menu>
-                                </Grid>
+        
                               </Grid>
                             </Grid>
                           </Box>
@@ -526,4 +425,4 @@ const Courses = () => {
   );
 };
 
-export default Courses;
+export default AllSubmissions;

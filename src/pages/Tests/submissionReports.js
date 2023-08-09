@@ -111,13 +111,16 @@ const SubmissionReports = () => {
       {sidebarVisible && <SidebarLeft />}
       <Box sx={{ flexGrow: 1, p: 3, mt: 5 }}>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          <Grid item xs={6}>
             <Typography
               variant="h1"
               sx={{ fontSize: 30, fontWeight: 600, textAlign: "left" }}
             >
               Test Report
             </Typography>
+          </Grid>
+          <Grid item xs={6} sx={{textAlign:"right"}}>
+            <Button component={Link} href={`/test/manage/${guid}`} className="custom-button" variant="contained">Back</Button>
           </Grid>
         </Grid>
         <Grid container spacing={2}>

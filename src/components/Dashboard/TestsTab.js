@@ -115,7 +115,7 @@ const TestsTab = () => {
       try {
         const response = await fetch(`${BASE_URL}/tests/list`, requestOptions);
         const result = await response.json();
-        setTests(result.payload.data);
+        setTests(result.payload);
         setLoading(false);
       } catch (error) {
         console.log("error", error);
@@ -170,9 +170,9 @@ const TestsTab = () => {
               <Box sx={{ textAlign: "center", mt: 5 }}>
                 <CircularProgress />
               </Box>
-            ) : tests && tests.length !== 0 ? (
+            ) : tests && tests.data.length !== 0 ? (
               tests &&
-              tests.slice(0, 3).map((item, index) => (
+              tests.data.slice(0, 3).map((item, index) => (
                 <Card
                   key={index}
                   sx={{
@@ -280,9 +280,9 @@ const TestsTab = () => {
               <Box sx={{ textAlign: "center", mt: 5 }}>
                 <CircularProgress />
               </Box>
-            ) : tests && tests.length !== 0 ? (
+            ) : tests && tests.data.length !== 0 ? (
               tests &&
-              tests.slice(0, 3).map((item, index) => (
+              tests.data.slice(0, 3).map((item, index) => (
                 <Card
                   key={index}
                   sx={{

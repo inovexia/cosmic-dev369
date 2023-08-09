@@ -34,7 +34,6 @@ const ImportQuestion = () => {
   } = useForm({
     defaultValues: {
       userfile: undefined,
-      created_by: {CreatedBy},
     },
   });
   const { userfile } = watch();
@@ -71,6 +70,7 @@ const ImportQuestion = () => {
     try {
       if (!importedQuestion) {
         const formData = serialize(data);
+        formData.append("created_by", CreatedBy);
         var requestOptions = {
           method: "POST",
           headers: myHeaders,
@@ -104,7 +104,7 @@ const ImportQuestion = () => {
         setIsQuestionsSaved(true);
         setTimeout(() => {
           navigate(`/test/manage/${guid}`);
-        }, 3000);
+        }, 2000);
       }
     } catch (error) {
       console.error(error);
@@ -155,11 +155,6 @@ const ImportQuestion = () => {
           <Grid container spacing={2} sx={{ mt: 0 }}>
             <Grid item xs={12}>
               <form onSubmit={handleSubmit(handleFormSubmit)}>
-                <input
-                  type="hidden"
-                  name="created_by"
-                  defaultValue={CreatedBy}
-                />
                 <input
                   name="userfile"
                   onChange={handleFileChange}
