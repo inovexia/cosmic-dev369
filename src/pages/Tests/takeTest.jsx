@@ -11,6 +11,7 @@ import {
   Box,
   RadioGroup,
   FormGroup,
+  Link,
   FormControl,
   FormControlLabel,
   Radio,
@@ -20,11 +21,18 @@ import {
   Snackbar,
   Alert,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
+
 } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 import TestSidebar from "../../components/Test/TestSidebar";
 import TestInstruction from "../../components/Test/testInstruction";
 import { Helmet } from "react-helmet";
+import Timer from "../../components/Test/Timer";
+import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 
 const StyledFormControl = styled(FormControl)({
   marginBottom: "16px",
@@ -52,6 +60,7 @@ const TakeTest = () => {
   myHeaders.append("Authorization", `Bearer ${token}`);
   myHeaders.append("Network", `${Network}`);
   // Fetch Test Details
+  const timerDuration = 10;
   const [test, setTest] = useState([]);
   useEffect(() => {
     const fetchTest = async () => {
@@ -129,11 +138,22 @@ const TakeTest = () => {
     setCheckConfirmValue(value);
   };
 
+  // Test auto submit when duration completed
+  const [timerExpired, setTimerExpired] = useState(false);
+  const handleTimerExpired = () => {
+    setTimerExpired(true);
+    onTestSubmit(); // Call the existing onSubmit function to submit the test
+  };
+
+  // Thanks after test submitted
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+
   // Test Submission
+  const resultType = test.settings && test.settings.show_result;
   const [open, setOpen] = useState(false);
   const [isTestSubmited, setIsTestSubmited] = useState(null);
   const session = localStorage.getItem("set_session");
-  const onSubmit = async () => {
+  const onTestSubmit = async () => {
     const formData = new FormData();
     testData.forEach((item, index) => {
       const answerKey = `answer[${item.guid}]`;
@@ -164,17 +184,21 @@ const TakeTest = () => {
         requestOptions
       );
       const result = await response.json();
-      setIsTestSubmited(true);
-      setOpen(true);
-      setTimeout(() => {
-        setOpen(false);
-        navigate(`/test/report/${guid}`);
-      }, 3000);
+      if (result.success === true) {
+        setIsTestSubmited(true);
+        if (resultType === "immediately") {
+          setOpen(true);
+          setTimeout(() => {
+            navigate(`/test/report/${guid}`);
+          }, 2000);
+        } else {
+          setDialogOpen(true);
+        }
+      }
     } catch (error) {
       setIsTestSubmited(false);
     }
   };
-
   const handleNext = () => {
     setCurrentQuestion(currentQuestion + 1);
     setSidebarOptions(selectedOptions);
@@ -328,13 +352,25 @@ const TakeTest = () => {
       </>
     );
   };
+
   //console.log(sidebarOptions);
   return (
     <>
       <Helmet>
         <title>Take Test</title>
       </Helmet>
-      <Box sx={{ display: "flex" }}>
+      <Dialog open={dialogOpen} >
+        
+        <DialogContent>
+        <Typography fullwidth sx={{textAlign:"center"}}><CheckCircleOutlinedIcon color="success" sx={{fontSize:50}} /></Typography>
+          <DialogTitle color="success">Test submitted successfully.</DialogTitle>
+          <Typography fullwidth sx={{textAlign:"center", pb:3}}>Result will publish after review.</Typography>
+          <DialogActions sx={{alignItems:"center", justifyContent:"center"}} fullwidth>
+          <Button className="custom-button" variant="outlined" component={Link} href={`/test/list`}>Go To Tests</Button>
+        </DialogActions>
+        </DialogContent>
+      </Dialog>
+      <Box sx={{ display: "flex", marginTop: "-50px" }}>
         <Box sx={{ flexGrow: 1, px: 3 }}>
           <Grid container spacing={2}>
             <Snackbar
@@ -350,10 +386,16 @@ const TakeTest = () => {
               </Alert>
             </Snackbar>
           </Grid>
-          <Grid container spacing={2} sx={{ mt: 5 }}>
-            <Grid item xs={6}>
-              <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 600 }}>
+          <Grid container sx={{ mt: 5 }}>
+            <Grid item xs={11} sx={{ display: "flex" }}>
+              <Typography
+                variant="h1"
+                component="h5"
+                sx={{ fontSize: 30, fontWeight: 600 }}
+              >
                 {test.title}
+              </Typography>
+              <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 600 }}>
                 {!showInstruction ? (
                   <span style={{ marginLeft: "15px" }}>
                     ({currentQuestion + 1}/{testData.length})
@@ -364,7 +406,7 @@ const TakeTest = () => {
               </Typography>
             </Grid>
             {!showInstruction ? (
-              <Grid item xs={6} sx={{ textAlign: "right" }}>
+              <Grid item xs={1} sx={{ textAlign: "right" }}>
                 {TestsidebarVisible ? (
                   <TestSidebar
                     data={testData}
@@ -376,6 +418,30 @@ const TakeTest = () => {
             ) : (
               ""
             )}
+          </Grid>
+          <Grid container>
+            <Grid item xs={12}>
+              <Typography
+                variant="h1"
+                component="h5"
+                sx={{ fontSize: 30, fontWeight: 600, display: "flex" }}
+              >
+                {!showInstruction &&
+                test.settings &&
+                test.settings.show_timer === "true" ? (
+                  <>
+                    <Timer
+                      durationInSeconds={
+                        test.settings && test.settings.test_duration
+                      }
+                      onTimerExpired={handleTimerExpired}
+                    />
+                  </>
+                ) : (
+                  ""
+                )}
+              </Typography>
+            </Grid>
           </Grid>
           <Grid container={true} sx={{ mt: 5 }}>
             {showInstruction && (
@@ -403,8 +469,11 @@ const TakeTest = () => {
                 </Grid>
               </form>
             )}
-            {showQuestions && (
-              <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+            {showQuestions && !timerExpired && (
+              <form
+                onSubmit={handleSubmit(onTestSubmit)}
+                style={{ width: "100%" }}
+              >
                 {testData[currentQuestion] && (
                   <h2>{ReactHtmlParser(testData[currentQuestion].question)}</h2>
                 )}

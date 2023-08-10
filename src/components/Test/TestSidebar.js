@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from "react";
-import ListRoundedIcon from "@mui/icons-material/ListRounded";
+//import ListRoundedIcon from "@mui/icons-material/ListRounded";
+import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
 
 import {
   Box,
   Drawer,
-  RadioGroup,
-  FormControl,
-  FormControlLabel,
-  Radio,
-  Checkbox,
   Grid,
   Typography,
-  Snackbar,
-  Alert,
   Button,
 } from "@mui/material";
 
@@ -88,9 +82,9 @@ export default function TestSidebar({ data, updateQuestion, selectedOptions }) {
   // console.log(missingIndices)
   // console.log(selectedOptions)
   return (
-    <div>
-      <Button onClick={toggleDrawer("right", true)}>
-        <ListRoundedIcon sx={{ fontSize: "30px" }} />
+    <>
+      <Button onClick={toggleDrawer("right", true)} sx={{paddingRight:"0", paddingLeft:"0" }}>
+        <GridViewOutlinedIcon sx={{ fontSize: "30px", padding:"0" }} />
       </Button>
       <Drawer
         anchor="right"
@@ -135,6 +129,6 @@ export default function TestSidebar({ data, updateQuestion, selectedOptions }) {
           </ul>
         </Box>
       </Drawer>
-    </div>
+    </>
   );
 }

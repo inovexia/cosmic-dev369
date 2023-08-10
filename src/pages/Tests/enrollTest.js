@@ -279,7 +279,7 @@ const EnrollTest = () => {
                       render={({ field }) => (
                         <TextField
                           {...field}
-                          label="Start Date and Time"
+                          label="End Date and Time"
                           type="datetime-local"
                           InputLabelProps={{
                             shrink: true,

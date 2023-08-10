@@ -47,8 +47,8 @@ const TestSetting = () => {
         requestOption
       );
       const testData = await response.json();
-      setTest(testData.payload.settings);
-      reset(testData.payload.settings);
+      setTest(testData && testData.payload.settings);
+      reset(testData && testData.payload.settings);
     };
     fetchTest();
   }, []);
@@ -187,15 +187,16 @@ const TestSetting = () => {
                           </StyledFormControl>
                         </Grid>
                         <Grid item xs={12} md={6}>
-                          <StyledFormControl sx={{ mt: 3, width: "100%" }}>
+                          <FormControl sx={{ mt: 3, width: "100%" }}>
                             <FormTextField
                               control={control}
-                              label="Test Duration (in minutes)"
-                              defaultValue="1"
+                              label="Test Duration (in second)"
+                              defaultValue="0"
                               variant="outlined"
+                              pattern="[A-Za-z]{1,}"
                               name="test_duration"
                             />
-                          </StyledFormControl>
+                          </FormControl>
                         </Grid>
                         <Grid item xs={12} md={6}>
                           <StyledFormControl sx={{ mt: 3, width: "100%" }}>
@@ -226,7 +227,44 @@ const TestSetting = () => {
                           >
                             Show Timer
                           </Typography>
-                          <RadioGroup aria-label="options" name="show_timer">
+                          <Controller
+                            control={control}
+                            name="show_timer"
+                            defaultValue="false"
+                            render={({ field: { value, onChange } }) => (
+                              <RadioGroup value={value} onChange={onChange}>
+                                <FormControlLabel
+                                  value="true"
+                                  control={
+                                    <Radio
+                                      onChange={({ target: { checked } }) => {
+                                        setValue(
+                                          "show_timer",
+                                          checked ? "true" : ""
+                                        );
+                                      }}
+                                    />
+                                  }
+                                  label="Yes"
+                                />
+                                <FormControlLabel
+                                  value="false"
+                                  control={
+                                    <Radio
+                                      onChange={({ target: { checked } }) => {
+                                        setValue(
+                                          "show_timer",
+                                          checked ? "false" : ""
+                                        );
+                                      }}
+                                    />
+                                  }
+                                  label="No"
+                                />
+                              </RadioGroup>
+                            )}
+                          />
+                          {/* <RadioGroup aria-label="options" name="show_timer">
                             <FormControlLabel
                               value="true"
                               control={
@@ -255,7 +293,7 @@ const TestSetting = () => {
                               }
                               label="No"
                             />
-                          </RadioGroup>
+                          </RadioGroup> */}
                         </Grid>
                         <Grid item xs={12}>
                           <Typography

@@ -142,11 +142,11 @@ const EditTest = () => {
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
-              {mtValue ? <Button variant="contained">
+              {mtValue ? <Button variant="contained" className="custom-button">
                 <Link href={`/course/${mtValue}/test/list`} color="inherit" underline="none">
                   Cancel
                 </Link>
-              </Button> : <Button variant="contained">
+              </Button> : <Button variant="contained" className="custom-button">
                 <Link href="/test/list" color="inherit" underline="none">
                   Cancel
                 </Link>
@@ -177,7 +177,7 @@ const EditTest = () => {
                 <FormEditorField control={control} name="details" />
               </StyledFormControl>
 
-              <Button variant="contained" type="submit">
+              <Button variant="outlined" type="submit" className="custom-button">
                 Update Test
               </Button>
             </form>
