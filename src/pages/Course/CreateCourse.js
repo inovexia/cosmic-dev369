@@ -140,7 +140,6 @@ const CreateCourse = () => {
                       name="title"
                       pattern="[A-Za-z]{1,}"
                       style={{ width: "100%" }}
-                      placeholder="Title"
                       required
                     />
                   </Grid>
