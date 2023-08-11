@@ -162,7 +162,7 @@ const ManageTest = () => {
       <SidebarLeft />
       {test && (
         <Box sx={{ flexGrow: 1, p: 3 }}>
-          <Grid container sx={{ mt: 5 }}>
+          <Grid container sx={{ mt: 3 }}>
             <Grid item xs={6}>
                 <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 600 }}>
                   Manage ({test.title})
@@ -231,7 +231,7 @@ const ManageTest = () => {
               </Grid>
             </Grid>
           </Grid>
-          <Grid container spacing={3} sx={{ mt: 5 }}>
+          <Grid container spacing={3} sx={{ mt:0 }}>
             <Grid item xs={12} md={3}>
               <Card sx={{ p: 4, backgroundColor: "#14C0CC" }}>
                 <Typography

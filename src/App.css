@@ -65,6 +65,14 @@ body {
 body .no-pd{
   padding: 5px !important;
 }
+@media (max-width:599px){
+  body .css-2dum1v-MuiDrawer-docked{
+    width: 0 !important;
+  }
+  body .css-2dum1v-MuiDrawer-docked .MuiDrawer-paper{
+    width:0;
+  }
+}
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {

@@ -35,7 +35,6 @@ const HomePage = () => {
       try {
         const response = await fetch(`${BASE_URL}/course/list`, requestOptions);
         const result = await response.json();
-        console.log(result)
         setCourses(result.payload);
       } catch (error) {
         console.log("error", error);
@@ -112,7 +111,7 @@ const HomePage = () => {
       </Helmet>
       <Box sx={{ display: "flex" }}>
         <SidebarLeft />
-        <Box sx={{ flexGrow: 1, px: 3, mt: 5 }} className="dashboard">
+        <Box sx={{ flexGrow: 1, px: 3, mt: 1 }} className="dashboard">
         <Grid container  sx={{ mt: 5 }}>
             <Grid item xs={12}>
             <AllCourses courses={courses && courses} />
