@@ -181,7 +181,6 @@ const Index = ({ item, courseGuid }) => {
         requestOptions
       );
       const statusResult = await res.json();
-      console.log(statusResult)
       setAlertOpen(true);
       if (statusResult.success === true) {
         setIsMeetingDeleted(true);

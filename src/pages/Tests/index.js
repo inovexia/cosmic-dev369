@@ -33,7 +33,6 @@ const {
   primary: { main: primaryColor },
 } = theme.palette;
 const Tests = () => {
-  console.log(token)
   const [tests, setTests] = useState([]);
   const [data, setData] = useState([]);
   useEffect(() => {

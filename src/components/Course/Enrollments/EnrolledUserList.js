@@ -126,7 +126,6 @@ const EnrolledUserList = ({
         setTimeout(() => {}, 3000);
       }
       setActionConfirmOpen(false);
-      console.log(result);
     } catch (error) {
       console.error(error);
       throw new Error(`Failed to post status: ${error.message}`);
@@ -164,7 +163,6 @@ const EnrolledUserList = ({
         setTimeout(() => {}, 3000);
       }
       setActionConfirmOpen(false);
-      console.log(result);
     } catch (error) {
       console.error(error);
       throw new Error(`Failed to post status: ${error.message}`);

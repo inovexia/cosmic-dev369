@@ -177,7 +177,6 @@ const Test = () => {
       throw new Error(`Failed to post status: ${error.message}`);
     }
   };
-  console.log(tests);
   return (
     <>
       <Helmet>

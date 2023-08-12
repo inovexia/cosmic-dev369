@@ -210,7 +210,6 @@ const PreviewTest = () => {
       throw new Error(`Failed to post status: ${error.message}`);
     }
   };
-console.log(questions)
   return (
     <>
       <Helmet>

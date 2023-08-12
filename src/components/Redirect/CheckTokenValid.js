@@ -25,7 +25,6 @@ const CheckTokenValid = () => {
         requestOptions
       );
       const result = await response.json();
-      console.log(result);
       if (result.success !== true) {
         navigate("/auth/login");
       }

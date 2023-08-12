@@ -11,7 +11,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Hidden,
   Link,
   FormHelperText,
   Snackbar,
@@ -21,7 +20,7 @@ import { Editor } from "@tinymce/tinymce-react";
 import { useForm } from "react-hook-form";
 import BASE_URL from "../../Utils/baseUrl";
 import CreatedBy from "../../Utils/createdBy"
-//import token from "../../Utils/token";
+import token from "../../Utils/token";
 import Network from "../../Utils/network";
 import SidebarLeft from "../../components/Sidebar/SidebarLeft";
 
@@ -30,7 +29,6 @@ const StyledFormControl = styled(FormControl)({
 });
 
 const CreateTest = () => {
-  const token = '726ea82af534eb4b12e63fc1594bd2abd35f0ee2036b6bc38d57b5f769d6601f';
   const {
     control,
     handleSubmit,
@@ -122,7 +120,6 @@ const CreateTest = () => {
           requestOptions
         );
         const result = await response.json();
-        console.log(result);
       } catch (error) {
         console.log("error", error);
       }

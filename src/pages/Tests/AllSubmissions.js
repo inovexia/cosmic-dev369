@@ -84,7 +84,6 @@ const AllSubmissions = () => {
     };
     fetchSubmissions();
   }, []);
-  console.log(submissions)
 
   // Search Users
   const filteredResult =

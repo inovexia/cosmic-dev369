@@ -98,7 +98,6 @@ const ExistingTestList = ({ user, onUserSelect, selectedUsers }) => {
         }, 3000);
       }
       setActionConfirmOpen(false);
-      console.log(result);
     } catch (error) {
       console.error(error);
       throw new Error(`Failed to post status: ${error.message}`);

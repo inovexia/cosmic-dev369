@@ -157,7 +157,7 @@ export default function SidebarLeft() {
     },
     {
       label: "Test Categories",
-      link: "/test/categories",
+      link: "/category/list",
       menuIcon: <CategoryIcon />,
     },
     {
