@@ -13,9 +13,9 @@ import {
 } from "@mui/material";
 import registration from "../../../assets/images/registerimg.png";
 import { MuiTelInput } from "mui-tel-input";
-import api from "../../../Utils/api"
 import BASE_URL from "../../../Utils/baseUrl"
 import CreatedBy from "../../../Utils/createdBy"
+import Network from "../../../Utils/network";
 
 export default function Register() {
   const [value, setValue] = React.useState("");
@@ -30,10 +30,14 @@ export default function Register() {
   } = useForm({
     defaultValues: {
       device_name: "device",
-      created_by: {CreatedBy},
       middle_name:""
     },
   });
+
+  // Configuration
+  const myHeaders = new Headers();
+  myHeaders.append("Network", `${Network}`); 
+
   const [token, setToken] = useState("");
   const [open, setOpen] = useState(false);
   const [isUserRegistered, setIsUserRegistered] = useState(null);
@@ -99,11 +103,12 @@ export default function Register() {
     fetchLocation();
   }, []);
 
-  const submitTegisterForm = async (data) => {
+  const submitRegisterForm = async (data) => {
     try {
       const formData = serialize(data);
       const requestOptions = {
         method: "POST",
+        headers: myHeaders,
         body: formData,
         redirect: "follow",
       };
@@ -128,7 +133,7 @@ export default function Register() {
   };
   return (
     <>
-      {settingData && settingData.allow_user_registration === "false" ? (
+      {settingData && settingData.allow_user_registration === "true" ? (
         <>
           <Grid
             container
@@ -154,7 +159,7 @@ export default function Register() {
               <Typography component="h1" variant="h5" sx={{ my: 2 }}>
                 Sign up to new account
               </Typography>
-              <form onSubmit={handleSubmit(submitTegisterForm)}>
+              <form onSubmit={handleSubmit(submitRegisterForm)}>
                 {settingData &&
                 settingData.auto_generate_username === "true" ? (
                   ""
@@ -169,7 +174,7 @@ export default function Register() {
                     autoFocus
                   />
                 )}
-                {/* <TextField
+                <TextField
                   margin="normal"
                   fullWidth
                   label="Mobile No"
@@ -182,8 +187,8 @@ export default function Register() {
                   helperText={errors.mobile && "Mobile number is required"}
                   autoComplete="mobile"
                   autoFocus
-                /> */}
-                <MuiTelInput
+                />
+                {/* <MuiTelInput
                   sx={{mb:1}}
                   fullWidth
                   label="Mobile No"
@@ -197,7 +202,7 @@ export default function Register() {
                   helperText={errors.mobile && "Mobile number is required"}
                   value={value}
                   onChange={handleChange}
-                />
+                /> */}
                 <TextField
                   margin="normal"
                   fullWidth

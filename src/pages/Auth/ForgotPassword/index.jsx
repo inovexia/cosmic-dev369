@@ -371,7 +371,7 @@ export default function ForgotPassword() {
             ) : activeStep === 1 ? (
               <form onSubmit={handleSubmit(handleVerifyOTP)}>
                 <Typography sx={{ textAlign: "center", mb: 3, color: "green" }}>
-                  OTP is {otpGenerated}
+                  OTP sent on your email.
                 </Typography>
                 <Controller
                   name="otp"

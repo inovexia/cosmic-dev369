@@ -24,6 +24,7 @@
     "dayjs": "^1.11.7",
     "html-react-parser": "^3.0.15",
     "http-proxy-middleware": "^2.0.6",
+    "material-ui-color-picker": "^3.5.1",
     "moment-timezone": "^0.5.43",
     "mui-one-time-password-input": "^1.1.2",
     "mui-tel-input": "^3.2.2",
