@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material/styles'
-
+const primaryColor = '#5A6DF9';
 const theme = createTheme({
   palette: {
     app: {
@@ -24,7 +24,7 @@ const theme = createTheme({
     //   light: '#0373F34D'
     // },
     primary: {
-      main: '#5A6DF9',
+      main: primaryColor,
       dark: '#223093',
       light: '#A5B0FF'
     },

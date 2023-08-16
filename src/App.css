@@ -205,3 +205,31 @@ body .mySwiper {
 .blink {
   animation: blink 1s infinite;
 }
+
+.custom-switch {
+  width: 60px;
+  height: 30px;
+  border-radius: 15px;
+  background-color: #ccc;
+  position: relative;
+  cursor: pointer;
+}
+
+.slider {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #fff;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: 0.3s;
+}
+
+.slider.on {
+  left: 32px;
+}
+
+.custom-switch.active {
+  background-color: #4caf50;
+}

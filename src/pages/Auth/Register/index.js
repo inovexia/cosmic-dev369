@@ -13,8 +13,8 @@ import {
 } from "@mui/material";
 import registration from "../../../assets/images/registerimg.png";
 import { MuiTelInput } from "mui-tel-input";
-import BASE_URL from "../../../Utils/baseUrl"
-import CreatedBy from "../../../Utils/createdBy"
+import BASE_URL from "../../../Utils/baseUrl";
+import CreatedBy from "../../../Utils/createdBy";
 import Network from "../../../Utils/network";
 
 export default function Register() {
@@ -30,13 +30,13 @@ export default function Register() {
   } = useForm({
     defaultValues: {
       device_name: "device",
-      middle_name:""
+      middle_name: "",
     },
   });
 
   // Configuration
   const myHeaders = new Headers();
-  myHeaders.append("Network", `${Network}`); 
+  myHeaders.append("Network", `${Network}`);
 
   const [token, setToken] = useState("");
   const [open, setOpen] = useState(false);
@@ -49,6 +49,7 @@ export default function Register() {
       try {
         var requestOption = {
           method: "GET",
+          headers: myHeaders,
           redirect: "follow",
         };
         const response = await fetch(
@@ -71,6 +72,7 @@ export default function Register() {
       try {
         var requestOptions = {
           method: "GET",
+          headers: myHeaders,
           redirect: "follow",
         };
         const response = await fetch(
@@ -112,10 +114,7 @@ export default function Register() {
         body: formData,
         redirect: "follow",
       };
-      const response = await fetch(
-        `${BASE_URL}/auth/register`,
-        requestOptions
-      );
+      const response = await fetch(`${BASE_URL}/auth/register`, requestOptions);
       const result = await response.json();
       setOpen(true);
       if (result.success === true) {
@@ -131,6 +130,8 @@ export default function Register() {
       setIsUserRegistered(false);
     }
   };
+
+  console.log(settingData);
   return (
     <>
       {settingData && settingData.allow_user_registration === "true" ? (

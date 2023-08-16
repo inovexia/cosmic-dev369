@@ -167,6 +167,7 @@ export default function ForgotPassword() {
   };
 
   // Verify OTP and username
+  const [verified, setVerified] = useState(false)
   const handleVerifyOTP = async (data) => {
     let newSkipped = skipped;
     if (isStepSkipped(activeStep)) {
@@ -190,10 +191,12 @@ export default function ForgotPassword() {
       const result = await response.json();
       setSnackbarOpen(true);
       if (result.success === true) {
-        setValue("token",result.payload.token)
+        setValue("token", result.payload.token)
+        setVerified(true)
         setSnackbarSuccess(true);
         setSnackbarMessage("OTP verification successfull.");
       } else {
+        setVerified(false)
         setSnackbarSuccess(false);
         setSnackbarMessage("Something went wrong!");
       }
@@ -369,10 +372,13 @@ export default function ForgotPassword() {
                 </Grid>
               </form>
             ) : activeStep === 1 ? (
-              <form onSubmit={handleSubmit(handleVerifyOTP)}>
-                <Typography sx={{ textAlign: "center", mb: 3, color: "green" }}>
+                  <form onSubmit={handleSubmit(handleVerifyOTP)}>
+                    {verified === true ? (<Typography sx={{ textAlign: "center", mb: 3, color: "green" }}>
                   OTP sent on your email.
-                </Typography>
+                </Typography>) : (<Typography sx={{ textAlign: "center", mb: 3, color: "red" }}>
+                  User not verified.
+                </Typography>)}
+                
                 <Controller
                   name="otp"
                   control={control}
