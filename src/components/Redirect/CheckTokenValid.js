@@ -25,6 +25,7 @@ const CheckTokenValid = () => {
         requestOptions
       );
       const result = await response.json();
+      localStorage.setItem('user', result && result.payload.guid);
       if (result.success !== true) {
         navigate("/auth/login");
       }

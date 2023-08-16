@@ -170,7 +170,8 @@ const NewStudents = () => {
                   }}
                 >
                   <Grid item xs={12} md={4}>
-                    <Box className="online-students">
+                    <Box className="online-students" sx={{justifyContent:"space-between"}}>
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Box
                         className="student-status"
                         sx={{
@@ -185,11 +186,50 @@ const NewStudents = () => {
                       </Box>
                       <h5>
                         {user.first_name} {user.last_name}
-                      </h5>
+                      </h5> 
+                      </Box>
+                      <Box sx={{display:{xs:"block", md:"none"}}}>
+                      <IconButton
+                        aria-label="more"
+                        id="long-button"
+                        aria-controls={open ? "long-menu" : undefined}
+                        aria-expanded={open ? "true" : undefined}
+                        aria-haspopup="true"
+                        //onClick={handleClick}
+                        onClick={(event) => handleClick(event, user.guid)}
+                        className="no-pd"
+                      >
+                        <MoreVertOutlinedIcon />
+                      </IconButton>
+                      <Menu
+                        id="long-menu"
+                        MenuListProps={{
+                          "aria-labelledby": "long-button",
+                        }}
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                      >
+                        {UpcommingOptions.map((upoption, index) => {
+                          const linkUrl = `${upoption.link}/${currentTestGuid}`;
+                          return (
+                            <MenuItem key={index} onClick={handleClose}>
+                              <Link
+                                href={linkUrl}
+                                underline="none"
+                                color="inherit"
+                              >
+                                {upoption.label}
+                              </Link>
+                            </MenuItem>
+                          );
+                        })}
+                      </Menu>
+                    </Box>
                     </Box>
                   </Grid>
-                  <Grid item xs={12} md={5}>
-                    <strong>Email:</strong> {user.email}
+                  <Grid item xs={12} md={5} sx={{display:"flex"}}>
+                    <Typography sx={{display:{xs:"block", md:"none"}}} component="strong" variant="strong">Email:</Typography> {user.email}
                   </Grid>
                   <Grid item xs={12} md={2}>
                     <span
@@ -201,7 +241,7 @@ const NewStudents = () => {
                     </span>
                   </Grid>
                   <Grid item xs={12} md={1} className="new-student-action">
-                    <Box>
+                    <Box sx={{display:{xs:"none", md:"block"}}}>
                       <IconButton
                         aria-label="more"
                         id="long-button"

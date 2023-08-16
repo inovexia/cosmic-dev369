@@ -1,4 +1,4 @@
-const CreatedBy = 'UR1';
-//const CreatedBy = localStorage.getItem('userId');
+//const CreatedBy = 'UR1';
+const CreatedBy = localStorage.getItem('user');
 
 export default  CreatedBy;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import SidebarLeft from "../components/Sidebar/SidebarLeft";
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, Alert } from "@mui/material";
 import { Helmet } from "react-helmet";
 import AllCourses from "../components/Dashboard/AllCourses";
 import TestsTab from "../components/Dashboard/TestsTab";
@@ -102,7 +102,6 @@ const HomePage = () => {
     };
     fetchStudents();
   }, []);
-
   return (
     <>
       <CheckTokenValid/>
@@ -114,7 +113,7 @@ const HomePage = () => {
         <Box sx={{ flexGrow: 1, px: 3, mt: 1 }} className="dashboard">
         <Grid container  sx={{ mt: 5 }}>
             <Grid item xs={12}>
-            <AllCourses courses={courses && courses} />
+              {courses && courses.data.length <= 0 ? (<Alert severity="error">Course not found!</Alert>) : (<AllCourses courses={courses && courses} />)}
             </Grid>
           </Grid>
           {/* Test and Online classes */}

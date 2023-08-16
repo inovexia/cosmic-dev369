@@ -18,7 +18,7 @@ import { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import BASE_URL from "../../Utils/baseUrl";
 import token from "../../Utils/token";
 import Network from "../../Utils/network";
-
+import ReactHtmlParser from "react-html-parser";
 
 const HtmlTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -32,7 +32,6 @@ const HtmlTooltip = styled(({ className, ...props }) => (
   },
 }));
 
-
 function extractHrefFromString(str) {
   const regex = /(https?:\/\/[^\s]+)/g; // Regex pattern to match URLs
   const matches = str.match(regex); // Find all matches in the string
@@ -45,7 +44,6 @@ function extractHrefFromString(str) {
 }
 
 const OnlineClasses = () => {
-
   // States
   const [classes, setClasses] = useState("");
   const [loading, setLoading] = useState(true);
@@ -73,7 +71,12 @@ const OnlineClasses = () => {
       }
     };
     fetchClasses();
-  },[]);
+  }, []);
+  function extractUrlFromHtml(htmlContent) {
+    const urlPattern = /https?:\/\/\S+(?=<\/p>)/; // Match URL until </p>
+    const match = htmlContent.match(urlPattern);
+    return match ? match[0] : "";
+  }
   return (
     <>
       <Grid container sx={{ alignItems: "center" }}>
@@ -89,9 +92,14 @@ const OnlineClasses = () => {
             justifyContent: "flex-end",
           }}
         >
-          <Button className="custom-button" component={Link} href={"/meeting/create"} variant="contained">
-          Add Online Class
-              </Button>
+          <Button
+            className="custom-button"
+            component={Link}
+            href={"/meeting/create"}
+            variant="contained"
+          >
+            Add Online Class
+          </Button>
         </Grid>
       </Grid>
       <Card sx={{ mt: 4.7 }}>
@@ -105,6 +113,8 @@ const OnlineClasses = () => {
             classes.data.slice(0, 5).map((item, index) => {
               const title = item.details.split(" ");
               const truncatedTitle = title.slice(0, 5).join(" ");
+              const extractedUrl = extractUrlFromHtml(item.details);
+              const exactUrl = ReactHtmlParser(extractedUrl);
               return (
                 <Grid
                   key={index}
@@ -121,17 +131,17 @@ const OnlineClasses = () => {
                   <Box
                     sx={{
                       display: "flex",
-                      alignItems: "center",
+                      alignItems: "baseline",
                       justifyContent: "flex-start",
                     }}
                   >
-                    <h3>
+                    <Typography component="h3" variant="strong" sx={{display:"flex", alignItems:"baseline"}}>
                       Title:
                       <span style={{ color: "#888888" }}>
                         {" "}
-                        {truncatedTitle}...
+                        {ReactHtmlParser(truncatedTitle)}...
                       </span>
-                    </h3>
+                    </Typography>
                     <HtmlTooltip
                       title={
                         <React.Fragment>
@@ -150,13 +160,18 @@ const OnlineClasses = () => {
                       />
                     </HtmlTooltip>
                   </Box>
+                  <Box sx={{display:"block", width:"100%"}}>
                   <Button
+                    sx={{ display: "inline-block" }}
                     variant="outlined"
                     component={Link}
-                    href={extractHrefFromString(item.details)}
+                    href={extractedUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     Start
                   </Button>
+                 </Box>
                 </Grid>
               );
             })
@@ -166,7 +181,14 @@ const OnlineClasses = () => {
             </Alert>
           )}
           <Grid item xs={12} sx={{ mt: 3 }}>
-            <Button variant="outlined" className="custom-button" component={Link} href={`/online-classes`}>View All Classes</Button>
+            <Button
+              variant="outlined"
+              className="custom-button"
+              component={Link}
+              href={`/online-classes`}
+            >
+              View All Classes
+            </Button>
           </Grid>
         </Box>
       </Card>

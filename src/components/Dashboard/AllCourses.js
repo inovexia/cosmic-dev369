@@ -76,10 +76,11 @@ const AllCourses = () => {
                 alignItems: "center",
               }}
             >
-              <Button component={Link} to={"/course/list"} variant="outlined">
+              <Button className="custom-button" component={Link} to={"/course/list"} variant="outlined">
                 View All Course
               </Button>
-              <Button
+                <Button
+                  className="custom-button"
                 component={Link}
                 to={"/course/create"}
                 variant="contained"
