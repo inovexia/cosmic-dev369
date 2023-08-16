@@ -38,7 +38,7 @@ const TestList = ({ item }) => {
               <Typography component="h5">{item.guid}</Typography>
             </Grid>
           </Grid>
-          {item.details !== "" ? (
+          {/* {item && item.details !== "" ? (
             <Grid container spacing={2} sx={{ py: 0, my: 2 }}>
               <Grid item xs={12} sx={{ py: 0 }}>
                 <Typography component="div">{parse(item.details)}</Typography>
@@ -46,7 +46,7 @@ const TestList = ({ item }) => {
             </Grid>
           ) : (
             ""
-          )}
+          )} */}
 
           <Grid container spacing={2}>
             <Grid item xs={6}>
