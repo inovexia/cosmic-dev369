@@ -75,7 +75,8 @@ const EditUser = () => {
   // Phone Number
   const [phoneValue, setPhoneValue] = React.useState("");
   const handleChangePhone = (newValue) => {
-    setPhoneValue(newValue);
+    const cleanedValue = newValue.replace(/\s/g, '');
+    setPhoneValue(cleanedValue);
   };
   //
   const navigate = useNavigate();
@@ -105,6 +106,8 @@ const EditUser = () => {
   const [MobileError, setMobileError] = useState(null);
   const handleFormSubmit = async (data) => {
     const formData = serialize(data);
+    const cleanedPhoneNumber = phoneValue.replace(/[+\s]/g, '');
+    formData.append('mobile', cleanedPhoneNumber);
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
@@ -178,10 +181,8 @@ const EditUser = () => {
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
-              <Button variant="contained">
-                <Link href="/user/list" color="inherit" underline="none">
+              <Button variant="contained" component={Link} className="custom-button" href="/user/list">
                   Cancel
-                </Link>
               </Button>
             </Grid>
           </Grid>
@@ -273,8 +274,9 @@ const EditUser = () => {
                       <MuiTelInput
                         fullWidth
                         label="Mobile No"
-                        control
+                        control={control}
                         defaultCountry={countryCode}
+                        // name="mobile"
                         {...register("mobile", { required: true })}
                         helperText={
                           errors.mobile && "Mobile number is required"
@@ -299,7 +301,8 @@ const EditUser = () => {
                 </Grid>
 
                 <Button
-                  variant="contained"
+                  className="custom-button"
+                  variant="outlined"
                   size="medium"
                   type="submit"
                   sx={{ mt: 5 }}

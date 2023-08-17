@@ -55,7 +55,7 @@ export default function Login() {
         localStorage.setItem('token', result.payload.token);
         setToken(data.token);
         setIsUserloggedIn(true);
-        const redirectUrl = '/';
+        const redirectUrl = '/dashboard';
         setTimeout(() => {
           window.location.href = redirectUrl; 
         }, 2000);

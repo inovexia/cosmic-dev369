@@ -34,6 +34,9 @@
   font-weight: normal;
   font-style: normal;
 }
+/* .grecaptcha-badge {
+  display: none !important;
+} */
 
 .App {
   text-align: center;

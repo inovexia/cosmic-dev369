@@ -1,6 +1,6 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import HomePage from "../pages";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import HomePage from "../pages/HomePage";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import ForgotPassword from "../pages/Auth/ForgotPassword";
@@ -61,7 +61,9 @@ const AppRouter = () => {
     <Router>
       <RedirectLogic />
       <Routes>
-        <Route path={"/"} element={<HomePage />} />
+        {/* <Route path={"/"} element={<Loader />} /> */}
+        <Route path="/" element={<Navigate to="/dashboard" />} />
+        <Route path={"/dashboard"} element={<HomePage />} />
         <Route path={"/auth/login"} element={<Login />} />
         <Route path={"/auth/register"} element={<Register />} />
         <Route path={"/auth/forgot-password"} element={<ForgotPassword />} />

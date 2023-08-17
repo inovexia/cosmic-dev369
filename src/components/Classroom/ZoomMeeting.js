@@ -43,7 +43,7 @@ function extractHrefFromString(str) {
   return null; // Return null if no match found
 }
 
-const ZoomMeeting = ({ item }) => {
+const ZoomMeeting = ({ item, extractedUrl }) => {
   // Configuration
   var myHeaders = new Headers();
   myHeaders.append("Authorization", `Bearer ${token}`);
@@ -97,7 +97,6 @@ const ZoomMeeting = ({ item }) => {
       throw new Error(`Failed to post status: ${error.message}`);
     }
   };
-
   return (
     <>
       <Dialog
@@ -153,7 +152,7 @@ const ZoomMeeting = ({ item }) => {
                   fontFamily: "Arial",
                 }}
               >
-                {item.title ? (item.title) : "Title not available"}
+                {item.title ? item.title : "Title not available"}
                 {/* {ReactHtmlParser(item.details)} */}
               </Box>
             </Grid>
@@ -236,7 +235,7 @@ const ZoomMeeting = ({ item }) => {
                 className="custom-button"
                 component={Link}
                 color="primary"
-                href={extractHrefFromString(item.details)}
+                to={extractedUrl}
                 target="_blank"
               >
                 START

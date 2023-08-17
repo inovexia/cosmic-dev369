@@ -127,12 +127,13 @@ const TestsTab = () => {
   return (
     <>
       <Grid container sx={{ alignItems: "center" }}>
-        <Grid item xs={6}>
+        <Grid item xs={3} md={6}>
           <h2>Tests</h2>
         </Grid>
         <Grid
           item
-          xs={6}
+          xs={9}
+          md={6}
           sx={{
             display: "flex",
             alignItems: "center",
@@ -216,29 +217,26 @@ const TestsTab = () => {
                   <Box>
                     <IconButton
                       aria-label="more"
-                      id="long-button"
-                      aria-controls={open ? "long-menu" : undefined}
+                      id="long-button-1"
+                      aria-controls={open ? "long-menu-1" : undefined}
                       aria-expanded={open ? "true" : undefined}
                       aria-haspopup="true"
-                      //onClick={handleClick}
                       onClick={(event) => handleClick(event, item.guid)}
                       className="no-pd"
                     >
                       <MoreVertOutlinedIcon />
                     </IconButton>
                     <Menu
-                      id="long-menu"
+                      id="long-menu-1"
                       MenuListProps={{
-                        "aria-labelledby": "long-button",
+                        "aria-labelledby": "long-button-1",
                       }}
                       anchorEl={anchorEl}
                       open={open}
                       onClose={handleClose}
-                      PaperProps={{
-                        style: {
-                          maxHeight: ITEM_HEIGHT * 4.5,
-                          width: "20ch",
-                        },
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
                       }}
                     >
                       {options.map((option, index) => {
@@ -326,29 +324,26 @@ const TestsTab = () => {
                   <Box>
                     <IconButton
                       aria-label="more"
-                      id="long-button"
-                      aria-controls={open ? "long-menu" : undefined}
+                      id="long-button-2"
+                      aria-controls={open ? "long-menu-2" : undefined}
                       aria-expanded={open ? "true" : undefined}
                       aria-haspopup="true"
-                      //onClick={handleClick}
                       onClick={(event) => handleClick(event, item.guid)}
                       className="no-pd"
                     >
                       <MoreVertOutlinedIcon />
                     </IconButton>
                     <Menu
-                      id="long-menu"
+                      id="long-menu-2"
                       MenuListProps={{
-                        "aria-labelledby": "long-button",
+                        "aria-labelledby": "long-button-2",
                       }}
                       anchorEl={anchorEl}
                       open={open}
                       onClose={handleClose}
-                      PaperProps={{
-                        style: {
-                          maxHeight: ITEM_HEIGHT * 4.5,
-                          width: "20ch",
-                        },
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
                       }}
                     >
                       {UpcommingOptions.map((upoption, index) => {

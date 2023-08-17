@@ -32,16 +32,15 @@ const HtmlTooltip = styled(({ className, ...props }) => (
   },
 }));
 
-function extractHrefFromString(str) {
-  const regex = /(https?:\/\/[^\s]+)/g; // Regex pattern to match URLs
-  const matches = str.match(regex); // Find all matches in the string
+// function extractHrefFromString(str) {
+//   const regex = /(https?:\/\/[^\s]+)/g; // Regex pattern to match URLs
+//   const matches = str.match(regex); // Find all matches in the string
 
-  if (matches && matches.length > 0) {
-    return matches[0]; // Return the first match (the URL)
-  }
-
-  return null; // Return null if no match found
-}
+//   if (matches && matches.length > 0) {
+//     return matches[0]; // Return the first match (the URL)
+//   }
+//   return null; // Return null if no match found
+// }
 
 const OnlineClasses = () => {
   // States

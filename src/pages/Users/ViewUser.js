@@ -55,10 +55,8 @@ const ViewUser = () => {
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
-              <Button variant="contained">
-                <Link href="/user/list" color="inherit" underline="none">
+              <Button variant="contained" href="/user/list" component={Link} className="custom-button">
                   Back
-                </Link>
               </Button>
             </Grid>
           </Grid>

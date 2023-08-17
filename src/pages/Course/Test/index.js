@@ -460,28 +460,41 @@ const Test = () => {
                 Tests
               </Typography>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ display: { xs: "flex", md: "block" }, justifyContent: { xs: "space-between" }, textAlign: { md: "right" } }}>
-              <Button variant="contained" className="custom-button">
-                <Link
-                  href={`/course/${courseGuid}/test/add`}
-                  color="inherit"
-                  underline="none"
-                >
-                  Add Existing
-                </Link>
+            <Grid
+              item
+              xs={12}
+              md={6}
+              sx={{
+                display: { xs: "flex", md: "block" },
+                justifyContent: { xs: "space-between" },
+                textAlign: { md: "right" },
+              }}
+            >
+              <Button
+                variant="contained"
+                component={Link}
+                className="custom-button"
+                href={`/course/manage/${courseGuid}`}
+                sx={{mr:1}}
+              >
+                Back
               </Button>
               <Button
                 variant="outlined"
-                sx={{ ml: 2 }}
+                component={Link}
+                className="custom-button"
+                href={`/course/${courseGuid}/test/add`}
+              >
+                Add Existing
+              </Button>
+              <Button
+                component={Link}
+                href={`/course/${courseGuid}/test/create`}
+                variant="outlined"
+                sx={{ ml: 1 }}
                 className="custom-button"
               >
-                <Link
-                  href={`/course/${courseGuid}/test/create`}
-                  color="inherit"
-                  underline="none"
-                >
-                  Create New
-                </Link>
+                Create New
               </Button>
             </Grid>
           </Grid>

@@ -502,10 +502,19 @@ const ManageCourse = () => {
                             name="status"
                             color="primary"
                           />
-                          <ListItemText
+                            <ListItemText
+                              onClick={() => {
+                                const newStatus =
+                                  currentCourse.status === "0" ? "1" : "0";
+                                setCurrentCourse({
+                                  ...currentCourse,
+                                  status: newStatus,
+                                });
+                                postStatus(newStatus);
+                              }}
                             id="publish-unpublish"
                             primary="Publish"
-                            sx={{ pl: 3, m:0 }}
+                            sx={{ pl: 3, m:0, cursor:"pointer" }}
                           />
                         </ListItem>
                         <Divider variant="" component="li" />

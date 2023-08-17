@@ -88,7 +88,11 @@ const OnlineClasses = () => {
         setCurrentPage(currentPage + 1);
       }
     }
-
+    function extractUrlFromHtml(htmlContent) {
+      const urlPattern = /https?:\/\/\S+(?=<\/p>)/; // Match URL until </p>
+      const match = htmlContent.match(urlPattern);
+      return match ? match[0] : "";
+    }
   return (
     <>
       <CheckTokenValid/>
@@ -132,10 +136,14 @@ const OnlineClasses = () => {
               {currentMeeting && currentMeeting.length !== 0 ? (
                 <>
                   
-                      {currentMeeting &&
-                        currentMeeting.map((item, index) => (
-                          <ZoomMeeting key={index} item={item} />
-                        ))}
+                    {currentMeeting &&
+                      currentMeeting.map((item, index) => {
+                        const extractedUrl = extractUrlFromHtml(item.details);
+                        return (
+                          <ZoomMeeting key={index} item={item} extractedUrl={extractedUrl} />
+                        )
+                          
+                      })}
                     
                   {filteredMeetings && filteredMeetings.length > testsPerPage ? (
                     <Grid container spacing={2}>

@@ -158,10 +158,8 @@ const CreateUser = () => {
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
-              <Button variant="contained">
-                <Link href="/user/list" color="inherit" underline="none">
+              <Button variant="contained" component={Link} href="/user/list" className="custom-button">
                   Cancel
-                </Link>
               </Button>
             </Grid>
           </Grid>
