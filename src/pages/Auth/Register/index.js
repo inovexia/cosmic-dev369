@@ -303,7 +303,7 @@ export default function Register() {
             sx={{ mx: "auto", justifyContent: "center" }}
             className={`login-page`}
           >
-            <Grid item>
+            <Grid item sx={{textAlign:"center"}}>
               <img
                 alt="Registration"
                 style={{ maxWidth: 200 }}
@@ -311,7 +311,8 @@ export default function Register() {
               />
               <Typography component="h1" variant="h5" sx={{ my: 2 }}>
                 Registration not allow!
-              </Typography>
+                </Typography>
+                <Button sx={{mt:2}} variant="contained" component={Link} className="custom-button" href={`/auth/login`}>Go To Login</Button>
             </Grid>
           </Grid>
         </>
