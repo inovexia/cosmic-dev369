@@ -73,6 +73,7 @@ const AppRouter = () => {
         <Route path={"/test/create"} element={<CreateTest />} />
         <Route path={"/test/edit/:guid"} element={<EditTest />} />
         <Route path={"/test/add-question/:guid"} element={<AddQuestion />} />
+        <Route path={"/test/edit-question/:guid/:guid"} element={<EditQuestion />} />
         <Route path={"/test/all-questions/:guid"} element={<AllQuestions />} />
         <Route path={"/test/edit-question/:guid"} element={<EditQuestion />} />
         <Route

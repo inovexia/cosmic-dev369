@@ -19,7 +19,6 @@ import { useForm, Controller } from "react-hook-form";
 import BASE_URL from "../../../Utils/baseUrl";
 import token from "../../../Utils/token";
 import Network from "../../../Utils/network";
-import { serialize } from "object-to-formdata";
 import FormTextField from "../../../components/Common/formTextField";
 import FormEditorField from "../../../components/Common/formEditorField";
 import SidebarLeft from "../../../components/Sidebar/SidebarLeft";
@@ -27,10 +26,8 @@ import CurrentUser from "../../../Utils/CurrentUserGuid";
 
 // Date Time picker
 import dayjs from "dayjs";
-import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
-import { MobileDateTimePicker } from "@mui/x-date-pickers/MobileDateTimePicker";
 import CreatedBy from "../../../Utils/createdBy";
 
 const CreateCourseTest = () => {
