@@ -194,7 +194,7 @@
     line-height:var(--title-lineheight-xsmall);
   }
   p{
-    font-size: var(--body-font-size-xlarge);
+    font-size: var(--body-font-size-large);
     line-height: var(--body-lineheight-xlarge);
   }
 }

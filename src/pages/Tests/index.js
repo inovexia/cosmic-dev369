@@ -14,6 +14,7 @@ import {
   MenuItem,
   Card,
   CardContent,
+  Alert
 } from "@mui/material";
 //import parse from "html-react-parser";
 import { Helmet } from "react-helmet";
@@ -27,12 +28,11 @@ import Network from "../../Utils/network"
 import SidebarLeft from "../../components/Sidebar/SidebarLeft";
 import theme from "../../configs/theme";
 import CheckTokenValid from "../../components/Redirect/CheckTokenValid"
+import { useTheme } from '@mui/material/styles';
 
-
-const {
-  primary: { main: primaryColor },
-} = theme.palette;
 const Tests = () => {
+  const theme = useTheme();
+  const primaryColor = theme.palette.primary.main;
   const [tests, setTests] = useState([]);
   const [data, setData] = useState([]);
   useEffect(() => {
@@ -63,15 +63,13 @@ const Tests = () => {
   // const handleTypeChange = (event) => {
   //   setTestType(event.target.value);
   // };
-
+console.log(tests)
   // Search data here
   const [searchTitle, setSearchTitle] = useState("");
   const filteredTests = tests && tests.filter(
     (test) =>
       test.title.toLowerCase().includes(searchTitle.toLowerCase()) ||
-      test.details.toLowerCase().includes(searchTitle.toLowerCase())
-    //test.type.toLowerCase().includes(testType.toLowerCase()) &&
-    //test.status.toLowerCase().includes(testStatus.toLowerCase())
+      test.details && test.details.toLowerCase().includes(searchTitle.toLowerCase())
   );
 
   // Pagination here
@@ -79,7 +77,7 @@ const Tests = () => {
   const [testsPerPage] = useState(6);
   const lastIndex = currentPage * testsPerPage;
   const firstIndex = lastIndex - testsPerPage;
-  const currentTests = filteredTests.slice(firstIndex, lastIndex);
+  const currentTests = filteredTests && filteredTests.slice(firstIndex, lastIndex);
   const totalPages = Math.ceil(filteredTests.length / testsPerPage);
   const numbers = [...Array(totalPages + 1).keys()].slice(1);
   function prePage() {
@@ -232,11 +230,9 @@ const Tests = () => {
         ) : (
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Card sx={{ my: 3 }}>
-                <CardContent>
-                  <Typography component="h3">No test found!</Typography>
-                </CardContent>
-              </Card>
+            <Alert sx={{ mt: 5 }} severity="error">
+                  Test not found!
+                </Alert>
             </Grid>
           </Grid>
         )}

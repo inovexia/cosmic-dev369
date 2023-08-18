@@ -10,7 +10,7 @@ import {
   Snackbar,
   Alert,
   ButtonGroup,
-  Link
+  Link,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet";
@@ -241,8 +241,15 @@ const PreviewTest = () => {
                   {test && test.title}
                 </Typography>
               </Grid>
-              <Grid item xs={6} sx={{textAlign:"right"}}>
-                <Button className="custom-button" variant="contained" component={Link} href={`/test/manage/${guid}`}>Back</Button>
+              <Grid item xs={6} sx={{ textAlign: "right" }}>
+                <Button
+                  className="custom-button"
+                  variant="contained"
+                  component={Link}
+                  href={`/test/manage/${guid}`}
+                >
+                  Back
+                </Button>
               </Grid>
             </Grid>
           </Grid>
@@ -302,41 +309,36 @@ const PreviewTest = () => {
                       </ButtonGroup>
                     </Grid>
                     {questions.map((question, index) => (
-                      <Grid item xs={12} key={index}>
-                        <FormControlLabel
-                          control={
-                            // <Checkbox
-                            // checked={checkedQues[question.guid]}
-                            // onChange={(event) => handleCheckboxChange(event, question.guid)}
-                            //   name={question.guid}
-                            //   control={control}
-                            //   //onChange={({ target: { checked } }) => {}}
-                            //   className="option-label"
-                            //   value={question.guid}
-                            // />
+                      <Grid item xs={12} key={index} sx={{mt:2, ml:1}}>
+                        <Box className="ques-list" sx={{display:"flex", alignItems:"flex-start"}}>
+                          <FormControlLabel
+                            sx={{display:"flex", alignItems:"flex-start"}}
+                            control={
+                              <Checkbox
+                                checked={selected.indexOf(question.guid) !== -1}
+                                onChange={() => handleSelect(question.guid)}
+                                inputProps={{
+                                  "aria-labelledby": `select ${question.question}`,
+                                }}
+                                sx={{padding:"0", mr:1}}
+                              />
+                            }
+                            label={
+                              <Box sx={{ display: "flex", fontSize:"20px" }}>
+                               ({index + 1}).{" "}
+                                <span>{ReactHtmlParser(question.question)}</span>
+                              </Box>
+                            }
+                          />
 
-                            <Checkbox
-                              checked={selected.indexOf(question.guid) !== -1}
-                              onChange={() => handleSelect(question.guid)}
-                              inputProps={{
-                                "aria-labelledby": `select ${question.question}`,
-                              }}
-                            />
-                          }
-                          label={
-                            <Box sx={{ display: "flex" }}>
-                              {index + 1}. {ReactHtmlParser(question.question)}
-                            </Box>
-                          }
-                        />
-
-                        <Button onClick={() => handleDelete(question.guid)}>
-                          {isDeleting === question.guid ? (
-                            <CachedIcon size={20} color="#fff" />
-                          ) : (
-                            <DeleteIcon />
-                          )}
-                        </Button>
+                          <Button onClick={() => handleDelete(question.guid)}>
+                            {isDeleting === question.guid ? (
+                              <CachedIcon size={20} color="#fff" />
+                            ) : (
+                              <DeleteIcon />
+                            )}
+                          </Button>
+                        </Box>
                         <ol
                           style={{
                             listStyleType: "lower-alpha",
@@ -344,31 +346,33 @@ const PreviewTest = () => {
                           }}
                         >
                           {question.choices.map((choice, index) => {
-                            return (
-                              question.question_type === "tf" ? index < 2 &&(<li
-                              style={{
-                                color:
-                                  choice.correct_answer === "1"
-                                    ? "#A6CD4E"
-                                    : "",
-                              }}
-                              key={index}
-                            >
-                              {ReactHtmlParser(choice.choice)}
-                            </li>) : (<li
-                              style={{
-                                color:
-                                  choice.correct_answer === "1"
-                                    ? "#A6CD4E"
-                                    : "",
-                              }}
-                              key={index}
-                            >
-                              {ReactHtmlParser(choice.choice)}
-                            </li>)
-                              
-                            )
-                            
+                            return question.question_type === "tf" ? (
+                              index < 2 && (
+                                <li
+                                  style={{
+                                    color:
+                                      choice.correct_answer === "1"
+                                        ? "#A6CD4E"
+                                        : "",
+                                  }}
+                                  key={index}
+                                >
+                                  {ReactHtmlParser(choice.choice)}
+                                </li>
+                              )
+                            ) : (
+                              <li
+                                style={{
+                                  color:
+                                    choice.correct_answer === "1"
+                                      ? "#A6CD4E"
+                                      : "",
+                                }}
+                                key={index}
+                              >
+                                {ReactHtmlParser(choice.choice)}
+                              </li>
+                            );
                           })}
                         </ol>
                       </Grid>

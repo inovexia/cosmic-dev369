@@ -8,8 +8,16 @@ import {
   Button,
 } from "@mui/material";
 import parse from "html-react-parser";
+import dayjs from 'dayjs';
 
 const TestList = ({ item }) => {
+  const startDate = item.start_date
+  const endDate = item.end_date
+  const createdDate = item.created_on
+
+  const sDate = dayjs(startDate).format('DD-MM-YYYY HH:mm:ss');
+  const eDate = dayjs(endDate).format('DD-MM-YYYY HH:mm:ss');
+  const cDate = dayjs(createdDate).format('DD-MM-YYYY HH:mm:ss');
   return (
     <>
       <Card className="dem" key={item.guid} sx={{ my: 3 }}>
@@ -51,12 +59,12 @@ const TestList = ({ item }) => {
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <Typography component="span">
-                Created On:{item.created_on}
+                Start Date:{item.start_date ? sDate : cDate}
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
               <Typography component="span">
-                End Date:{item.created_on}
+                End Date:{item.end_date ? eDate : cDate}
               </Typography>
             </Grid>
           </Grid>

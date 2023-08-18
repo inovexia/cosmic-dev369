@@ -96,7 +96,7 @@ const UpdateCourse = () => {
         setIsCourseUpdated(true);
         setTimeout(() => {
           setAlertOpen(false);
-          navigate(`/course/list`);
+          navigate(`/course/manage/${courseGuid}`);
         }, 3000);
       } else {
         setIsCourseUpdated(false);

@@ -136,9 +136,9 @@ const AllQuestions = () => {
               {questions.length > 0 ? (
                 <>
                   {questions.map((question, index) => (
-                    <Grid item xs={12} key={index}>
-                      <Box sx={{ display: "flex" }}>
-                        {index + 1}. {ReactHtmlParser(question.question)}
+                    <Grid item xs={12} key={index} sx={{mb:3}}>
+                      <Box sx={{ display: "flex", fontSize:"18px" }}>
+                        ({index + 1}). <span>{ReactHtmlParser(question.question)}</span>
                       </Box>
                       <ol
                         style={{

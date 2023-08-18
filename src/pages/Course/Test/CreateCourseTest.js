@@ -26,11 +26,12 @@ import SidebarLeft from "../../../components/Sidebar/SidebarLeft";
 import CurrentUser from "../../../Utils/CurrentUserGuid";
 
 // Date Time picker
-import dayjs from 'dayjs';
-import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
+import dayjs from "dayjs";
+import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
+import { MobileDateTimePicker } from "@mui/x-date-pickers/MobileDateTimePicker";
+import CreatedBy from "../../../Utils/createdBy";
 
 const CreateCourseTest = () => {
   const { courseGuid } = useParams();
@@ -48,8 +49,8 @@ const CreateCourseTest = () => {
       title: "",
       details: "",
       type: "evaluated",
-      // start_date: "",
-      // end_date:"",
+      start_date: "",
+      end_date: "",
       created_by: CurrentUser,
     },
   });
@@ -58,17 +59,28 @@ const CreateCourseTest = () => {
   var myHeaders = new Headers();
   myHeaders.append("Authorization", `Bearer ${token}`);
   myHeaders.append("Network", `${Network}`);
-  const formdata = new FormData();
+  const formData = new FormData();
 
+  // States
+  const [errorValue, setErrorValue] = useState(null);
   const handleFormSubmit = async (data) => {
-    const formData = serialize(data);
+    //const formData = serialize(data);
+    const formattedStartDate = dayjs(data.start_date).format(
+      "YYYY-MM-DD HH:mm:ss"
+    );
+    const formattedEndDate = dayjs(data.end_date).format("YYYY-MM-DD HH:mm:ss");
+    formData.append("title", data.title);
+    formData.append("type", data.type);
+    formData.append("details", data.details);
+    formData.append("created_by", CreatedBy);
+    formData.append("start_date", formattedStartDate);
+    formData.append("end_date", formattedEndDate);
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
       body: formData,
       redirect: "follow",
     };
-
     try {
       const response = await fetch(
         `${BASE_URL}/course/create_test/${courseGuid}`,
@@ -77,6 +89,7 @@ const CreateCourseTest = () => {
       const result = await response.json();
       setAlertOpen(true);
       if (result.success === true) {
+        setErrorValue("Test created successfully, please add questions in this test.")
         setIsTestCreated(true);
         setTimeout(() => {
           const newTestID = result.payload.test_guid;
@@ -85,6 +98,7 @@ const CreateCourseTest = () => {
           navigate(`/test/add-question/${newTestID}?mt=${courseGuid}`);
         }, 3000);
       } else {
+        setErrorValue(result.message.end_date || result.message.start_date || result.message.title || result.message.type || result.message.details || result.message.created_by)
         setIsTestCreated(false);
         setTimeout(() => {
           setAlertOpen(false);
@@ -119,9 +133,10 @@ const CreateCourseTest = () => {
                 <Alert
                   severity={isTestCreated === true ? "success" : "warning"}
                 >
-                  {isTestCreated === true
+                  {/* {isTestCreated === true
                     ? "Test created Successfully"
-                    : "Test creation failled!"}
+                    : "Test creation failled!"} */}
+                  {errorValue && errorValue}
                 </Alert>
               </Snackbar>
             </Grid>
@@ -180,6 +195,49 @@ const CreateCourseTest = () => {
                         )}
                       />
                     </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6} sx={{ mt: 2 }}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <Controller
+                        name="start_date"
+                        control={control}
+                        defaultValue={dayjs()} // Set default value to current date and time
+                        rules={{ required: "Start date is required" }}
+                        render={({ field }) => (
+                          <DateTimePicker
+                            sx={{ width: "100%" }}
+                            {...field}
+                            label="Start Date"
+                            showTodayButton
+                            error={!!errors.start_date}
+                            helperText={errors.start_date?.message}
+                          />
+                        )}
+                      />
+                    </LocalizationProvider>
+                  </Grid>
+                  <Grid item xs={12} md={6} sx={{ mt: 2 }}>
+                    <LocalizationProvider
+                      dateAdapter={AdapterDayjs}
+                      className="demo  "
+                    >
+                      <Controller
+                        name="end_date"
+                        control={control}
+                        defaultValue={dayjs()} // Set default value to current date and time
+                        rules={{ required: "End date is required" }}
+                        render={({ field }) => (
+                          <DateTimePicker
+                            sx={{ width: "100%" }}
+                            {...field}
+                            label="End Date"
+                            showTodayButton
+                            error={!!errors.end_date}
+                            helperText={errors.end_date?.message}
+                          />
+                        )}
+                      />
+                    </LocalizationProvider>
                   </Grid>
                   <Grid item xs={12}>
                     <InputLabel htmlFor="test-details" sx={{ my: 1 }}>
