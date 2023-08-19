@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -17,11 +17,12 @@ import ZoomMeeting from "../../components/Classroom/ZoomMeeting";
 import { Helmet } from "react-helmet";
 import theme from "../../configs/theme";
 import SidebarLeft from "../../components/Sidebar/SidebarLeft";
-import CheckTokenValid from "../../components/Redirect/CheckTokenValid"
-
+import CheckTokenValid from "../../components/Redirect/CheckTokenValid";
 
 const OnlineClasses = () => {
-  const { primary: { main: primaryColor } } = theme.palette;
+  const {
+    primary: { main: primaryColor },
+  } = theme.palette;
   const [meetings, setMeetings] = useState("");
   const [searchTitle, setSearchTitle] = useState("");
   const [loading, setLoading] = useState(true);
@@ -55,7 +56,6 @@ const OnlineClasses = () => {
     };
     fetchMeetingList();
   }, []);
-  
 
   // Search Classroom
   const filteredMeetings =
@@ -64,52 +64,41 @@ const OnlineClasses = () => {
       meeting.details.toLowerCase().includes(searchTitle.toLowerCase())
     );
 
-    // Pagination here
-    const [currentPage, setCurrentPage] = useState(1);
-    const [testsPerPage] = useState(6);
-    const lastIndex = currentPage * testsPerPage;
-    const firstIndex = lastIndex - testsPerPage;
-    const currentMeeting =
-      filteredMeetings && filteredMeetings.slice(firstIndex, lastIndex);
-    const totalPages = Math.ceil(
-      (filteredMeetings && filteredMeetings.length) / testsPerPage
-    );
-    const numbers = Array.from({ length: totalPages }, (_, i) => i + 1);
-    function prePage() {
-      if (currentPage !== firstIndex) {
-        setCurrentPage(currentPage - 1);
-      }
+  // Pagination here
+  const [currentPage, setCurrentPage] = useState(1);
+  const [testsPerPage] = useState(6);
+  const lastIndex = currentPage * testsPerPage;
+  const firstIndex = lastIndex - testsPerPage;
+  const currentMeeting =
+    filteredMeetings && filteredMeetings.slice(firstIndex, lastIndex);
+  const totalPages = Math.ceil(
+    (filteredMeetings && filteredMeetings.length) / testsPerPage
+  );
+  const numbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+  function prePage() {
+    if (currentPage !== firstIndex) {
+      setCurrentPage(currentPage - 1);
     }
-    function changeCPage(id) {
-      setCurrentPage(id);
+  }
+  function changeCPage(id) {
+    setCurrentPage(id);
+  }
+  function nextPage() {
+    if (currentPage !== lastIndex) {
+      setCurrentPage(currentPage + 1);
     }
-    function nextPage() {
-      if (currentPage !== lastIndex) {
-        setCurrentPage(currentPage + 1);
-      }
-    }
-    // function extractUrlFromHtml(htmlContent) {
-    //   const urlPattern = /https?:\/\/\S+(?=<\/p>)/; // Match URL until </p>
-    //   const match = htmlContent.match(urlPattern);
-    //   return match ? match[0] : "";
-    // }
-  
-    // function extractUrlFromHtml(htmlContent) {
-    //   const urlPattern = /https?:\/\/[^\s<]+/g; // Match all URLs in the text
-    //   const matches = htmlContent.match(urlPattern);
-    //   return matches || [];
-    // }
-  
-    function extractUrlFromHtml(htmlContent) {
-      // Remove HTML anchor tags and then extract URLs
-      const cleanedHtml = htmlContent.replace(/<a\b[^>]*>(.*?)<\/a>/gi, '$1');
-      const urlPattern = /https?:\/\/[^\s<]+/g; // Match all URLs in the text
-      const matches = cleanedHtml.match(urlPattern);
-      return matches || [];
-    }
+  }
+
+  function extractUrlFromHtml(htmlContent) {
+    // Remove HTML anchor tags and then extract URLs
+    const cleanedHtml = htmlContent.replace(/<a\b[^>]*>(.*?)<\/a>/gi, "$1");
+    const urlPattern = /https?:\/\/[^\s<]+/g; // Match all URLs in the text
+    const matches = cleanedHtml.match(urlPattern);
+    return matches || [];
+  }
   return (
     <>
-      <CheckTokenValid/>
+      <CheckTokenValid />
       <Helmet>
         <title>Meetings</title>
       </Helmet>
@@ -123,8 +112,13 @@ const OnlineClasses = () => {
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
-              <Button variant="contained" component={Link} href="/meeting/create" className="custom-button">
-              Create Meeting
+              <Button
+                variant="contained"
+                component={Link}
+                href="/meeting/create"
+                className="custom-button"
+              >
+                Create Meeting
               </Button>
             </Grid>
           </Grid>
@@ -147,18 +141,20 @@ const OnlineClasses = () => {
             <>
               {currentMeeting && currentMeeting.length !== 0 ? (
                 <>
-                  
-                    {currentMeeting &&
-                      currentMeeting.map((item, index) => {
-                        const extractedUrl = extractUrlFromHtml(item.details);
-                        console.log(extractedUrl)
-                        return (
-                          <ZoomMeeting key={index} item={item} extractedUrl={extractedUrl[0]} />
-                        )
-                          
-                      })}
-                    
-                  {filteredMeetings && filteredMeetings.length > testsPerPage ? (
+                  {currentMeeting &&
+                    currentMeeting.map((item, index) => {
+                      const extractedUrl = extractUrlFromHtml(item.details);
+                      return (
+                        <ZoomMeeting
+                          key={index}
+                          item={item}
+                          extractedUrl={extractedUrl[0]}
+                        />
+                      );
+                    })}
+
+                  {filteredMeetings &&
+                  filteredMeetings.length > testsPerPage ? (
                     <Grid container spacing={2}>
                       <Grid
                         item
@@ -170,35 +166,36 @@ const OnlineClasses = () => {
                         }}
                       >
                         <ButtonGroup
-                        color="primary"
-                            aria-label="outlined primary button group"
-                            className="pagination-button"
-                      >
-                        <Button
-                          onClick={prePage}
-                          disabled={currentPage === 1}
+                          color="primary"
+                          aria-label="outlined primary button group"
+                          className="pagination-button"
                         >
-                          PREV
-                        </Button>
-                        {numbers.map((n, i) => (
                           <Button
-                            className={currentPage === n ? "active" : ""}
-                            key={i}
-                            onClick={() => changeCPage(n)}
-                            style={{
-                              backgroundColor: currentPage === n ? primaryColor : ''
-                            }}
+                            onClick={prePage}
+                            disabled={currentPage === 1}
                           >
-                            {n}
+                            PREV
                           </Button>
-                        ))}
-                        <Button
-                          onClick={nextPage}
-                          disabled={currentPage === totalPages}
-                        >
-                          NEXT
-                        </Button>
-                      </ButtonGroup>
+                          {numbers.map((n, i) => (
+                            <Button
+                              className={currentPage === n ? "active" : ""}
+                              key={i}
+                              onClick={() => changeCPage(n)}
+                              style={{
+                                backgroundColor:
+                                  currentPage === n ? primaryColor : "",
+                              }}
+                            >
+                              {n}
+                            </Button>
+                          ))}
+                          <Button
+                            onClick={nextPage}
+                            disabled={currentPage === totalPages}
+                          >
+                            NEXT
+                          </Button>
+                        </ButtonGroup>
                       </Grid>
                     </Grid>
                   ) : (
