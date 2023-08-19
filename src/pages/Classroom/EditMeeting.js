@@ -144,15 +144,8 @@ const EditMeeting = () => {
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
-              <Button variant="contained" className="custom-button">
-                {
-                  mtValue && mtValue ? (<Link href={`/course/${mtValue}/meeting/list`} color="inherit" underline="none">
-                  Cancel
-                </Link>) : (<Link href="/online-classes" color="inherit" underline="none">
-                  Cancel
-                </Link>)
-                }
-                
+              <Button variant="contained" className="custom-button" component={Link} href={mtValue && mtValue ? `/course/${mtValue}/meeting/list` : `/online-classes`} >
+                Cancel 
               </Button>
             </Grid>
           </Grid>
@@ -189,7 +182,7 @@ const EditMeeting = () => {
                     onInit={(evt, editor) => (editorRef.current = editor)}
                   />
                 </StyledFormControl>
-                <Button variant="contained" type="submit">
+                <Button variant="outlined" type="submit" className="custom-button">
                   Save Meeting
                 </Button>
               </form>

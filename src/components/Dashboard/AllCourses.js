@@ -20,8 +20,17 @@ import token from "../../Utils/token";
 import Network from "../../Utils/network";
 import { Link } from "react-router-dom";
 import CheckTokenValid from "../Redirect/CheckTokenValid";
+import ReactHtmlParser from "react-html-parser";
 
+
+function truncateString(text, maxCharLength) {
+  if (text.length <= maxCharLength) {
+    return text;
+  }
+  return text.slice(0, maxCharLength) + '...';
+}
 const AllCourses = () => {
+  const maxCharLength = 20;
   const ratingValueString = "3.5";
   const ratingValue = parseFloat(ratingValueString);
   // States
@@ -52,7 +61,6 @@ const AllCourses = () => {
     };
     fetchCourses();
   },[]);
-
   return (
     <>
       {loading ? (
@@ -117,7 +125,9 @@ const AllCourses = () => {
               >
                 {courses && courses.data.length !== 0 ? (
                   courses &&
-                  courses.data.map((course, index) => (
+                    courses.data.map((course, index) => {
+                      const truncatedText = truncateString(course.description, maxCharLength)
+                        return(
                     <SwiperSlide key={index}>
                       <Grid container spacing={2}>
                         <Grid item xs={12} md={6} className="course-image">
@@ -125,10 +135,7 @@ const AllCourses = () => {
                         </Grid>
                         <Grid item xs={12} md={6} display="grid">
                           <h3>{course.title}</h3>
-                          <h4 style={{ color: "#888888", fontWeight: "400" }}>
-                            {course.created_by}
-                          </h4>
-                          <Box className="rating-box" sx={{ display: "flex" }}>
+                          <Box className="rating-box" sx={{ display: "none" }}>
                             <Box sx={{ display: "flex", alignItems: "center" }}>
                               <h4
                                 style={{ color: "#888888", fontWeight: "400" }}
@@ -149,11 +156,13 @@ const AllCourses = () => {
                             />
                           </Box>
                           <Box>
-                            <Typography color="primary" component="span">
-                              Lesson
+                            <Typography color="inherit" component="span">
+                              {ReactHtmlParser(truncatedText)}
                             </Typography>
-                            (20)
                           </Box>
+                          <h4 style={{ color: "#888888", fontWeight: "400" }}>
+                            <strong>Author: </strong>{course.created_by}
+                          </h4>
                           <Button
                             variant="contained"
                             component={Link}
@@ -164,8 +173,9 @@ const AllCourses = () => {
                           </Button>
                         </Grid>
                       </Grid>
-                    </SwiperSlide>
-                  ))
+                        </SwiperSlide>
+                        )
+})
                 ) : (
                   <Alert sx={{ mt: 5 }} severity="error">
                     Course not found!

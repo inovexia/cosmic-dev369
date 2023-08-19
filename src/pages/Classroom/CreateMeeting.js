@@ -114,10 +114,8 @@ const CreateMeeting = () => {
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
-              <Button variant="contained">
-                <Link href="/online-classes" color="inherit" underline="none">
-                  Cancel
-                </Link>
+              <Button variant="contained" className="custom-button" component={Link} href="/online-classes">
+                Cancel
               </Button>
             </Grid>
           </Grid>
@@ -155,7 +153,7 @@ const CreateMeeting = () => {
                   />
                 </StyledFormControl>
 
-                <Button variant="contained" type="submit">
+                <Button variant="outlined" type="submit" className="custom-button">
                   Save Meeting
                 </Button>
               </form>

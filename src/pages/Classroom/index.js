@@ -109,10 +109,8 @@ const OnlineClasses = () => {
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
-              <Button variant="contained">
-                <Link href="/meeting/create" color="inherit" underline="none">
-                  Create Meeting
-                </Link>
+              <Button variant="contained" component={Link} href="/meeting/create" className="custom-button">
+              Create Meeting
               </Button>
             </Grid>
           </Grid>

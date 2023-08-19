@@ -1,23 +1,10 @@
 import React from "react";
 import {
-  Box,
-  Typography,
-  Grid,
-  ButtonGroup,
-  Button,
-  Tabs,
-  Tab,
-  Link,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Card,
-  CardContent,
+  Grid
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import ReactHtmlParser from "react-html-parser";
 
 const DetailsReport = ({ testResult }) => {
   //console.log(testResult);
@@ -38,9 +25,9 @@ const DetailsReport = ({ testResult }) => {
       {formatedResult &&
         formatedResult.map((item, index) => {
           return (
-            <Grid container spacing={3} sx={{ mb: 3 }} key={index}>
-              <Grid item xs={10}>
-                {index + 1}. {item.question}
+            <Grid container spacing={3} sx={{ mb: 5 }} key={index}>
+              <Grid item xs={10} sx={{display:"flex", fontSize:"20px"}}>
+                ({index + 1}). <span>{ReactHtmlParser(item.question)}</span>
               </Grid>
               <Grid item xs={1}>
                 {item.response === "CORRECT" ? (
