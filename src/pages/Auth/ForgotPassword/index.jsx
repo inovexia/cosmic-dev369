@@ -461,7 +461,7 @@ export default function ForgotPassword() {
                 </Grid>
               </form>
               )}
-              <Box sx={{mt:3}}><Typography component="h6" variant="h6">If you don't want to reset password <Link href={`/auth/login`}>login</Link> here.</Typography></Box>
+              <Box sx={{mt:3}}><Typography component="h6" variant="h6" sx={{fontSize:"16px"}}>If you don't want to reset password <Link href={`/auth/login`}>login</Link> here.</Typography></Box>
             <Box sx={{ display: "none", flexDirection: "row", pt: 2 }}>
               <Button
                 color="inherit"
