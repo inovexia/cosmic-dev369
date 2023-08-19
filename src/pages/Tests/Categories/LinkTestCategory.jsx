@@ -193,7 +193,7 @@ const LinkTestCategory = () => {
       if (result.success === true) {
         showSnackbar("success", "Test linked Successfully");
         setTimeout(() => {
-          navigate(`/course/${guid}/test/list`);
+          navigate(`/category/tests/${guid}`);
         }, 1000);
       } else {
         showSnackbar(
@@ -207,7 +207,6 @@ const LinkTestCategory = () => {
       throw new Error(`Failed to post status: ${error.message}`);
     }
   };
-console.log(selectedTests)
   return (
     <>
       <Helmet>

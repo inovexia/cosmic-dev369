@@ -21,6 +21,7 @@ import {
   DialogContentText,
   Snackbar,
   Card,
+  Tooltip,
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
@@ -29,26 +30,36 @@ import BASE_URL from "../../../Utils/baseUrl";
 import token from "../../../Utils/token";
 import Network from "../../../Utils/network";
 import { Helmet } from "react-helmet";
-import theme from "../../../configs/theme";
 import SidebarLeft from "../../../components/Sidebar/SidebarLeft";
-import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { styled } from "@mui/material/styles";
 import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
-import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
-import { MobileDateTimePicker } from "@mui/x-date-pickers/MobileDateTimePicker";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { tooltipClasses } from "@mui/material/Tooltip";
+import { useTheme } from '@mui/material/styles';
+
+const HtmlTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: "#f5f5f9",
+    color: "rgba(0, 0, 0, 0.87)",
+    maxWidth: 220,
+    fontSize: theme.typography.pxToRem(12),
+    border: "1px solid #dadde9",
+  },
+}));
 
 const EditIcon = styled(EditRoundedIcon)(({ theme }) => ({
   color: theme.palette.warning.main, // Replace 'primary' with the desired theme color
 }));
-const DeleteIcon = styled(DeleteRoundedIcon)(({ theme }) => ({
-  color: theme.palette.danger.main, // Replace 'primary' with the desired theme color
-}));
 
 const Test = () => {
+  const theme = useTheme();
+  const primaryColor = theme.palette.primary.main;
   const currentDate = new Date(); // Get the current date and time
   const { courseGuid } = useParams();
   const {
@@ -61,9 +72,7 @@ const Test = () => {
       end_date: "",
     },
   });
-  const {
-    primary: { main: primaryColor },
-  } = theme.palette;
+
   const [tests, setTests] = useState("");
   const [searchTitle, setSearchTitle] = useState("");
   const [loading, setLoading] = useState(true);
@@ -140,11 +149,11 @@ const Test = () => {
   const [testsPerPage] = useState(10);
   const lastIndex = currentPage * testsPerPage;
   const firstIndex = lastIndex - testsPerPage;
-  const currentTests = filteredTests.slice(firstIndex, lastIndex);
+  const currentTests = filteredTests && filteredTests.slice(firstIndex, lastIndex);
   const totalPages = Math.ceil(
-    filteredTests && filteredTests.length / testsPerPage
+    (filteredTests && filteredTests.length) / testsPerPage
   );
-  const numbers = [...Array(totalPages + 1).keys()].slice(1);
+  const numbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   function prePage() {
     if (currentPage !== firstIndex) {
@@ -474,7 +483,7 @@ const Test = () => {
                 component={Link}
                 className="custom-button"
                 href={`/course/manage/${courseGuid}`}
-                sx={{mr:1}}
+                sx={{ mr: 1 }}
               >
                 Back
               </Button>
@@ -525,7 +534,7 @@ const Test = () => {
                       alignItems: "center",
                     }}
                   >
-                    <Grid item xs={12} md={2}>
+                    <Grid item xs={12} md={2} sx={{ display: "flex" }}>
                       <FormControl sx={{ width: "100%" }}>
                         <InputLabel id="type-select-label">Action</InputLabel>
                         <Controller
@@ -539,6 +548,9 @@ const Test = () => {
                               label="Action"
                               onChange={handleActionChange}
                               defaultValue=""
+                              disabled={
+                                selectedTests.length !== 0 ? false : true
+                              }
                             >
                               <MenuItem
                                 value="changeDate"
@@ -562,6 +574,18 @@ const Test = () => {
                           )}
                         />
                       </FormControl>
+                      <HtmlTooltip
+                        title={
+                          <React.Fragment>
+                            <Typography color="inherit">Menu open when 1 item should be selected.</Typography>
+                          </React.Fragment>
+                        }
+                        placement="right-start"
+                      >
+                        <InfoOutlinedIcon
+                          sx={{ color: "#B8B8B8", ml: 2, mb: 1 }}
+                        />
+                      </HtmlTooltip>
                     </Grid>
                   </Grid>
                   <Grid container spacing={2} className="manage-course">

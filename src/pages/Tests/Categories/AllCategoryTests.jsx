@@ -24,18 +24,16 @@ import theme from "../../../configs/theme";
 import SidebarLeft from "../../../components/Sidebar/SidebarLeft";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import { styled } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 
 const DeleteIcon = styled(DeleteRoundedIcon)(({ theme }) => ({
   color: theme.palette.danger.main, // Replace 'primary' with the desired theme color
 }));
 
 const AllCategoryTests = () => {
-  const {
-    primary: { main: primaryColor },
-  } = theme.palette;
-  const {
-    success: { main: successColor },
-  } = theme.palette;
+  const theme = useTheme();
+  const primaryColor = theme.palette.primary.main;
+  const successColor = theme.palette.success.main;
   const { guid } = useParams();
   const {
     control,
@@ -178,7 +176,7 @@ const AllCategoryTests = () => {
     });
     formData.append("category_guid", guid);
     //console.log(formData)
- 
+
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
@@ -193,9 +191,9 @@ const AllCategoryTests = () => {
       const result = await res.json();
       setSnackbarSuccess(result.success);
       if (result.success === true) {
-        showSnackbar("success", "Test added Successfully");
+        showSnackbar("success", "Test unlinked Successfully");
         setTimeout(() => {
-          navigate(`/course/${guid}/test/list`);
+          window.location.reload();
         }, 1000);
       } else {
         showSnackbar(
@@ -241,11 +239,7 @@ const AllCategoryTests = () => {
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
               <Button variant="contained" className="custom-button">
-                <Link
-                  href={`/category/list`}
-                  color="inherit"
-                  underline="none"
-                >
+                <Link href={`/category/list`} color="inherit" underline="none">
                   Back
                 </Link>
               </Button>
@@ -253,7 +247,7 @@ const AllCategoryTests = () => {
                 variant="outlined"
                 className="custom-button"
                 sx={{ ml: 2 }}
-                onClick={handleUnlinkTest}  
+                onClick={handleUnlinkTest}
               >
                 Unlink
               </Button>

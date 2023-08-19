@@ -131,7 +131,6 @@ export default function Register() {
     }
   };
 
-  console.log(settingData);
   return (
     <>
       {settingData && settingData.allow_user_registration === "true" ? (

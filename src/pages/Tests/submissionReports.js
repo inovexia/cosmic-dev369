@@ -25,7 +25,7 @@ const SubmissionReports = () => {
   const params = new URLSearchParams(location.search);
   const user_guid = params.get("userId");
   const ses_id = params.get("ses_id");
-  console.log(`user id: ${user_guid}, ses id: ${ses_id}`)
+  //console.log(`user id: ${user_guid}, ses id: ${ses_id}`)
   const { guid } = useParams();
   const sidebarVisible = true;
   const [selectedTab, setSelectedTab] = useState(0);

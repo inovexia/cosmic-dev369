@@ -12,21 +12,14 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Card,
-  CardContent,
   Alert
 } from "@mui/material";
-//import parse from "html-react-parser";
 import { Helmet } from "react-helmet";
-// import BASE_URL from "../../Utils/baseUrl";
-// import Token from "../../Utils/token";
-// import axios from "axios";
 import TestList from "../../components/Test/TestList";
 import BASE_URL from "../../Utils/baseUrl";
 import token from "../../Utils/token";
 import Network from "../../Utils/network"
 import SidebarLeft from "../../components/Sidebar/SidebarLeft";
-import theme from "../../configs/theme";
 import CheckTokenValid from "../../components/Redirect/CheckTokenValid"
 import { useTheme } from '@mui/material/styles';
 
@@ -60,10 +53,7 @@ const Tests = () => {
     setTestStatus(event.target.value);
   };
 
-  // const handleTypeChange = (event) => {
-  //   setTestType(event.target.value);
-  // };
-console.log(tests)
+
   // Search data here
   const [searchTitle, setSearchTitle] = useState("");
   const filteredTests = tests && tests.filter(

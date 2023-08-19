@@ -20,7 +20,7 @@ import Network from "../../Utils/network";
 import FormEditorField from "../../components/Common/formEditorField";
 import { serialize } from "object-to-formdata";
 import SidebarLeft from "../../components/Sidebar/SidebarLeft";
-import FormTextField from "../../components/Common/formTextField"
+import FormTextField from "../../components/Common/formTextField";
 
 const StyledFormControl = styled(FormControl)({
   marginBottom: "16px",
@@ -28,11 +28,12 @@ const StyledFormControl = styled(FormControl)({
 
 const CreateMeeting = () => {
   // state initialization
+  const [errorMessage, setErrorMessage] = useState(null);
   const [isMeetingCreated, setIsMeetingCreated] = useState(null);
   const [alertOpen, setAlertOpen] = useState(null);
   const { control, handleSubmit } = useForm({
     defaultValues: {
-      title:"",
+      title: "",
       created_by: CreatedBy,
       details: "",
     },
@@ -64,14 +65,20 @@ const CreateMeeting = () => {
       try {
         const response = await fetch(`${BASE_URL}/zoom/create`, requestOptions);
         const result = await response.json();
-        setAlertOpen(true)
+        setAlertOpen(true);
         if (result.success === true) {
+          setErrorMessage("Meeting created successfully.");
           setIsMeetingCreated(true);
           setTimeout(() => {
+            setAlertOpen(false);
             navigate(`/online-classes`);
           }, 3000);
         } else {
+          setErrorMessage(result.message.title);
           setIsMeetingCreated(false);
+          setTimeout(() => {
+            setAlertOpen(false);
+          }, 3000);
         }
       } catch (error) {
         setIsMeetingCreated(false);
@@ -93,18 +100,18 @@ const CreateMeeting = () => {
             alignItems="center"
           >
             <Grid item>
-            <Snackbar
-            open={alertOpen}
-            autoHideDuration={3000}
-            onClose={() => setIsMeetingCreated(false)}
-            anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          >
-            <Alert severity={isMeetingCreated === true ? "success" : "warning"}>
-              {isMeetingCreated === true
-                ? "Meeting created Successfully"
-                : "Meeting creation failed"}
-            </Alert>
-          </Snackbar>
+              <Snackbar
+                open={alertOpen}
+                autoHideDuration={3000}
+                onClose={() => setIsMeetingCreated(false)}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+              >
+                <Alert
+                  severity={isMeetingCreated === true ? "success" : "warning"}
+                >
+                  {errorMessage}
+                </Alert>
+              </Snackbar>
             </Grid>
           </Grid>
           <Grid container spacing={2} sx={{ mt: 3 }}>
@@ -114,7 +121,12 @@ const CreateMeeting = () => {
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
-              <Button variant="contained" className="custom-button" component={Link} href="/online-classes">
+              <Button
+                variant="contained"
+                className="custom-button"
+                component={Link}
+                href="/online-classes"
+              >
                 Cancel
               </Button>
             </Grid>
@@ -123,16 +135,16 @@ const CreateMeeting = () => {
           <Grid container spacing={2} sx={{ mt: 3 }}>
             <Grid item xs={12}>
               <form onSubmit={handleSubmit(handleFormSubmit)}>
-                <Grid item xs={12} sx={{mb:2}}>
-                <FormTextField
-                      control={control}
-                      label="Title"
-                      variant="outlined"
-                      name="title"
-                      pattern="[A-Za-z]{1,}"
-                      style={{ width: "100%" }}
-                      required
-                    />
+                <Grid item xs={12} sx={{ mb: 2 }}>
+                  <FormTextField
+                    control={control}
+                    label="Title"
+                    variant="outlined"
+                    name="title"
+                    pattern="[A-Za-z]{1,}"
+                    style={{ width: "100%" }}
+                    required
+                  />
                 </Grid>
                 <StyledFormControl sx={{ width: "100%" }}>
                   <label
@@ -153,7 +165,11 @@ const CreateMeeting = () => {
                   />
                 </StyledFormControl>
 
-                <Button variant="outlined" type="submit" className="custom-button">
+                <Button
+                  variant="outlined"
+                  type="submit"
+                  className="custom-button"
+                >
                   Save Meeting
                 </Button>
               </form>
