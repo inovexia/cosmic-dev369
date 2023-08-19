@@ -22,27 +22,6 @@ import ReactHtmlParser from "react-html-parser";
 import BASE_URL from "../../Utils/baseUrl";
 import token from "../../Utils/token";
 import Network from "../../Utils/network";
-
-// const extractHrefValue = (htmlString) => {
-//   const parser = new DOMParser();
-//   const doc = parser.parseFromString(htmlString, "text/html");
-//   const linkElement = doc.querySelector("a");
-//   if (linkElement) {
-//     return linkElement.getAttribute("href");
-//   }
-// };
-
-function extractHrefFromString(str) {
-  const regex = /<p>(https?:\/\/[^\s]+)<\/p>/g; // Regex pattern to match URLs
-  const matches = str.match(regex); // Find all matches in the string
-
-  if (matches && matches.length > 0) {
-    return matches[0]; // Return the first match (the URL)
-  }
-
-  return null; // Return null if no match found
-}
-
 const ZoomMeeting = ({ item, extractedUrl }) => {
   // Configuration
   var myHeaders = new Headers();
