@@ -1,6 +1,6 @@
 {
+  "name": "cosmic-app",
   "homepage": "https://cosmic-academy.netlify.app",
-  "name": "cosmic-web",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -21,11 +21,13 @@
     "buffer": "^6.0.3",
     "chart.js": "^4.3.0",
     "cors": "^2.8.5",
+    "date-fns": "^2.30.0",
     "dayjs": "^1.11.7",
     "html-react-parser": "^3.0.15",
     "http-proxy-middleware": "^2.0.6",
     "material-ui-color-picker": "^3.5.1",
     "moment-timezone": "^0.5.43",
+    "mui-file-input": "^3.0.2",
     "mui-one-time-password-input": "^1.1.2",
     "mui-tel-input": "^3.2.2",
     "notistack": "^3.0.1",

@@ -18,10 +18,14 @@ import {
 import BASE_URL from "../../../Utils/baseUrl";
 import token from "../../../Utils/token";
 import Network from "../../../Utils/network";
-import PersonOffIcon from '@mui/icons-material/PersonOff';
+import PersonOffIcon from "@mui/icons-material/PersonOff";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import { styled } from "@mui/material/styles";
-import {useNavigate } from "react-router-dom";
+import { useForm, Controller } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import dayjs from "dayjs";
+
 const EnrolledUserList = ({
   user,
   onUserSelect,
@@ -52,6 +56,20 @@ const EnrolledUserList = ({
     return `rgb(${red}, ${green}, ${blue})`;
   }
   const bgColor = generateColorCode(firstInitial + lastInitial);
+
+  const {
+    control,
+    setValue,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      start_date: "",
+      end_date: "",
+    },
+  });
+  const { start_date, end_date } = watch();
 
   // State variables for Snackbar
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -133,14 +151,20 @@ const EnrolledUserList = ({
   };
 
   // Enroll function on submit
-  const handleEnrollSingleUser = async (id) => {
-    var formdata = new FormData();
-    formdata.append("users[0]", id);
+  const handleEnrollSingleUser = async (data) => {
+    var formData = new FormData();
+    const formattedStartDate = dayjs(data.start_date).format(
+      "YYYY-MM-DD HH:mm:ss"
+    );
+    const formattedEndDate = dayjs(data.end_date).format("YYYY-MM-DD HH:mm:ss");
+    formData.append("users[0]", selectedUserId);
+    formData.append("start_date", formattedStartDate);
+    formData.append("end_date", formattedEndDate);
     setDeleteConfirmOpen(false);
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
-      body: formdata,
+      body: formData,
       redirect: "follow",
     };
     try {
@@ -186,41 +210,116 @@ const EnrolledUserList = ({
         </Alert>
       </Snackbar>
       <Dialog
+        className="enroll-date-outer"
         open={deleteConfirmOpen}
         onClose={actionConfirmClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Confirmation</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            {
-              action && action === "enroll" ? ("Are you sure you want to Enroll this user?") : ("Are you sure you want to Unenroll this user?")
-            }
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={actionConfirmClose} color="primary">
-            Cancel
-          </Button>
-          {action && action === "enroll" ? (
-            <Button
-              onClick={() => handleEnrollSingleUser(selectedUserId)}
-              color="primary"
-              autoFocus
-            >
-              Confirm
-            </Button>
-          ) : (
-            <Button
-              onClick={() => handleUnenrollSingleUser(selectedUserId)}
-              color="primary"
-              autoFocus
-            >
-              Confirm
-            </Button>
-          )}
-        </DialogActions>
+        {action && action === "enroll" ? (
+          <>
+            <form onSubmit={handleSubmit(handleEnrollSingleUser)}>
+              <DialogTitle id="alert-dialog-title">
+                Select date and confirm
+              </DialogTitle>
+              <DialogContent>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} md={6}>
+                    <label>Start Date</label>
+                    <Controller
+                      fullWidth
+                      name="start_date"
+                      control={control}
+                      defaultValue={null}
+                      render={({ field }) => (
+                        <DatePicker
+                          className="enroll-date"
+                          sx={{ width: "100%" }}
+                          {...field}
+                          selected={field.value}
+                          onChange={(date) => {
+                            field.onChange(date);
+                          }}
+                          showTimeSelect
+                          timeFormat="HH:mm"
+                          timeIntervals={15}
+                          dateFormat="yyyy-MM-dd HH:mm:ss"
+                          placeholderText="YYYY-MM-DD HH:mm:ss" // Add the placeholder
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <label>End Date</label>
+                    <Controller
+                      fullWidth
+                      name="end_date"
+                      control={control}
+                      defaultValue={null}
+                      render={({ field }) => (
+                        <DatePicker
+                          className="enroll-date"
+                          sx={{ width: "100%" }}
+                          {...field}
+                          selected={field.value}
+                          onChange={(date) => {
+                            field.onChange(date); // Update the field value directly
+                          }}
+                          showTimeSelect
+                          timeFormat="HH:mm"
+                          timeIntervals={15}
+                          dateFormat="yyyy-MM-dd HH:mm:ss" // Set the desired display format
+                          placeholderText="YYYY-MM-DD HH:mm:ss" // Add the placeholder
+                        />
+                      )}
+                    />
+                  </Grid>
+                </Grid>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={actionConfirmClose} color="primary">
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  color="primary"
+                  autoFocus
+                  disabled={!watch("start_date") || !watch("end_date")}
+                >
+                  Confirm
+                </Button>
+                {/* <Button
+                onClick={() => handleEnrollSingleUser(selectedUserId)}
+                color="primary"
+                autoFocus
+              >
+                Confirm
+              </Button> */}
+              </DialogActions>
+            </form>
+          </>
+        ) : (
+          <>
+            <DialogTitle id="alert-dialog-title">Confirmation</DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Are you sure you want to Unenroll this user?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={actionConfirmClose} color="primary">
+                Cancel
+              </Button>
+              <Button
+                onClick={() => handleUnenrollSingleUser(selectedUserId)}
+                color="primary"
+                autoFocus
+              >
+                Confirm
+              </Button>
+            </DialogActions>
+          </>
+        )}
       </Dialog>
       <Grid item xs={12} className="user-items">
         <Card className="user-listing listing" sx={{ my: 3 }} key={`item`}>
@@ -312,7 +411,7 @@ const EnrolledUserList = ({
                             fontFamily: "Arial",
                           }}
                         >
-                          <PersonAddIcon sx={{mr:1}} />
+                          <PersonAddIcon sx={{ mr: 1 }} />
                           Enroll
                         </Button>
                       ) : (
@@ -325,7 +424,7 @@ const EnrolledUserList = ({
                             fontFamily: "Arial",
                           }}
                         >
-                            <PersonOffIcon sx={{mr:1}}/>
+                          <PersonOffIcon sx={{ mr: 1 }} />
                           Unenroll
                         </Button>
                       )}

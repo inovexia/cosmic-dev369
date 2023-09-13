@@ -24,7 +24,8 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  CircularProgress
 
 } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
@@ -83,6 +84,7 @@ const TakeTest = () => {
 
   // Get all questions
   const [testData, setTestData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchQuestion = async () => {
       const requestOption = {
@@ -96,6 +98,7 @@ const TakeTest = () => {
       );
       const test_Data = await response.json();
       setTestData(test_Data.payload);
+      setIsLoading(false);
     };
     fetchQuestion();
   }, []);
@@ -115,6 +118,7 @@ const TakeTest = () => {
   }
   const handleClickStart = () => {
     const set_Session = generateSessionID(36);
+    console.log(set_Session)
     setShowInstruction(false);
     setShowQuestions(true);
     localStorage.setItem("set_session", set_Session);
@@ -146,7 +150,7 @@ const TakeTest = () => {
   };
 
   // Thanks after test submitted
-  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   // Test Submission
   const resultType = test.settings && test.settings.show_result;
@@ -352,15 +356,26 @@ const TakeTest = () => {
       </>
     );
   };
+  // Check if questions.length === 0 and redirect if necessary
+  useEffect(() => {
+    if (!isLoading && testData.length === 0) {
+      console.log("Redirecting to manage test page...");
+      navigate(`/test/manage/${guid}`);
+    }
+  }, [testData, navigate, isLoading]);
 
-  //console.log(sidebarOptions);
+  if (isLoading) {
+    return <Box sx={{height:"70vh", display:"flex", alignItems:"center", justifyContent:"center"}}><CircularProgress/></Box>;
+  }
+
+  //console.log(testData);
+  console.log(testData)
   return (
     <>
       <Helmet>
         <title>Take Test</title>
       </Helmet>
       <Dialog open={dialogOpen} >
-        
         <DialogContent>
         <Typography fullwidth sx={{textAlign:"center"}}><CheckCircleOutlinedIcon color="success" sx={{fontSize:50}} /></Typography>
           <DialogTitle color="success">Test submitted successfully.</DialogTitle>
@@ -423,15 +438,15 @@ const TakeTest = () => {
             <Grid item xs={12}>
               <Typography
                 variant="h1"
-                component="h5"
-                sx={{ fontSize: 30, fontWeight: 600, display: "flex" }}
+                component="div"
+                sx={{ fontSize: 24, fontWeight: 600, display: "flex" }}
               >
                 {!showInstruction &&
                 test.settings &&
                 test.settings.show_timer === "true" ? (
                   <>
                     <Timer
-                      durationInSeconds={
+                      durationInMinutes={
                         test.settings && test.settings.test_duration
                       }
                       onTimerExpired={handleTimerExpired}
@@ -474,9 +489,34 @@ const TakeTest = () => {
                 onSubmit={handleSubmit(onTestSubmit)}
                 style={{ width: "100%" }}
               >
-                {testData[currentQuestion] && (
-                  <h2>{ReactHtmlParser(testData[currentQuestion].question)}</h2>
+                {testData[currentQuestion] && testData[currentQuestion].parent_question &&(
+                  <h4>{ReactHtmlParser(testData[currentQuestion].parent_question)}</h4>
                 )}
+                {testData[currentQuestion] && (
+                  <h4>{ReactHtmlParser(testData[currentQuestion].question)}</h4>
+                )}
+                {(testData[currentQuestion] && testData[currentQuestion].file_hash !== null) ||
+                                  (testData[currentQuestion] &&
+                                    testData[currentQuestion].file_url_path !== null) ? (
+                                    <Box
+                                      sx={{ width: "100%", maxWidth: "500px" }}
+                                    >
+                                      <img
+                                          style={{
+                                          maxWidth:"100%",
+                                          height: "auto",
+                                        }}
+                                        src={
+                                          testData[currentQuestion] &&
+                                          testData[currentQuestion].file_url_path &&
+                                          testData[currentQuestion].file_hash &&
+                                          testData[currentQuestion].file_url_path + "/" + testData[currentQuestion].file_hash
+                                        } 
+                                      />
+                                    </Box>
+                                  ) : (
+                                    ""
+                                  )}
                 {/* Display options */}
                 {testData[currentQuestion] && (
                   <FormGroup>

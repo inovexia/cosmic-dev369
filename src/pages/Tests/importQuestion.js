@@ -14,7 +14,7 @@ import { serialize } from "object-to-formdata";
 import ReactHtmlParser from "react-html-parser";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import EditIcon from "@mui/icons-material/Edit";
-import EditQuestionPopup from "../../components/Test/editQuestionPopup";
+import UpdateQuestion from "../../components/Test/updateQuestion";
 import BASE_URL from "../../Utils/baseUrl";
 import token from "../../Utils/token";
 import Network from "../../Utils/network";
@@ -43,10 +43,10 @@ const ImportQuestion = () => {
   const [selectedQuestionId, setSelectedQuestionId] = useState("");
   const [questionDetails, setQuestionDetails] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const handleOpen = (index, question) => {
+  const handleOpen = (q_id) => {
     setOpenEditQuestion(true);
-    setSelectedQuestionId(index);
-    setQuestionDetails(index);
+    setSelectedQuestionId(q_id);
+    setQuestionDetails(q_id);
   };
 
   // Upload file in question
@@ -54,6 +54,7 @@ const ImportQuestion = () => {
     const selectedFile = e.target.files[0];
     setValueStep1("userfile", selectedFile);
     setSelectedFile(selectedFile.name);
+    setImportedQuestion(null)
   };
   // End Upload file
 
@@ -63,7 +64,6 @@ const ImportQuestion = () => {
   const [testGuid, setTestGuid] = useState("");
   myHeaders.append("Authorization", `Bearer ${token}`);
   myHeaders.append("Network", `${Network}`);
-
   // Save questions
   const handleFormSubmit = async (data) => {
     try {
@@ -81,14 +81,13 @@ const ImportQuestion = () => {
           requestOptions
         );
         const saveResult = await res.json();
-
         if (saveResult.success === true) {
           const questionsAll = saveResult.payload[0];
           setImportedQuestion(questionsAll);
           reset(questionsAll);
         }
       } else {
-        const formData = serialize({ questions: data });
+        const formData = serialize({ questions: importedQuestion });
         var requestOptions = {
           method: "POST",
           headers: myHeaders,
@@ -110,8 +109,102 @@ const ImportQuestion = () => {
       throw new Error(`Failed to post status: ${error.message}`);
     }
   };
+
   const sampleFileUrl = "/path/to/sample/file.txt";
   const [selectedQ, setSelectedQ] = useState(undefined);
+
+  const Question = ({ allQues, qData, questionNumber, q_id }) => {
+    const { question, parent_id, choice, question_type, correct_answer } =
+      qData;
+    // Render parent question or child question
+    if (parent_id === 0 && question_type === "comp") {
+      // Render parent directions
+      return (
+        <Box className="parent-q">
+          <strong>{ReactHtmlParser(question)}</strong>
+          <Button
+            onClick={() => {
+              handleOpen(q_id);
+              setSelectedQ(allQues && Object.values(allQues)[q_id - 1]);
+            }}
+          >
+            <EditIcon />
+          </Button>
+        </Box>
+      );
+    } else {
+      // Render child question
+      return (
+        <Box className="child-q" sx={{ mb: 3, mt: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", fontWeight: 500 }}>
+            {questionNumber}. {ReactHtmlParser(question)}
+            <Button
+              onClick={() => {
+                handleOpen(q_id);
+                setSelectedQ(allQues && Object.values(allQues)[q_id - 1]);
+              }}
+            >
+              <EditIcon />
+            </Button>
+          </Box>
+
+          <ol
+            style={{
+              listStyleType: "lower-alpha",
+              paddingLeft: "20px",
+              marginTop: "10px",
+            }}
+          >
+            {choice &&
+              choice.map((item, i) => (
+                <li
+                  style={{ color: correct_answer[i] === 1 ? "#A6CD4E" : "" }}
+                  key={i}
+                >
+                  {ReactHtmlParser(item)}
+                </li>
+              ))}
+          </ol>
+        </Box>
+      );
+    }
+  };
+  //const [questionData, setQuestionData] = useState("")
+  const QuestionList = ({ questionData }) => {
+    let childQuestionCounter = 0;
+
+    return (
+      <Box>
+        {questionData &&
+          Object.values(questionData).map((qData, index) => {
+            if (qData.parent_id === 0 && qData.question_type === "comp") {
+              // Render parent directions
+              return (
+                <Question
+                  key={index}
+                  allQues={questionData}
+                  q_id={index + 1}
+                  qData={qData}
+                />
+              );
+            } else {
+              // Increment child question counter and render child question
+              childQuestionCounter++;
+              return (
+                <Question
+                  key={index}
+                  q_id={index + 1}
+                  qData={qData}
+                  allQues={questionData}
+                  questionNumber={`Q${childQuestionCounter}`}
+                />
+              );
+            }
+          })}
+      </Box>
+    );
+  };
+
   return (
     <>
       <Box sx={{ display: "flex" }}>
@@ -160,7 +253,7 @@ const ImportQuestion = () => {
                   type="file"
                   id="file-upload"
                   hidden
-                  helperText={errors.userfile && "File is required"}
+                  //helperText={errors.userfile && "File is required"}
                 />
                 <label
                   htmlFor="file-upload"
@@ -176,7 +269,9 @@ const ImportQuestion = () => {
                   />
                   Import File
                 </label>
-                <Box sx={{mt:1}}>{selectedFile ? selectedFile : "No file selected"}</Box>
+                <Box sx={{ mt: 1 }}>
+                  {selectedFile ? selectedFile : "No file selected"}
+                </Box>
                 <Box
                   sx={{
                     minWidth: "150px",
@@ -193,7 +288,15 @@ const ImportQuestion = () => {
                       </Grid>
                     ) : (
                       <Grid item>
-                        <Button variant="contained" type="submit">
+                        <Button
+                          variant="contained"
+                          type="submit"
+                          sx={{
+                            pointerEvents:
+                              selectedFile !== null ? "auto" : "none",
+                            opacity: selectedFile !== null ? "1" : "0.5",
+                          }}
+                        >
                           Upload & Preview
                         </Button>
                       </Grid>
@@ -209,58 +312,24 @@ const ImportQuestion = () => {
             </Grid>
           </Grid>
           <Grid container spacing={2} sx={{ mt: 0 }}>
-            {importedQuestion &&
-              Object.values(importedQuestion).map(
-                ({ question, choice, correct_answer }, index) => (
-                  <Grid item key={index} xs={12}>
-                    <Box sx={{ display: "flex" }}>
-                      {index + 1}. {ReactHtmlParser(question)}
-                      <Button
-                        onClick={() => {
-                          handleOpen(index);
-                          setSelectedQ(
-                            importedQuestion &&
-                              Object.values(importedQuestion)[index]
-                          );
-                        }}
-                      >
-                        <EditIcon />
-                      </Button>
-                    </Box>
-                    <ol
-                      style={{
-                        listStyleType: "lower-alpha",
-                        paddingLeft: "45px",
-                      }}
-                    >
-                      {choice &&
-                        choice.map((item, i) => (
-                          <li
-                            style={{
-                              color: correct_answer[i] === 1 ? "#A6CD4E" : "",
-                            }}
-                            key={i}
-                          >
-                            {ReactHtmlParser(item)}
-                          </li>
-                        ))}
-                    </ol>
-                  </Grid>
-                )
-              )}
+            <Grid item>
+              <QuestionList questionData={importedQuestion} />
+            </Grid>
           </Grid>
         </Box>
       </Box>
 
-      <EditQuestionPopup
+      <UpdateQuestion
         openEditQuestion={selectedQ !== undefined}
         closePopup={() => {
           setSelectedQ(undefined);
         }}
         setOpenEditQuestion={setOpenEditQuestion}
-        questionDetails={questionDetails + 1}
+        questionDetails={questionDetails}
         importedQuestion={importedQuestion}
+        setImportedQuestion={setImportedQuestion}
         selectedQ={selectedQ}
+        selectedQIndex={questionDetails}
       />
     </>
   );

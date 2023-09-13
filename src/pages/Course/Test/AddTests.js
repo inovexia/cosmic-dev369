@@ -102,7 +102,6 @@ const AddTests = () => {
     fetchAllTests();
   }, []);
 
-
   // Search Test
   const filteredTests =
     allTests &&
@@ -141,22 +140,61 @@ const AddTests = () => {
 
   // Bulk selection feature
   const [selectedTests, setSelectedTests] = useState([]);
+  const [selectedTestDetails, setSelectedTestDetails] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
 
-  const handleTestSelect = (testId) => {
+  // const handleTestSelect = (testId) => {
+  //   if (selectedTests.includes(testId)) {
+  //     setSelectedTests(selectedTests.filter((guid) => guid !== testId));
+  //   } else {
+  //     setSelectedTests([...selectedTests, testId]);
+  //   }
+  // };
+
+  const handleTestSelect = (testId, start_date, end_date) => {
     if (selectedTests.includes(testId)) {
       setSelectedTests(selectedTests.filter((guid) => guid !== testId));
+      setSelectedTestDetails(
+        selectedTestDetails.filter((details) => details.guid !== testId)
+      );
     } else {
       setSelectedTests([...selectedTests, testId]);
+      setSelectedTestDetails([
+        ...selectedTestDetails,
+        { guid: testId, start_date, end_date },
+      ]);
     }
   };
 
+  // const handleTestSelect = (testId, start_date, end_date) => {
+  //   console.log("Selected Test:", testId, "Start Date:", start_date, "End Date:", end_date);
+  
+  //   // Rest of your code...
+  // };
+
+  // const handleSelectAllTests = () => {
+  //   if (!selectAll) {
+  //     const alltestIds = filteredTests.map((test) => test.guid);
+  //     setSelectedTests(alltestIds);
+  //   } else {
+  //     setSelectedTests([]);
+  //   }
+  //   setSelectAll(!selectAll);
+  // };
+
   const handleSelectAllTests = () => {
     if (!selectAll) {
-      const alltestIds = filteredTests.map((test) => test.guid);
-      setSelectedTests(alltestIds);
+      const allTestIds = filteredTests.map((test) => test.guid);
+      setSelectedTests(allTestIds);
+      const allTestDetails = filteredTests.map((test) => ({
+        guid: test.guid,
+        start_date: test.start_date,
+        end_date: test.end_date,
+      }));
+      setSelectedTestDetails(allTestDetails);
     } else {
       setSelectedTests([]);
+      setSelectedTestDetails([]);
     }
     setSelectAll(!selectAll);
   };
@@ -170,8 +208,13 @@ const AddTests = () => {
   // Add function on submit
   const handleAddTest = async () => {
     const formData = serialize();
-    selectedTests.forEach((value, index) => {
-      formData.append(`tests[${index}][guid]`, value);
+    // selectedTests.forEach((value, index) => {
+    //   formData.append(`tests[${index}][guid]`, value);
+    // });
+    selectedTestDetails.forEach((testDetails, index) => {
+      formData.append(`tests[${index}][guid]`, testDetails.guid);
+      formData.append(`tests[${index}][start_date]`, testDetails.start_date);
+      formData.append(`tests[${index}][end_date]`, testDetails.end_date);
     });
     const requestOptions = {
       method: "POST",
@@ -185,7 +228,7 @@ const AddTests = () => {
         requestOptions
       );
       const result = await res.json();
-      setSnackbarSuccess(result.success)
+      setSnackbarSuccess(result.success);
       if (result.success === true) {
         showSnackbar("success", "Test added Successfully");
         setTimeout(() => {
@@ -196,15 +239,13 @@ const AddTests = () => {
           "warning",
           "Test added failed, Atleast 1 item should be selected!"
         );
-        setTimeout(() => {
-        }, 3000);
+        setTimeout(() => {}, 3000);
       }
     } catch (error) {
       console.error(error);
       throw new Error(`Failed to post status: ${error.message}`);
     }
   };
-
   return (
     <>
       <Helmet>
@@ -218,7 +259,15 @@ const AddTests = () => {
           onClose={hideSnackbar}
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
-          <Alert severity={snackbarSuccess && snackbarSuccess === true ? "success" : "warning"}>{snackbarMessage}</Alert>
+          <Alert
+            severity={
+              snackbarSuccess && snackbarSuccess === true
+                ? "success"
+                : "warning"
+            }
+          >
+            {snackbarMessage}
+          </Alert>
         </Snackbar>
         <Box sx={{ flexGrow: 1, p: 3, mt: 5 }}>
           <Grid container spacing={2}>
@@ -240,7 +289,11 @@ const AddTests = () => {
               <Button
                 variant="outlined"
                 className="custom-button"
-                sx={{ ml: 2 }}
+                sx={{
+                  ml: 2,
+                  pointerEvents: selectedTests.length !== 0 ? "auto" : "none",
+                  opacity: selectedTests.length !== 0 ? "1" : "0.5",
+                }}
                 onClick={handleAddTest}
               >
                 Add
@@ -372,7 +425,15 @@ const AddTests = () => {
                                         test.guid
                                       )}
                                       onChange={() =>
-                                        handleTestSelect(test.guid)
+                                        handleTestSelect(
+                                          test.guid,
+                                          test.start_date
+                                            ? test.start_date
+                                            : test.created_on,
+                                          test.end_date
+                                            ? test.end_date
+                                            : test.updated_on
+                                        )
                                       }
                                     />
                                     <Box

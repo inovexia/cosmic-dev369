@@ -120,7 +120,7 @@ const Index = ({ item, courseGuid }) => {
     };
     try {
       const res = await fetch(
-        `${BASE_URL}/course/zoom/remove_meetings/${courseGuid}`,
+        `${BASE_URL}/course/zoom/remove_classes/${courseGuid}`,
         requestOptions
       );
       const statusResult = await res.json();
@@ -215,9 +215,9 @@ const Index = ({ item, courseGuid }) => {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             {selectedAction && selectedAction === "delete" ? (
-              "Are you sure you want to delete this meeting?"
+              "Are you sure you want to delete this online class?"
             ) : selectedAction && selectedAction == "remove" ? (
-              "Are you sure you want to remove this meeting?"
+              "Are you sure you want to remove this online class?"
             ) : (
               <form onSubmit={handleSubmit(handleChangeDate)}>
                 <Grid container spacing={2} sx={{ py: 3 }}>
@@ -330,14 +330,14 @@ const Index = ({ item, courseGuid }) => {
         {selectedAction && selectedAction === "delete" ? (
           <Alert severity={isMeetingDeleted === true ? "success" : "warning"}>
             {isMeetingDeleted === true
-              ? "Meeting deleted Successfully"
-              : "Meeting deleted failed"}
+              ? "Class deleted Successfully"
+              : "Class deleted failed"}
           </Alert>
         ) : selectedAction && selectedAction === "remove" ? (
           <Alert severity={isMeetingDeleted === true ? "success" : "warning"}>
             {isMeetingDeleted === true
-              ? "Meeting removed Successfully"
-              : "Meeting remove failed"}
+              ? "Class removed Successfully"
+              : "Class remove failed"}
           </Alert>
         ) : (
           <Alert severity={isMeetingDeleted === true ? "success" : "warning"}>
@@ -394,7 +394,6 @@ const Index = ({ item, courseGuid }) => {
                   <MoreVertOutlinedIcon />
                 </IconButton>
                 <Menu
-                  className="demo"
                   id="long-menu"
                   MenuListProps={{
                     "aria-labelledby": "long-button",
@@ -473,7 +472,6 @@ const Index = ({ item, courseGuid }) => {
                   <MoreVertOutlinedIcon />
                 </IconButton>
                 <Menu
-                  className="demo"
                   id="long-menu"
                   MenuListProps={{
                     "aria-labelledby": "long-button",
@@ -508,7 +506,7 @@ const Index = ({ item, courseGuid }) => {
             <Grid item xs={12}>
               <Button
                 component={Link}
-                to={`/meeting/edit/${item.guid}?ci=${courseGuid}`}
+                to={`/class/edit/${item.guid}?ci=${courseGuid}`}
                 color="primary"
                 sx={{ mr: 2 }}
               >
@@ -517,7 +515,7 @@ const Index = ({ item, courseGuid }) => {
               </Button>
               <Button
                 component={Link}
-                to={`/meeting/share/${item.guid}`}
+                to={`/class/share/${item.guid}`}
                 color="primary"
                 sx={{ mr: 2 }}
               >
@@ -526,7 +524,7 @@ const Index = ({ item, courseGuid }) => {
               </Button>
               <Button
                 component={Link}
-                to={`/meeting/share/${item.guid}`}
+                to={`/class/share/${item.guid}`}
                 color="success"
               >
                 Start

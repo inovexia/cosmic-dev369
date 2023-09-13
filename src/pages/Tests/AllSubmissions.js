@@ -118,7 +118,7 @@ const AllSubmissions = () => {
       setCurrentPage(currentPage + 1);
     }
   }
-
+//console.log(submissions)
   return (
     <>
       <Helmet>

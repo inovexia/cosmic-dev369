@@ -104,7 +104,7 @@ const SubmissionReports = () => {
     },
     { label: "Details", content: <DetailsReport testResult = {testResult} testDetails = {testDetails} /> },
   ];
-
+console.log(testResult)
   return (
     <>
     <Helmet>

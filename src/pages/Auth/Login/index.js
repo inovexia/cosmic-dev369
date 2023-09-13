@@ -1,7 +1,7 @@
-import React, {useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { serialize } from "object-to-formdata";
-import {useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import {
   TextField,
@@ -11,11 +11,14 @@ import {
   Button,
   Alert,
   Link,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import illustartion from "../../../assets/images/Illustration.png";
 import BASE_URL from "../../../Utils/baseUrl";
 import Network from "../../../Utils/network";
-import Recaptchav3 from "../../../Utils/reCaptchav3"
+import Recaptchav3 from "../../../Utils/reCaptchav3";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 export default function Login() {
   const recaptchaRef = useRef(null);
@@ -31,7 +34,7 @@ export default function Login() {
   });
   const myHeaders = new Headers();
   myHeaders.append("Network", `${Network}`);
-  const [token, setToken] = useState('');
+  const [token, setToken] = useState("");
   const [open, setOpen] = useState(false);
   const [isUserloggedIn, setIsUserloggedIn] = useState(null);
 
@@ -40,25 +43,20 @@ export default function Login() {
     try {
       const formData = serialize(data);
       const requestOptions = {
-        method: 'POST',
+        method: "POST",
         headers: myHeaders,
         body: formData,
-        redirect: 'follow'
+        redirect: "follow",
       };
-      const response = await fetch(
-        `${BASE_URL}/auth/login`,
-        requestOptions
-      );
+      const response = await fetch(`${BASE_URL}/auth/login`, requestOptions);
       const result = await response.json();
-      setOpen(true)
+      setOpen(true);
       if (result.success === true) {
-        localStorage.setItem('token', result.payload.token);
+        localStorage.setItem("token", result.payload.token);
         setToken(data.token);
         setIsUserloggedIn(true);
-        const redirectUrl = '/dashboard';
-        setTimeout(() => {
-          window.location.href = redirectUrl; 
-        }, 2000);
+        navigate(`/dashboard`);
+        
       } else {
         setIsUserloggedIn(false);
       }
@@ -67,7 +65,11 @@ export default function Login() {
       setIsUserloggedIn(false);
     }
   };
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const handlePasswordVisibilityToggle = () => {
+    setShowPassword(!showPassword);
+  };
   return (
     <>
       <Grid
@@ -99,7 +101,7 @@ export default function Login() {
               helperText={errors.username && "Username is required"}
               autoComplete="username"
             />
-            <TextField
+            {/* <TextField
               margin="normal"
               fullWidth
               {...register("password", { required: true })}
@@ -107,11 +109,38 @@ export default function Login() {
               label="Password"
               type="password"
               autoComplete="current-password"
+            /> */}
+            <TextField
+              sx={{ my: 2 }}
+              fullWidth
+              variant="outlined"
+              autoComplete="current-password"
+              {...register("password", { required: true })}
+              helperText={errors.password && "Password is required"}
+              type={showPassword ? "text" : "password"}
+              label="Password"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handlePasswordVisibilityToggle}
+                      edge="end"
+                    >
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <Grid container>
-              <Grid item xs={12}>
-              <ReCAPTCHA ref={recaptchaRef} sitekey={Recaptchav3} size="invisible" />
-              </Grid>
+              {/* <Grid item xs={12}>
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={Recaptchav3}
+                  size="invisible"
+                />
+              </Grid> */}
               <Grid item xs={12}>
                 <Link href="/auth/forgot-password" variant="body2">
                   Forgot password?
@@ -128,7 +157,7 @@ export default function Login() {
               Sign In
             </Button>
           </form>
-          <Grid container sx={{ justifyContent: "center", mb:3 }}>
+          <Grid container sx={{ justifyContent: "center", mb: 3 }}>
             <Grid item>
               <Link href="/auth/register" variant="body2">
                 {"Don't have an account? Sign Up"}
@@ -145,7 +174,9 @@ export default function Login() {
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
           <Alert severity={isUserloggedIn === true ? "success" : "warning"}>
-            {isUserloggedIn === true ? "Login Successfull" : "Invalid Credential"}
+            {isUserloggedIn === true
+              ? "Login Successfull"
+              : "Invalid Credential"}
           </Alert>
         </Snackbar>
       </Grid>

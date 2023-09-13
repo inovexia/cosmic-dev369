@@ -311,16 +311,6 @@ const NewStudents = () => {
               Student not found!
             </Alert>
           )}
-          <Grid item xs={12} sx={{ mt: 3 }}>
-            <Button
-              className="custom-button"
-              component={Link}
-              href={"/user/students"}
-              variant="outlined"
-            >
-              View All Students
-            </Button>
-          </Grid>
         </Box>
       </Card>
     </>

@@ -151,15 +151,12 @@ const Enrollments = () => {
               Enrollments
             </Typography>
           </Grid>
-          <Grid item xs={6} sx={{ textAlign: "right" }}>
-            <Button variant="contained" size="medium">
-              <Link
-                href={`/test/enroll/${guid}`}
-                color="inherit"
-                underline="none"
-              >
+            <Grid item xs={6} sx={{ textAlign: "right" }}>
+            <Button variant="contained" size="medium" component={Link} className="custom-button" href={`/test/manage/${guid}`}>
+                Back
+            </Button>
+            <Button sx={{ml:1}} variant="outlined" size="medium" component={Link} className="custom-button" href={`/test/enroll/${guid}`}>
                 Add New
-              </Link>
             </Button>
           </Grid>
         </Grid>
@@ -175,19 +172,7 @@ const Enrollments = () => {
           </Grid>
         )}
 
-        <Grid container={true} spacing={2} sx={{ mt: 5 }}>
-          <Grid item xs={12}>
-            <Button variant="contained" size="medium">
-              <Link
-                href={`/test/enroll/${guid}`}
-                color="inherit"
-                underline="none"
-              >
-                Add New
-              </Link>
-            </Button>
-          </Grid>
-        </Grid>
+
       </Box>
     </Box>
     </>

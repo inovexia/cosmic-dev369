@@ -195,6 +195,7 @@ const TestsTab = () => {
                   >
                     <h3>{item.title}</h3>
                     <HtmlTooltip
+                      className="dashboard-tooltip"
                       title={
                         <React.Fragment>
                           <Typography color="inherit">Details</Typography>
@@ -302,6 +303,7 @@ const TestsTab = () => {
                   >
                     <h3>{item.title}</h3>
                     <HtmlTooltip
+                      className="dashboard-tooltip"
                       title={
                         <React.Fragment>
                           <Typography color="inherit">Details</Typography>

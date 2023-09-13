@@ -111,9 +111,12 @@ const AddQuestion = () => {
   // Upload file in question
   const [file, setFile] = useState(null);
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    setValue("userfile", selectedFile);
-  };
+    if (e.target.files.length > 0) {
+      const [selectedFile] = e.target.files;
+      setValue("userfile", selectedFile); 
+    }
+  }
+ 
   // End Upload file
   // Search Parent ID
   const handleSearchChange = (event) => {
@@ -166,6 +169,7 @@ const AddQuestion = () => {
       formdata.append(`correct_answer[${i}]`, data.correct_answer[i]);
     }
     formdata.append("created_by", CreatedBy);
+    formdata.append("userfile", userfile);
     var requestOptions = {
       method: "POST",
       headers: myHeaders,
@@ -232,20 +236,12 @@ const AddQuestion = () => {
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
               {mtValue ? (
-                <Button variant="contained">
-                  <Link
-                    href={`/course/${mtValue}/test/list`}
-                    color="inherit"
-                    underline="none"
-                  >
-                    Cancel
-                  </Link>
+                <Button variant="contained" component={Link} className="custom-button" href={`/course/${mtValue}/test/list`}>
+                  Back
                 </Button>
               ) : (
-                <Button variant="contained">
-                  <Link href="/test/list" color="inherit" underline="none">
-                    Cancel
-                  </Link>
+                <Button variant="contained" component={Link} className="custom-button" href={`/test/manage/${guid}`}>
+                    Back
                 </Button>
               )}
             </Grid>

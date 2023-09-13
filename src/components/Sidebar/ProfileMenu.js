@@ -74,9 +74,7 @@ const ProfileMenu = () => {
       if (result.success === true) {
         localStorage.setItem("token", "");
         setIsUserloggedOut(true);
-        setTimeout(() => {
-          navigate(`/auth/login`);
-        }, 3000);
+        navigate(`/auth/login`);
       } else {
         setIsUserloggedOut(false);
       }
@@ -198,7 +196,7 @@ const ProfileMenu = () => {
             open={openMenu}
             onClose={handleClose}
           >
-            <MenuItem onClick={handleClose} component={Link} href={`/my-account`}>My Account</MenuItem>
+            <MenuItem onClick={handleClose} component={Link} href={`/auth/my-account`}>My Account</MenuItem>
             <MenuItem onClick={submitLogoutForm}>Sign Out</MenuItem>
           </Menu>
         </Box>

@@ -15,7 +15,8 @@ import {
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet";
 import ReactHtmlParser from "react-html-parser";
-import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import CachedIcon from "@mui/icons-material/Cached";
 import BASE_URL from "../../Utils/baseUrl";
 import CreatedBy from "../../Utils/createdBy";
@@ -210,6 +211,7 @@ const PreviewTest = () => {
       throw new Error(`Failed to post status: ${error.message}`);
     }
   };
+  console.log(questions);
   return (
     <>
       <Helmet>
@@ -302,17 +304,25 @@ const PreviewTest = () => {
                         />
                         <Button
                           onClick={deleteBulkQuestion}
-                          startIcon={<DeleteIcon />}
+                          startIcon={<DeleteOutlineOutlinedIcon />}
                         >
                           Delete
                         </Button>
                       </ButtonGroup>
                     </Grid>
                     {questions.map((question, index) => (
-                      <Grid item xs={12} key={index} sx={{mt:2, ml:1}}>
-                        <Box className="ques-list" sx={{display:"flex", alignItems:"flex-start"}}>
+                      <Grid item xs={12} key={index} sx={{ mt: 2, ml: 1 }}>
+                        <Box
+                          className="ques-list"
+                          sx={{ display: "flex", alignItems: "flex-start" }}
+                        >
                           <FormControlLabel
-                            sx={{display:"flex", alignItems:"flex-start"}}
+                            className="question-label"
+                            sx={{
+                              display: "flex",
+                              alignItems: "flex-start",
+                              width: "100%",
+                            }}
                             control={
                               <Checkbox
                                 checked={selected.indexOf(question.guid) !== -1}
@@ -320,22 +330,83 @@ const PreviewTest = () => {
                                 inputProps={{
                                   "aria-labelledby": `select ${question.question}`,
                                 }}
-                                sx={{padding:"0", mr:1}}
+                                sx={{ padding: "0", mr: 1 }}
                               />
                             }
                             label={
-                              <Box sx={{ display: "flex", fontSize:"20px" }}>
-                               ({index + 1}).{" "}
-                                <span>{ReactHtmlParser(question.question)}</span>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  fontSize: "20px",
+                                  width: "100%",
+                                }}
+                              >
+                                ({index + 1}).{" "}
+                                <Box sx={{ mb: 1, width: "100%" }}>
+                                  {question.parent_question ? (
+                                    <span
+                                      style={{
+                                        display: "block",
+                                        width: "100%",
+                                      }}
+                                    >
+                                      {ReactHtmlParser(
+                                        question.parent_question
+                                      )}
+                                    </span>
+                                  ) : (
+                                    ""
+                                  )}
+                                  <span
+                                    style={{
+                                      display: "block",
+                                      width: "100%",
+                                      marginLeft:
+                                        question.parent_question &&
+                                        question.parent_question
+                                          ? "-20"
+                                          : "0",
+                                    }}
+                                  >
+                                    {ReactHtmlParser(question.question)}
+                                  </span>
+                                  {(question && question.file_hash !== null) ||
+                                  (question &&
+                                    question.file_url_path !== null) ? (
+                                    <Box
+                                      sx={{ width: "100%", maxWidth: "500px" }}
+                                    >
+                                      <img
+                                          style={{
+                                          maxWidth:"100%",
+                                          height: "auto",
+                                        }}
+                                        src={
+                                          question &&
+                                          question.file_url_path &&
+                                          question.file_hash &&
+                                          question.file_url_path + "/" + question.file_hash
+                                        } 
+                                      />
+                                    </Box>
+                                  ) : (
+                                    ""
+                                  )}
+                                </Box>
                               </Box>
                             }
                           />
-
+                          <Button
+                            component={Link}
+                            href={`/test/edit-question/${guid}/${question.guid}`}
+                          >
+                            <EditOutlinedIcon />
+                          </Button>
                           <Button onClick={() => handleDelete(question.guid)}>
                             {isDeleting === question.guid ? (
                               <CachedIcon size={20} color="#fff" />
                             ) : (
-                              <DeleteIcon />
+                              <DeleteOutlineOutlinedIcon />
                             )}
                           </Button>
                         </Box>

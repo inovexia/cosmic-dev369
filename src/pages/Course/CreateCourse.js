@@ -1,36 +1,30 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { styled } from "@mui/material/styles";
+import React, { useState} from "react";
+import {useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
   Grid,
   Button,
-  FormControl,
   InputLabel,
-  Select,
-  MenuItem,
   Link,
   Snackbar,
   Alert,
 } from "@mui/material";
 import { Helmet } from "react-helmet";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import BASE_URL from "../../Utils/baseUrl";
 import token from "../../Utils/token";
 import Network from "../../Utils/network";
+import CreatedBy from "../../Utils/createdBy";
 import { serialize } from "object-to-formdata";
 import FormTextField from "../../components/Common/formTextField";
 import FormEditorField from "../../components/Common/formEditorField"
 import SidebarLeft from "../../components/Sidebar/SidebarLeft";
-import CurrentUser from "../../Utils/CurrentUserGuid";
 
 
 const CreateCourse = () => {
-  const { courseGuid } = useParams();
   const [alertOpen, setAlertOpen] = useState(null)
   const [isCourseCreated, setIsCourseCreated] = useState(null)
-  const inputRef = useRef(null);
   const navigate = useNavigate();
   const {
     control,
@@ -40,8 +34,8 @@ const CreateCourse = () => {
     defaultValues: {
       title: "",
       description: "",
-      status: "",
-      created_by: CurrentUser
+      status:"0",
+      created_by: CreatedBy
     },
   });
 
@@ -49,7 +43,6 @@ const CreateCourse = () => {
   var myHeaders = new Headers();
   myHeaders.append("Authorization", `Bearer ${token}`);
   myHeaders.append("Network", `${Network}`);
-  const formdata = new FormData();
 
   const handleFormSubmit = async (data) => {
     const formData = serialize(data);
@@ -132,7 +125,7 @@ const CreateCourse = () => {
             <Grid item xs={12}>
               <form onSubmit={handleSubmit(handleFormSubmit)}>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} md={10} sx={{ mt: 3 }}>
+                  <Grid item xs={12} md={12} sx={{ mt: 3 }}>
                   <FormTextField
                       control={control}
                       label="Title"
@@ -143,7 +136,7 @@ const CreateCourse = () => {
                       required
                     />
                   </Grid>
-                  <Grid item xs={12} md={2} sx={{ mt: 3 }}>
+                  {/* <Grid item xs={12} md={2} sx={{ mt: 3 }}>
                   <FormControl sx={{ width: "100%" }}>
                       <InputLabel id="type-select-label">Status</InputLabel>
                       <Controller
@@ -164,7 +157,7 @@ const CreateCourse = () => {
                         )}
                       />
                     </FormControl>
-                  </Grid>
+                  </Grid> */}
                   <Grid item xs={12}>
                   <InputLabel htmlFor="course-desc" sx={{my:1}}>Description</InputLabel>
                   <FormEditorField id="course-desc" control={control} name="description" />

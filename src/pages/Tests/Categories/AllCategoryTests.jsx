@@ -239,7 +239,7 @@ const AllCategoryTests = () => {
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
               <Button variant="contained" className="custom-button">
-                <Link href={`/category/list`} color="inherit" underline="none">
+                <Link href={`/test/category/list`} color="inherit" underline="none">
                   Back
                 </Link>
               </Button>

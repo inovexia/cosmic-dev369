@@ -10,6 +10,7 @@ import {
   Link,
   FormHelperText,
   Snackbar,
+  Alert
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet";
@@ -45,7 +46,7 @@ const EditTest = () => {
     },
   });
   const [isTestCreated, setIsTestCreated] = useState(null);
-
+  const [alertOpen, setAlertOpen] = useState(null)
   
 
 // Authorization Setup
@@ -73,10 +74,20 @@ const EditTest = () => {
         requestOptions
       );
       const result = await response.json();
-      setIsTestCreated(true);
-      setTimeout(() => {
-        navigate(`/test/add-question/${guid}?mt=${mtValue}`);
-      }, 1000);
+      setAlertOpen(true);
+      if (result.success === true) {
+        setIsTestCreated(true);
+        setTimeout(() => {
+          setAlertOpen(false);
+          navigate(`/test/add-question/${guid}?mt=${mtValue}`);
+        }, 1000);
+      }
+      else {
+        setIsTestCreated(false);
+        setTimeout(() => {
+          setAlertOpen(false);
+        }, 3000);
+      }
       reset();
     } catch (error) {
       setValidationErrors(error.response.data);
@@ -116,23 +127,20 @@ const EditTest = () => {
           alignItems="center"
         >
           <Grid item>
-            <Snackbar
-              severity="success"
-              open={isTestCreated}
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-              autoHideDuration={50000}
-              onClose={() => setIsTestCreated(false)}
-              sx={{
-                backgroundColor: `${
-                  isTestCreated === true ? "#008000" : "#ff0000"
-                }`,
-              }}
-              message={
-                isTestCreated === true
-                  ? "Test created successfully!"
-                  : "Failed to create test"
-              }
-            />
+          <Snackbar
+                open={alertOpen}
+                autoHideDuration={3000}
+                onClose={() => isTestCreated(false)}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+              >
+                <Alert
+                  severity={isTestCreated === true ? "success" : "warning"}
+                >
+                  {isTestCreated === true
+                    ? "Test updated Successfully"
+                    : "Test updation failled!"}
+                </Alert>
+              </Snackbar>
           </Grid>
         </Grid>
         <Grid container spacing={2} sx={{ mt: 5 }}>

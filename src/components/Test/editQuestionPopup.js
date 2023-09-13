@@ -44,7 +44,7 @@ const EditQuestionPopup = ({
   setOpenEditQuestion,
   questionDetails,
   closePopup,
-  selectedQ
+  selectedQ,
 }) => {
   const { guid } = useParams();
   const {
@@ -69,7 +69,7 @@ const EditQuestionPopup = ({
       order: [4],
       feedback: "",
       answer_feedback: "",
-      created_by: {CreatedBy},
+      created_by: { CreatedBy },
       parent_id: undefined,
       marks: "1",
       neg_marks: "0",
@@ -124,12 +124,11 @@ const EditQuestionPopup = ({
     closePopup();
   };
   // Edit questions
-  const handleQuestionSubmit = async (data) => { };
+  const handleQuestionSubmit = async (data) => {};
   useEffect(() => {
     selectedQ && reset(selectedQ);
   }, [selectedQ]);
   //console.log(selectedQ, watch(`correct_answer[${1}]`))
-
 
   // Update Question
 
@@ -143,8 +142,6 @@ const EditQuestionPopup = ({
 
     setImportedQuestion(updatedQuestions);
   };
-  
-
 
   return (
     <>
@@ -175,307 +172,307 @@ const EditQuestionPopup = ({
               </Button>
             </Grid>
           </Grid>
-          
-              <Fragment >
-                <form onSubmit={handleSubmit(handleQuestionUpdate)}>
-                  <input
-                    type="hidden"
-                    name="created_by"
-                    defaultValue={CreatedBy}
-                  />
-                  <Box style={{ mt: 5, width: "100%", marginBottom: "16px" }}>
-                    <label
-                      htmlFor="question"
+
+          <Fragment>
+            <form onSubmit={handleSubmit(handleQuestionUpdate)}>
+              <input type="hidden" name="created_by" defaultValue={CreatedBy} />
+              <Box style={{ mt: 5, width: "100%", marginBottom: "16px" }}>
+                <label
+                  htmlFor="question"
+                  sx={{
+                    fontSize: 24,
+                    fontWeight: 600,
+                    fontFamily: "Arial",
+                    mt: 5,
+                  }}
+                >
+                  Question
+                </label>
+                <FormEditorField
+                  control={control}
+                  name="question"
+                  onInit={(evt, editor) => (editorRef.current = editor)}
+                />
+              </Box>
+
+              <div className="add-file">
+                <Input
+                  id="file-input"
+                  type="file"
+                  onChange={handleFile}
+                  style={{ display: "none" }}
+                />
+                <strong>Upload File</strong>
+                <label htmlFor="file-input">
+                  <IconButton component="span">
+                    <FileUploadIcon
                       sx={{
-                        fontSize: 24,
-                        fontWeight: 600,
-                        fontFamily: "Arial",
-                        mt: 5,
+                        color: "#EAC43D",
+                        width: "50px",
+                        height: "50px",
+                        cursor: "pointer",
                       }}
-                    >
-                      Question
-                    </label>
-                    <FormEditorField
-                      control={control}
-                      name="question"
-                      onInit={(evt, editor) => (editorRef.current = editor)}
+                    />
+                  </IconButton>
+                </label>
+                <span>{file ? file.name : "No file selected"}</span>
+              </div>
+              <div className="select-type">
+                <FormControl sx={{ my: 3, width: "100%" }}>
+                  <FormTextField
+                    control={control}
+                    name="question_type"
+                    label="Type"
+                    required
+                    select
+                    onChange={({ target: { value } }) => {
+                      setValue("question_type", value);
+                      if (value === "tf") {
+                        setValue("choice[0]", "true");
+                        setValue("choice[1]", "false");
+                        setValue("correct_answer[0]", "0");
+                        setValue("correct_answer[1]", "0");
+                      }
+                    }}
+                  >
+                    <MenuItem value={`tf`}>True False</MenuItem>
+                    <MenuItem selected value={`mcmc`}>
+                      Multi Chioce
+                    </MenuItem>
+                    <MenuItem value={`la`}>Essay</MenuItem>
+                    <MenuItem value={`comp`}>Comprehension</MenuItem>
+                  </FormTextField>
+                </FormControl>
+
+                {question_type === "comp" ? (
+                  <></>
+                ) : question_type === "tf" ? (
+                  <>
+                    <Typography component="h4">True Or False</Typography>
+                    <RadioGroup aria-label="options" name="correct-ans">
+                      <FormControlLabel
+                        value="true"
+                        control={
+                          <Radio
+                            onChange={({ target: { checked } }) => {
+                              setValue(
+                                "correct_answer[0]",
+                                checked ? "1" : "0"
+                              );
+                              setValue("correct_answer[1]", "0");
+                            }}
+                          />
+                        }
+                        label="True"
+                      />
+                      <FormControlLabel
+                        value="false"
+                        control={
+                          <Radio
+                            onChange={({ target: { checked } }) => {
+                              setValue(
+                                "correct_answer[1]",
+                                checked ? "1" : "0"
+                              );
+                              setValue("correct_answer[0]", "0");
+                            }}
+                          />
+                        }
+                        label="False"
+                      />
+                    </RadioGroup>
+                  </>
+                ) : question_type === "la" ? (
+                  <Essay />
+                ) : (
+                  <>
+                    <Typography component="h4">
+                      Multi Choice Question
+                    </Typography>
+                    <FormGroup>
+                      {choice.map((item, index) => (
+                        <div key={index}>
+                          <input
+                            type="hidden"
+                            name={`order[${index}]`}
+                            value={item}
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                name={`correct_answer[${index}]`}
+                                //checked={`correct_answer[${index}]` === "1"}
+                                checked={
+                                  `correct_answer[${index}]` === 1
+                                    ? true
+                                    : false
+                                }
+                                control={control}
+                                onChange={({ target: { checked } }) => {
+                                  setValue(
+                                    `correct_answer[${index}]`,
+                                    checked ? "1" : "0"
+                                  );
+                                }}
+                                className={`correct_answer[${index}]`}
+                                value={`choice ${index}`}
+                              />
+                            }
+                            label={`Choice ${index + 1}`}
+                          />
+
+                          <Box style={{ width: "100%", marginBottom: "16px" }}>
+                            <Editor
+                              control
+                              value={item}
+                              name={`choice[${index}]`}
+                              init={{
+                                height: 250,
+                              }}
+                              onEditorChange={(content, editor) => {
+                                setValue(`choice[${index}]`, content);
+                              }}
+                            />
+                          </Box>
+                          <FormHelperText error={Boolean(errorcheck)}>
+                            {errorcheck}
+                          </FormHelperText>
+                        </div>
+                      ))}
+                      <Button
+                        variant="outlined"
+                        sx={{ width: "150px", mb: 5 }}
+                        onClick={handleAddOption}
+                      >
+                        Add Option
+                      </Button>
+                    </FormGroup>
+                  </>
+                )}
+              </div>
+              {question_type !== "comp" ? (
+                <>
+                  <Box style={{ width: "100%", mt: 3, marginBottom: "16px" }}>
+                    <TextField
+                      label="Search"
+                      name="parent_id"
+                      value={parent_id}
+                      onChange={handleSearchChange}
+                      style={{ width: "100%" }}
                     />
                   </Box>
-                  
-                  <div className="add-file">
-                    <Input
-                      id="file-input"
-                      type="file"
-                      onChange={handleFile}
-                      style={{ display: "none" }}
-                    />
-                    <strong>Upload File</strong>
-                    <label htmlFor="file-input">
-                      <IconButton component="span">
-                        <FileUploadIcon
-                          sx={{
-                            color: "#EAC43D",
-                            width: "50px",
-                            height: "50px",
-                            cursor: "pointer",
-                          }}
-                        />
-                      </IconButton>
-                    </label>
-                    <span>{file ? file.name : "No file selected"}</span>
-                  </div>
-                  <div className="select-type">
-                    <FormControl sx={{ my: 3, width: "100%" }}>
-                      <FormTextField
-                        control={control}
-                        name="question_type"
-                        label="Type"
-                        required
-                        select
-                        onChange={({ target: { value } }) => {
-                          setValue("question_type", value);
-                          if (value === "tf") {
-                            setValue("choice[0]", "true");
-                            setValue("choice[1]", "false");
-                            setValue("correct_answer[0]", "0");
-                            setValue("correct_answer[1]", "0");
-                          }
+
+                  <Box style={{ width: "100%", marginBottom: "16px" }}>
+                    <Accordion>
+                      <AccordionSummary
+                        sx={{
+                          backgroundColor: "#14C0CC",
+                          color: "#fff",
                         }}
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
                       >
-                        <MenuItem value={`tf`}>True False</MenuItem>
-                        <MenuItem selected value={`mcmc`}>
-                          Multi Chioce
-                        </MenuItem>
-                        <MenuItem value={`la`}>Essay</MenuItem>
-                        <MenuItem value={`comp`}>Comprehension</MenuItem>
-                      </FormTextField>
-                    </FormControl>
-
-                    {question_type === "comp" ? (
-                      <></>
-                    ) : question_type === "tf" ? (
-                      <>
-                        <Typography component="h4">True Or False</Typography>
-                        <RadioGroup aria-label="options" name="correct-ans">
-                          <FormControlLabel
-                            value="true"
-                            control={
-                              <Radio
-                                onChange={({ target: { checked } }) => {
-                                  setValue(
-                                    "correct_answer[0]",
-                                    checked ? "1" : "0"
-                                  );
-                                  setValue("correct_answer[1]", "0");
-                                }}
-                              />
-                            }
-                            label="True"
-                          />
-                          <FormControlLabel
-                            value="false"
-                            control={
-                              <Radio
-                                onChange={({ target: { checked } }) => {
-                                  setValue(
-                                    "correct_answer[1]",
-                                    checked ? "1" : "0"
-                                  );
-                                  setValue("correct_answer[0]", "0");
-                                }}
-                              />
-                            }
-                            label="False"
-                          />
-                        </RadioGroup>
-                      </>
-                    ) : question_type === "la" ? (
-                      <Essay />
-                    ) : (
-                      <>
-                        <Typography component="h4">
-                          Multi Choice Question
-                        </Typography>
-                        <FormGroup>
-                          {choice.map((item, index) => (
-                            <div key={index}>
-                              <input
-                                type="hidden"
-                                name={`order[${index}]`}
-                                value={item}
-                              />
-                              <FormControlLabel
-                                control={
-                                  <Checkbox
-                                    name={`correct_answer[${index}]`}
-                                    //checked={`correct_answer[${index}]` === "1"}
-                                    checked={`correct_answer[${index}]` === 1 ? true : false}
-                                    control={control}
-                                    onChange={({ target: { checked } }) => {
-                                      setValue(
-                                        `correct_answer[${index}]`,
-                                        checked ? "1" : "0"
-                                      );
-                                    }}
-                                    className={`correct_answer[${index}]`}
-                                    value={`choice ${index}`}
-                                  />
-                                }
-                                label={`Choice ${index + 1}`}
-                              />
-
-                              <Box style={{ width: "100%", marginBottom: "16px" }}>
-                                <Editor
-                                  control
-                                  value={item}
-                                  name={`choice[${index}]`}
-                                  init={{
-                                    height: 250,
-                                  }}
-                                  onEditorChange={(content, editor) => {
-                                    setValue(`choice[${index}]`, content);
-                                  }}
-                                />
-                              </Box>
-                              <FormHelperText error={Boolean(errorcheck)}>
-                                {errorcheck}
-                              </FormHelperText>
-                            </div>
-                          ))}
-                          <Button
-                            variant="outlined"
-                            sx={{ width: "150px", mb:5 }}
-                            onClick={handleAddOption}
-                          >
-                            Add Option
-                          </Button>
-                        </FormGroup>
-                      </>
-                    )}
-                  </div>
-                  {question_type !== "comp" ? (
-                    <>
-                      <Box style={{ width: "100%", mt: 3, marginBottom: "16px" }}>
-                        <TextField
-                          label="Search"
-                          name="parent_id"
-                          value={parent_id}
-                          onChange={handleSearchChange}
-                          style={{width:"100%"}}
-                        />
-                      </Box>
-
-                      <Box style={{ width: "100%", marginBottom: "16px" }}>
-                        <Accordion>
-                          <AccordionSummary
+                        <Typography>Feedback</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <Box
+                          style={{ mt: 3, width: "100%", marginBottom: "16px" }}
+                        >
+                          <label
+                            htmlFor="question"
                             sx={{
-                              backgroundColor: "#14C0CC",
-                              color: "#fff",
+                              fontSize: 24,
+                              fontWeight: 600,
+                              fontFamily: "Arial",
+                              mt: 3,
                             }}
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="panel1a-content"
-                            id="panel1a-header"
                           >
-                            <Typography>Feedback</Typography>
-                          </AccordionSummary>
-                          <AccordionDetails>
-                            <Box style={{ mt: 3, width: "100%", marginBottom: "16px" }}>
-                              <label
-                                htmlFor="question"
-                                sx={{
-                                  fontSize: 24,
-                                  fontWeight: 600,
-                                  fontFamily: "Arial",
-                                  mt: 3,
-                                }}
-                              >
-                                Question Feedback
-                                <Tooltip
-                                  title="Add question feedback"
-                                  placement="right-start"
-                                >
-                                  <IconButton>
-                                    <ErrorIcon sx={{ color: "#EAC43D" }} />
-                                  </IconButton>
-                                </Tooltip>
-                              </label>
-                              <FormEditorField
-                                control={control}
-                                name="feedback"
-                              />
-                            </Box>
-                            <Box style={{ mt: 3, width: "100%", marginBottom: "16px" }}>
-                              <label
-                                htmlFor="question"
-                                sx={{
-                                  fontSize: 24,
-                                  fontWeight: 600,
-                                  fontFamily: "Arial",
-                                  mt: 3,
-                                }}
-                              >
-                                Answer Feedback
-                                <Tooltip
-                                  title="Add answer feedback"
-                                  placement="right-start"
-                                >
-                                  <IconButton>
-                                    <ErrorIcon sx={{ color: "#EAC43D" }} />
-                                  </IconButton>
-                                </Tooltip>
-                              </label>
-                              <FormEditorField
-                                control={control}
-                                name="answer_feedback"
-                              />
-                            </Box>
-                            <Box style={{ width: "100%", marginBottom: "16px" }}>
-                              <FormTextField
-                                control={control}
-                                label="Marks"
-                                defaultValue="1"
-                                variant="outlined"
-                                name="marks"
-                                pattern="[A-Za-z]{1,}"
-                                style={{width:"100%"}}
-                              />
-                            </Box>
-                            <Box style={{ width: "100%", marginBottom: "16px" }}>
-                              <FormTextField
-                                control={control}
-                                label="Negative Marks"
-                                variant="outlined"
-                                defaultValue="0"
-                                name="neg_marks"
-                                pattern="[A-Za-z]{1,}"
-                                style={{width:"100%"}}
-                              />
-                            </Box>
-                            <Box style={{ width: "100%", marginBottom: "16px" }}>
-                              <FormTextField
-                                control={control}
-                                label="Time Duration (in seconds)"
-                                variant="outlined"
-                                name="time"
-                                pattern="[A-Za-z]{1,}"
-                                defaultValue="0"
-                                style={{width:"100%"}}
-                              />
-                            </Box>
-                          </AccordionDetails>
-                        </Accordion>
-                      </Box>
-                    </>
-                  ) : (
-                    ""
-                  )}
+                            Question Feedback
+                            <Tooltip
+                              title="Add question feedback"
+                              placement="right-start"
+                            >
+                              <IconButton>
+                                <ErrorIcon sx={{ color: "#EAC43D" }} />
+                              </IconButton>
+                            </Tooltip>
+                          </label>
+                          <FormEditorField control={control} name="feedback" />
+                        </Box>
+                        <Box
+                          style={{ mt: 3, width: "100%", marginBottom: "16px" }}
+                        >
+                          <label
+                            htmlFor="question"
+                            sx={{
+                              fontSize: 24,
+                              fontWeight: 600,
+                              fontFamily: "Arial",
+                              mt: 3,
+                            }}
+                          >
+                            Answer Feedback
+                            <Tooltip
+                              title="Add answer feedback"
+                              placement="right-start"
+                            >
+                              <IconButton>
+                                <ErrorIcon sx={{ color: "#EAC43D" }} />
+                              </IconButton>
+                            </Tooltip>
+                          </label>
+                          <FormEditorField
+                            control={control}
+                            name="answer_feedback"
+                          />
+                        </Box>
+                        <Box style={{ width: "100%", marginBottom: "16px" }}>
+                          <FormTextField
+                            control={control}
+                            label="Marks"
+                            defaultValue="1"
+                            variant="outlined"
+                            name="marks"
+                            pattern="[A-Za-z]{1,}"
+                            style={{ width: "100%" }}
+                          />
+                        </Box>
+                        <Box style={{ width: "100%", marginBottom: "16px" }}>
+                          <FormTextField
+                            control={control}
+                            label="Negative Marks"
+                            variant="outlined"
+                            defaultValue="0"
+                            name="neg_marks"
+                            pattern="[A-Za-z]{1,}"
+                            style={{ width: "100%" }}
+                          />
+                        </Box>
+                        <Box style={{ width: "100%", marginBottom: "16px" }}>
+                          <FormTextField
+                            control={control}
+                            label="Time Duration (in seconds)"
+                            variant="outlined"
+                            name="time"
+                            pattern="[A-Za-z]{1,}"
+                            defaultValue="0"
+                            style={{ width: "100%" }}
+                          />
+                        </Box>
+                      </AccordionDetails>
+                    </Accordion>
+                  </Box>
+                </>
+              ) : (
+                ""
+              )}
 
-                  <Button variant="contained" type="submit">
-                    Save Question
+              <Button variant="contained" type="submit">
+                Save Question
               </Button>
-                </form>
-              </Fragment>
-           
+            </form>
+          </Fragment>
         </Box>
       </Modal>
     </>

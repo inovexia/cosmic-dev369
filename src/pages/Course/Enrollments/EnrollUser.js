@@ -31,14 +31,26 @@ import { Helmet } from "react-helmet";
 import EnrolledUserList from "../../../components/Course/Enrollments/EnrolledUserList";
 import theme from "../../../configs/theme";
 import SidebarLeft from "../../../components/Sidebar/SidebarLeft";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import dayjs from "dayjs";
 
 const EnrollUsers = () => {
   const { courseGuid } = useParams();
   const navigate = useNavigate();
   const {
     control,
+    setValue,
+    watch,
+    handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      start_date: "",
+      end_date: "",
+    },
+  });
+  const { start_date, end_date } = watch();
   const {
     primary: { main: primaryColor },
   } = theme.palette;
@@ -105,8 +117,8 @@ const EnrollUsers = () => {
 
   // Search Users
   const filteredUsers =
-  allUsers &&
-  allUsers.filter((user) => {
+    allUsers &&
+    allUsers.filter((user) => {
       const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
       const searchValue = searchTitle.toLowerCase();
       return fullName.includes(searchValue);
@@ -177,12 +189,18 @@ const EnrollUsers = () => {
   };
 
   // Bulk enroll function on submit
-  const handleBulkEnroll = async () => {
+  const handleBulkEnroll = async (data) => {
+    const formattedStartDate = dayjs(data.start_date).format(
+      "YYYY-MM-DD HH:mm:ss"
+    );
+    const formattedEndDate = dayjs(data.end_date).format("YYYY-MM-DD HH:mm:ss");
     setActionConfirmOpen(false);
     const formData = serialize();
     selectedUsers.forEach((value, index) => {
       formData.append(`users[${index}]`, value);
     });
+    formData.append("start_date", formattedStartDate);
+    formData.append("end_date", formattedEndDate);
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
@@ -190,9 +208,12 @@ const EnrollUsers = () => {
       redirect: "follow",
     };
     try {
-      const res = await fetch(`${BASE_URL}/course/enrol/${courseGuid}`, requestOptions);
+      const res = await fetch(
+        `${BASE_URL}/course/enrol/${courseGuid}`,
+        requestOptions
+      );
       const result = await res.json();
-      setSnackbarSuccess(result.success)
+      setSnackbarSuccess(result.success);
       if (result.success === true) {
         showSnackbar("success", "User Enrolled Successfully");
         setTimeout(() => {
@@ -203,8 +224,7 @@ const EnrollUsers = () => {
           "warning",
           "User enrolled failed, Atleast 1 item should be selected!"
         );
-        setTimeout(() => {
-        }, 3000);
+        setTimeout(() => {}, 3000);
       }
       setActionConfirmOpen(false);
     } catch (error) {
@@ -213,39 +233,90 @@ const EnrollUsers = () => {
     }
   };
 
-
-
   return (
     <>
       <Helmet>
-        <title>Enrolled Users</title>
+        <title>Enroll Users</title>
       </Helmet>
       <Box sx={{ display: "flex" }}>
         <SidebarLeft />
         {/* Bulk Delete Confirmation popup */}
 
         <Dialog
+          className="enroll-date-outer"
+          sx={{ height: "auto", overflowY: "auto" }}
           open={actionConfirmOpen}
           onClose={actionConfirmClose}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">
-          Confirm Unenroll
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-            Are you sure you want to enroll selected users?
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={actionConfirmClose} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={handleBulkEnroll} color="primary" autoFocus>
+          <form onSubmit={handleSubmit(handleBulkEnroll)}>
+            <DialogTitle id="alert-dialog-title">
+              Select date and confirm
+            </DialogTitle>
+            <DialogContent>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <label>Start Date</label>
+                  <Controller
+                    fullWidth
+                    name="start_date"
+                    control={control}
+                    defaultValue={null}
+                    render={({ field }) => (
+                      <DatePicker
+                        className="enroll-date"
+                        sx={{ width: "100%" }}
+                        {...field}
+                        selected={field.value}
+                        onChange={(date) => {
+                          field.onChange(date);
+                        }}
+                        showTimeSelect
+                        timeFormat="HH:mm"
+                        timeIntervals={15}
+                        dateFormat="yyyy-MM-dd HH:mm:ss"
+                        placeholderText="YYYY-MM-DD HH:mm:ss" // Add the placeholder
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <label>End Date</label>
+                  <Controller
+                    fullWidth
+                    name="end_date"
+                    control={control}
+                    defaultValue={null}
+                    render={({ field }) => (
+                      <DatePicker
+                        className="enroll-date"
+                        sx={{ width: "100%" }}
+                        {...field}
+                        selected={field.value}
+                        onChange={(date) => {
+                          field.onChange(date); // Update the field value directly
+                        }}
+                        showTimeSelect
+                        timeFormat="HH:mm"
+                        timeIntervals={15}
+                        dateFormat="yyyy-MM-dd HH:mm:ss" // Set the desired display format
+                        placeholderText="YYYY-MM-DD HH:mm:ss" // Add the placeholder
+                      />
+                    )}
+                  />
+                </Grid>
+              </Grid>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={actionConfirmClose} color="primary">
+                Cancel
+              </Button>
+              <Button type="submit" color="primary" autoFocus disabled={!watch("start_date") || !watch("end_date")}>
                 Confirm
               </Button>
-          </DialogActions>
+            </DialogActions>
+          </form>
         </Dialog>
         {/* End Bulk Delete popup */}
         {/* Bulk Archive Confirmation popup */}
@@ -256,7 +327,15 @@ const EnrollUsers = () => {
           onClose={hideSnackbar}
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
-          <Alert severity={snackbarSuccess && snackbarSuccess === true ? "success" : "warning"}>{snackbarMessage}</Alert>
+          <Alert
+            severity={
+              snackbarSuccess && snackbarSuccess === true
+                ? "success"
+                : "warning"
+            }
+          >
+            {snackbarMessage}
+          </Alert>
         </Snackbar>
         <Box sx={{ flexGrow: 1, p: 3, mt: 5 }}>
           <Grid container spacing={2}>
@@ -266,10 +345,13 @@ const EnrollUsers = () => {
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
-              <Button variant="contained" className="custom-button">
-                <Link href={`/course/${courseGuid}/enrolled-users`} color="inherit" underline="none">
-                  Back
-                </Link>
+              <Button
+                variant="contained"
+                className="custom-button"
+                component={Link}
+                href={`/course/${courseGuid}/enrolled-users`}
+              >
+                Back
               </Button>
             </Grid>
           </Grid>
@@ -302,19 +384,30 @@ const EnrollUsers = () => {
                         alignItems: "center",
                       }}
                     >
-                      <Grid item xs={6} sx={{ ml: 2, fontSize: "18px" }}>
-                        <Checkbox
-                          checked={selectAll}
-                          onChange={handleSelectAllUsers}
-                          indeterminate={
-                            selectedUsers.length > 0 &&
-                            selectedUsers.length < filteredUsers.length
-                          }
-                        />
-                        Select All
+                      <Grid item xs={6} sx={{ fontSize: "18px" }}>
+                        <ButtonGroup
+                          disableElevation
+                          variant="contained"
+                          aria-label="Disabled elevation buttons"
+                        >
+                          <Button variant="outlined">
+                            <Checkbox
+                              sx={{ padding: "0" }}
+                              checked={selectAll}
+                              onChange={handleSelectAllUsers}
+                              indeterminate={
+                                selectedUsers.length > 0 &&
+                                selectedUsers.length < filteredUsers.length
+                              }
+                            />
+                          </Button>
+                          <Button sx={{opacity:selectedUsers.length !== 0 ? "1" : "0.5",pointerEvents:selectedUsers.length !== 0 ? "auto" : "none"}} onClick={handleBulkConfirmOpen}>
+                            Enroll User
+                          </Button>
+                        </ButtonGroup>
                       </Grid>
                       <Grid item xs={2}>
-                        <FormControl sx={{ width: "100%" }}>
+                        <FormControl sx={{ width: "100%", display: "none" }}>
                           <InputLabel id="type-select-label">Action</InputLabel>
                           <Controller
                             name="role"

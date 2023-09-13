@@ -10,6 +10,9 @@ import {
   Menu,
   CircularProgress,
   Snackbar,
+  FormControl,
+  InputLabel,
+  Select,
   Alert,
   ButtonGroup,
   IconButton,
@@ -21,15 +24,14 @@ import {
   Typography,
 } from "@mui/material";
 import { Helmet } from "react-helmet";
-import { serialize } from "object-to-formdata";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
 import SidebarLeft from "../../components/Sidebar/SidebarLeft";
 import Course from "../../assets/images/Course.jpg";
 import BASE_URL from "../../Utils/baseUrl";
 import token from "../../Utils/token";
 import Network from "../../Utils/network";
-import theme from "../../configs/theme";
-import CheckTokenValid from "../../components/Redirect/CheckTokenValid"
+import { useTheme } from "@mui/material/styles";
+import CheckTokenValid from "../../components/Redirect/CheckTokenValid";
 
 const options = [
   {
@@ -45,13 +47,11 @@ const options = [
 const ITEM_HEIGHT = 48;
 
 const Courses = () => {
-  const {
-    primary: { main: primaryColor },
-  } = theme.palette;
-  const {
-    success: { main: successColor },
-  } = theme.palette;
+  const theme = useTheme();
+  const primaryColor = theme.palette.primary.main;
+  const successColor = theme.palette.success.main;
   // State Manage
+  const [filterOption, setFilterOption] = useState("all");
   const [courses, setCourses] = useState("");
   const [loading, setLoading] = useState(true);
   const [searchTitle, setSearchTitle] = useState("");
@@ -59,6 +59,10 @@ const Courses = () => {
   const myHeaders = new Headers();
   myHeaders.append("Authorization", `Bearer ${token}`);
   myHeaders.append("Network", `${Network}`);
+
+  const handleFilterChange = (event) => {
+    setFilterOption(event.target.value);
+  };
 
   // Fetch Course list
   useEffect(() => {
@@ -82,12 +86,36 @@ const Courses = () => {
   }, []);
 
   // Search Users
+  // const filteredCourse =
+  //   courses &&
+  //   courses.filter((course) => {
+  //     const searchVal = `${course.title} ${course.description}`.toLowerCase();
+  //     const searchValue = searchTitle.toLowerCase();
+  //     return searchVal.includes(searchValue);
+  //   });
   const filteredCourse =
     courses &&
     courses.filter((course) => {
       const searchVal = `${course.title} ${course.description}`.toLowerCase();
       const searchValue = searchTitle.toLowerCase();
-      return searchVal.includes(searchValue);
+
+      if (filterOption === "all") {
+        return searchVal.includes(searchValue);
+      } else if (filterOption === "published") {
+        return (
+          searchVal.includes(searchValue) && course.status === "1" // Published courses
+        );
+      } else if (filterOption === "unpublished") {
+        return (
+          searchVal.includes(searchValue) && course.status === "0" // Unpublished courses
+        );
+      } else if (filterOption === "archive") {
+        return (
+          searchVal.includes(searchValue) && course.status === "2" // Archived courses
+        );
+      }
+
+      return true; // By default, show all courses
     });
 
   // Pagination here
@@ -173,7 +201,7 @@ const Courses = () => {
   };
   return (
     <>
-      <CheckTokenValid/>
+      <CheckTokenValid />
       <Helmet>
         <title>All Courses</title>
       </Helmet>
@@ -212,7 +240,7 @@ const Courses = () => {
               : "Course not deleted."}
           </Alert>
         </Snackbar>
-        
+
         <Box sx={{ flexGrow: 1, p: 3, mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={6}>
@@ -234,7 +262,11 @@ const Courses = () => {
             </Box>
           ) : courses && courses.length !== 0 ? (
             <>
-              <Grid container spacing={2} sx={{ mt: 3 }}>
+              <Grid
+                container
+                spacing={2}
+                sx={{ mt: 3, justifyContent: "space-between" }}
+              >
                 <Grid item xs={12} md={4}>
                   <TextField
                     label="Search by title and description"
@@ -243,6 +275,23 @@ const Courses = () => {
                     onChange={(e) => setSearchTitle(e.target.value)}
                     sx={{ width: "100%" }}
                   />
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <FormControl fullWidth>
+                    <InputLabel id="filter-label">Filter by Status</InputLabel>
+                    <Select
+                      labelId="filter-label"
+                      label="Filter by Status"
+                      id="filter-select"
+                      value={filterOption}
+                      onChange={handleFilterChange}
+                    >
+                      <MenuItem value="all">All</MenuItem>
+                      <MenuItem value="published">Published</MenuItem>
+                      <MenuItem value="unpublished">Unpublished</MenuItem>
+                      <MenuItem value="archive">Archive</MenuItem>
+                    </Select>
+                  </FormControl>
                 </Grid>
               </Grid>
               <Grid
@@ -302,7 +351,10 @@ const Courses = () => {
                                     <MoreVertOutlinedIcon />
                                   </IconButton>
                                   <Menu
-                                    sx={{boxShadow: "0px 0px 7px -5px rgba(0,0,0,0.1)"}}
+                                    sx={{
+                                      boxShadow:
+                                        "0px 0px 7px -5px rgba(0,0,0,0.1)",
+                                    }}
                                     id="long-menu1"
                                     MenuListProps={{
                                       "aria-labelledby": "long-button1",
@@ -407,7 +459,6 @@ const Courses = () => {
                                     <MoreVertOutlinedIcon />
                                   </IconButton>
                                   <Menu
-                                    className="demo"
                                     id="long-menu"
                                     MenuListProps={{
                                       "aria-labelledby": "long-button",

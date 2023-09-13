@@ -11,9 +11,6 @@ import {
   CircularProgress,
   Checkbox,
   FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Dialog,
   DialogActions,
   DialogTitle,
@@ -23,7 +20,7 @@ import {
 } from "@mui/material";
 import { serialize } from "object-to-formdata";
 import { useParams } from "react-router-dom";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import BASE_URL from "../../../Utils/baseUrl";
 import token from "../../../Utils/token";
 import Network from "../../../Utils/network";
@@ -189,9 +186,12 @@ const EnrolledUsers = () => {
       redirect: "follow",
     };
     try {
-      const res = await fetch(`${BASE_URL}/course/unenrol/${courseGuid}`, requestOptions);
+      const res = await fetch(
+        `${BASE_URL}/course/unenrol/${courseGuid}`,
+        requestOptions
+      );
       const result = await res.json();
-      setSnackbarSuccess(result.success)
+      setSnackbarSuccess(result.success);
       if (result.success === true) {
         showSnackbar("success", "User Unenrolled Successfully");
         setTimeout(() => {
@@ -202,8 +202,7 @@ const EnrolledUsers = () => {
           "warning",
           "User Unenrolled failed, Atleast 1 item should be selected!"
         );
-        setTimeout(() => {
-        }, 3000);
+        setTimeout(() => {}, 3000);
       }
       setActionConfirmOpen(false);
     } catch (error) {
@@ -211,8 +210,6 @@ const EnrolledUsers = () => {
       throw new Error(`Failed to post status: ${error.message}`);
     }
   };
-
-
 
   return (
     <>
@@ -229,12 +226,10 @@ const EnrolledUsers = () => {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">
-          Confirm Unenroll
-          </DialogTitle>
+          <DialogTitle id="alert-dialog-title">Confirm Unenroll</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-            Are you sure you want to unenroll selected users?
+              Are you sure you want to unenroll selected users?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -242,8 +237,8 @@ const EnrolledUsers = () => {
               Cancel
             </Button>
             <Button onClick={handleBulkUnenroll} color="primary" autoFocus>
-                Confirm
-              </Button>
+              Confirm
+            </Button>
           </DialogActions>
         </Dialog>
         {/* End Bulk Delete popup */}
@@ -255,7 +250,15 @@ const EnrolledUsers = () => {
           onClose={hideSnackbar}
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
-          <Alert severity={snackbarSuccess && snackbarSuccess === true ? "success" : "warning"}>{snackbarMessage}</Alert>
+          <Alert
+            severity={
+              snackbarSuccess && snackbarSuccess === true
+                ? "success"
+                : "warning"
+            }
+          >
+            {snackbarMessage}
+          </Alert>
         </Snackbar>
         <Box sx={{ flexGrow: 1, p: 3, mt: 5 }}>
           <Grid container spacing={2}>
@@ -266,7 +269,11 @@ const EnrolledUsers = () => {
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
               <Button variant="contained" className="custom-button">
-                <Link href={`/course/${courseGuid}/enroll`} color="inherit" underline="none">
+                <Link
+                  href={`/course/${courseGuid}/enroll`}
+                  color="inherit"
+                  underline="none"
+                >
                   Enroll User
                 </Link>
               </Button>
@@ -301,20 +308,32 @@ const EnrolledUsers = () => {
                         alignItems: "center",
                       }}
                     >
-                      <Grid item xs={6} sx={{ ml: 2, fontSize: "18px" }}>
-                        <Checkbox
-                          checked={selectAll}
-                          onChange={handleSelectAllUsers}
-                          indeterminate={
-                            selectedUsers.length > 0 &&
-                            selectedUsers.length < filteredUsers.length
-                          }
-                        />
-                        Select All
+                      <Grid item xs={6} sx={{ ml:0, fontSize: "18px" }}>
+                        <ButtonGroup
+                          disableElevation
+                          variant="contained"
+                          aria-label="Disabled elevation buttons"
+                        >
+                          <Button variant="outlined">
+                              <Checkbox
+                                sx={{padding:"0"}}
+                              checked={selectAll}
+                              onChange={handleSelectAllUsers}
+                              indeterminate={
+                                selectedUsers.length > 0 &&
+                                selectedUsers.length < filteredUsers.length
+                              }
+                            />
+                          </Button>
+
+                          <Button sx={{opacity:selectedUsers.length !== 0 ? "1" : "0.5",pointerEvents:selectedUsers.length !== 0 ? "auto" : "none"}} onClick={handleBulkConfirmOpen}>
+                            UnEnroll User
+                          </Button>
+                        </ButtonGroup>
                       </Grid>
                       <Grid item xs={2}>
                         <FormControl sx={{ width: "100%" }}>
-                          <InputLabel id="type-select-label">Action</InputLabel>
+                          {/* <InputLabel id="type-select-label">Action</InputLabel>
                           <Controller
                             name="role"
                             control={control}
@@ -335,7 +354,7 @@ const EnrolledUsers = () => {
                                 </MenuItem>
                               </Select>
                             )}
-                          />
+                          /> */}
                         </FormControl>
                       </Grid>
                     </Grid>

@@ -55,7 +55,7 @@ const Users = () => {
   myHeaders.append("Authorization", `Bearer ${token}`);
   myHeaders.append("Network", `${Network}`);
 
-  // Fetch meetings list
+  // Fetch classes list
   useEffect(() => {
     const fetchUserList = async () => {
       const requestOptions = {

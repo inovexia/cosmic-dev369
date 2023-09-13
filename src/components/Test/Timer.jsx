@@ -2,44 +2,45 @@ import React, { useState, useEffect } from 'react';
 import { Typography } from '@mui/material';
 import AvTimerOutlinedIcon from "@mui/icons-material/AvTimerOutlined";
 
-const Timer = ({ durationInSeconds, onTimerExpired }) => {
-  const [seconds, setSeconds] = useState(durationInSeconds);
+const Timer = ({ durationInMinutes, onTimerExpired }) => {
+  const totalSeconds = durationInMinutes * 60;
+  const [remainingSeconds, setRemainingSeconds] = useState(totalSeconds);
   const [isActive, setIsActive] = useState(true);
 
   useEffect(() => {
     let timerInterval;
 
-    if (isActive && seconds > 0) {
+    if (isActive && remainingSeconds > 0) {
       timerInterval = setInterval(() => {
-        setSeconds((prevSeconds) => prevSeconds - 1);
+        setRemainingSeconds((prevSeconds) => prevSeconds - 1);
       }, 1000);
-    } else if (seconds === 0) {
+    } else if (remainingSeconds === 0) {
       setIsActive(false);
       clearInterval(timerInterval);
-      onTimerExpired(); // Call the provided function when timer expires
+      onTimerExpired(); // Call the provided function when the timer expires
     }
 
     return () => {
       clearInterval(timerInterval);
     };
-  }, [isActive, seconds, onTimerExpired]);
+  }, [isActive, remainingSeconds, onTimerExpired]);
 
   const formatTime = (timeInSeconds) => {
-    const minutes = Math.floor(timeInSeconds / 60);
+    const hours = Math.floor(timeInSeconds / 3600);
+    const minutes = Math.floor((timeInSeconds % 3600) / 60);
     const seconds = timeInSeconds % 60;
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const timerColor = seconds <= 60 ? 'secondary' : 'primary';
-  const timerClassName = seconds <= 60 ? 'blink' : '';
+  const timerColor = remainingSeconds <= 60 ? 'secondary' : 'primary';
+  const timerClassName = remainingSeconds <= 60 ? 'blink' : '';
 
   return (
-     <>
+    <>
       <AvTimerOutlinedIcon color={timerColor} sx={{ fontSize: 32 }} />
       <Typography className={timerClassName} variant="h4" color={timerColor} sx={{ fontSize: '24px' }}>
-      {seconds <= 60 ? (isActive ? `Time Remains: ${formatTime(seconds)}` : 'Time is up!') : (isActive ? `Time Left: ${formatTime(seconds)}` : 'Time is up!')} : MM:SS
-      {/* {isActive ? `Time Left: ${formatTime(seconds)}` : 'Time is up!'} */}
-    </Typography>
+        {isActive ? `Time Left: ${formatTime(remainingSeconds)}` : 'Time is up!'} HH:MM:SS
+      </Typography>
     </>
   );
 };

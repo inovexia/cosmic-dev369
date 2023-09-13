@@ -37,6 +37,26 @@
 /* .grecaptcha-badge {
   display: none !important;
 } */
+/* footer {
+  position: fixed;
+  bottom:20px;
+  width: 100%;
+  padding:5px;
+} */
+#not-found-page .MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation0.MuiDrawer-paper.MuiDrawer-paperAnchorLeft.MuiDrawer-paperAnchorDockedLeft{
+  width: 0;
+}
+#not-found-page .css-1hjeidz-MuiPaper-root-MuiAppBar-root{
+  width:100%;
+  margin-left: 0;
+}
+body#not-found-page header {
+  width: 100%;
+  margin-left: 0;
+}
+#not-found-page .MuiBox-root.css-k008qs{
+  width: 0;
+}
 
 .App {
   text-align: center;
@@ -55,9 +75,30 @@ body {
 body .listing{
   box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.4) !important;
 }
+body .no-radius{
+border-radius: 0px;
+display: inline-block;
+text-align: center;
+}
+body .no-radius span{
+  font-size: 10px;
+}
+.content-outer .tox.tox-tinymce {
+  width: 100%;
+}
 
 body main {
   margin-top: 64px;
+  padding-bottom:100px;
+}
+.on-time-date {
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.2);
+  padding: 3px;
+  margin-left: 5px;
+}
+.MuiInputBase-root fieldset legend{
+  font-size: 15px;
 }
 
 body {
@@ -238,4 +279,9 @@ body .mySwiper {
 
 .custom-switch.active {
   background-color: #4caf50;
+}
+
+/* Preview Test Page Css */
+.question-label .MuiFormControlLabel-label {
+  width: 100%;
 }

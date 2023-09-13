@@ -64,7 +64,7 @@ const EditMeeting = () => {
     };
     const content = editorRef.current.getContent();
     if (content.trim() === "") {
-      alert("Meeting details field should not be empty!");
+      alert("Class details field should not be empty!");
     } else {
       try {
         const response = await fetch(
@@ -109,7 +109,7 @@ const EditMeeting = () => {
   return (
     <>
       <Helmet>
-        <title>Edit Meeting</title>
+        <title>Edit Class</title>
       </Helmet>
       <Box sx={{ display: "flex" }}>
         <SidebarLeft />
@@ -131,8 +131,8 @@ const EditMeeting = () => {
                   severity={isMeetingCreated === true ? "success" : "warning"}
                 >
                   {isMeetingCreated === true
-                    ? "Meeting updated Successfully"
-                    : "Meeting updation failed"}
+                    ? "Class updated Successfully"
+                    : "Class updation failed"}
                 </Alert>
               </Snackbar>
             </Grid>
@@ -140,11 +140,11 @@ const EditMeeting = () => {
           <Grid container spacing={2} sx={{ mt: 3 }}>
             <Grid item xs={6}>
               <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 600 }}>
-                Edit Meeting
+                Edit Class
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
-              <Button variant="contained" className="custom-button" component={Link} href={mtValue && mtValue ? `/course/${mtValue}/meeting/list` : `/online-classes`} >
+              <Button variant="contained" className="custom-button" component={Link} href={mtValue && mtValue ? `/course/${mtValue}/class/list` : `/online-classes`} >
                 Cancel 
               </Button>
             </Grid>
@@ -174,7 +174,7 @@ const EditMeeting = () => {
                       marginBottom: "10px",
                     }}
                   >
-                    Meeting Details
+                    Class Details
                   </label>
                   <FormEditorField
                     control={control}
@@ -183,7 +183,7 @@ const EditMeeting = () => {
                   />
                 </StyledFormControl>
                 <Button variant="outlined" type="submit" className="custom-button">
-                  Save Meeting
+                  Save
                 </Button>
               </form>
             </Grid>

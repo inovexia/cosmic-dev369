@@ -100,7 +100,7 @@ const OnlineClasses = () => {
     <>
       <CheckTokenValid />
       <Helmet>
-        <title>Meetings</title>
+        <title>Classes</title>
       </Helmet>
       <Box sx={{ display: "flex" }}>
         <SidebarLeft />
@@ -108,17 +108,17 @@ const OnlineClasses = () => {
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 600 }}>
-                Zoom Meeting
+                Zoom Class
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
               <Button
                 variant="contained"
                 component={Link}
-                href="/meeting/create"
+                href="/class/create"
                 className="custom-button"
               >
-                Create Meeting
+                Create Class
               </Button>
             </Grid>
           </Grid>
@@ -204,7 +204,7 @@ const OnlineClasses = () => {
                 </>
               ) : (
                 <Alert sx={{ mt: 5 }} severity="error">
-                  No Meeting found!
+                  No Class found!
                 </Alert>
               )}
             </>

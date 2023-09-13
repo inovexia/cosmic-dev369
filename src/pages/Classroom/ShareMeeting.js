@@ -144,7 +144,7 @@ const ShareMeeting = () => {
   return (
     <>
       <Helmet>
-        <title>Share Meeting</title>
+        <title>Share Class</title>
       </Helmet>
       <Box sx={{ display: "flex" }}>
         <SidebarLeft />
@@ -166,8 +166,8 @@ const ShareMeeting = () => {
                   severity={isMeetingShared === true ? "success" : "warning"}
                 >
                   {isMeetingShared === true
-                    ? "Meeting shared Successfully"
-                    : "Meeting shared failed. At Least one user to be selected."}
+                    ? "Class shared Successfully"
+                    : "Class shared failed. At Least one user to be selected."}
                 </Alert>
               </Snackbar>
             </Grid>
@@ -175,7 +175,7 @@ const ShareMeeting = () => {
           <Grid container spacing={2} sx={{ mt: 3 }}>
             <Grid item xs={6}>
               <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 600 }}>
-                Share Meeting
+                Share Class
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>

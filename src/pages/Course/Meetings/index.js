@@ -48,7 +48,7 @@ const Index = () => {
       };
       try {
         const response = await fetch(
-          `${BASE_URL}/course/zoom/get_meetings/${courseGuid}`,
+          `${BASE_URL}/course/zoom/get_classes/${courseGuid}`,
           requestOptions
         );
         const result = await response.json();
@@ -100,7 +100,7 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>Meetings</title>
+        <title>Classes</title>
       </Helmet>
       <Box sx={{ display: "flex" }}>
         <SidebarLeft />
@@ -108,7 +108,7 @@ const Index = () => {
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 600 }}>
-                Zoom Meeting
+                Zoom Class
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} sx={{ display: { xs: "flex", md: "block" }, justifyContent: { xs: "space-between" }, textAlign: { md: "right" } }}>
@@ -123,7 +123,7 @@ const Index = () => {
               </Button>
               <Button variant="outlined" className="custom-button">
                 <Link
-                  href={`/course/${courseGuid}/meeting/create`}
+                  href={`/course/${courseGuid}/class/create`}
                   color="inherit"
                   underline="none"
                 >
@@ -246,7 +246,7 @@ const Index = () => {
                 </>
               ) : (
                 <Alert sx={{ mt: 5 }} severity="error">
-                  No Meeting found!
+                  Class Not found!
                 </Alert>
               )}
             </>

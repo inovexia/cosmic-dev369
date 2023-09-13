@@ -12,9 +12,9 @@ import {
   Alert,
 } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import { Pagination } from "swiper/modules";
 import BASE_URL from "../../Utils/baseUrl";
 import token from "../../Utils/token";
 import Network from "../../Utils/network";
@@ -22,12 +22,11 @@ import { Link } from "react-router-dom";
 import CheckTokenValid from "../Redirect/CheckTokenValid";
 import ReactHtmlParser from "react-html-parser";
 
-
 function truncateString(text, maxCharLength) {
   if (text.length <= maxCharLength) {
     return text;
   }
-  return text.slice(0, maxCharLength) + '...';
+  return text.slice(0, maxCharLength) + "...";
 }
 const AllCourses = () => {
   const maxCharLength = 20;
@@ -60,7 +59,7 @@ const AllCourses = () => {
       }
     };
     fetchCourses();
-  },[]);
+  }, []);
   return (
     <>
       {loading ? (
@@ -71,7 +70,7 @@ const AllCourses = () => {
         <>
           {/* Entry Title and button */}
           <Grid container spacing={2} sx={{ justifyContent: "space-between" }}>
-              <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6}>
               <h1>All Courses</h1>
             </Grid>
             <Grid
@@ -84,11 +83,16 @@ const AllCourses = () => {
                 alignItems: "center",
               }}
             >
-              <Button className="custom-button" component={Link} to={"/course/list"} variant="outlined">
+              <Button
+                className="custom-button"
+                component={Link}
+                to={"/course/list"}
+                variant="outlined"
+              >
                 View All Course
               </Button>
-                <Button
-                  className="custom-button"
+              <Button
+                className="custom-button"
                 component={Link}
                 to={"/course/create"}
                 variant="contained"
@@ -102,10 +106,15 @@ const AllCourses = () => {
           <Card sx={{ p: 3, mt: 3 }}>
             <Box className="custom-swiper">
               <Swiper
-                spaceBetween={30}
+                autoplay={{
+                  delay: 2500,
+                  disableOnInteraction: false,
+                }}
                 pagination={{
                   clickable: true,
                 }}
+                spaceBetween={30}
+                modules={[Autoplay, Pagination]}
                 breakpoints={{
                   640: {
                     slidesPerView: 1.5,
@@ -120,62 +129,75 @@ const AllCourses = () => {
                     slidesPerView: 2.6,
                   },
                 }}
-                modules={[Pagination]}
                 className="mySwiper"
               >
                 {courses && courses.data.length !== 0 ? (
                   courses &&
-                    courses.data.map((course, index) => {
-                      const truncatedText = truncateString(course.description, maxCharLength)
-                        return(
-                    <SwiperSlide key={index}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12} md={6} className="course-image">
-                          <img src={Course} alt="Course" loading="lazy" />
-                        </Grid>
-                        <Grid item xs={12} md={6} display="grid">
-                          <h3>{course.title}</h3>
-                          <Box className="rating-box" sx={{ display: "none" }}>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                              <h4
-                                style={{ color: "#888888", fontWeight: "400" }}
+                  courses.data.map((course, index) => {
+                    const truncatedText = truncateString(
+                      course.description,
+                      maxCharLength
+                    );
+                    return (
+                      <SwiperSlide key={index}>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} md={6} className="course-image">
+                            <img src={Course} alt="Course" loading="lazy" />
+                          </Grid>
+                          <Grid item xs={12} md={6} display="grid">
+                            <h3>{course.title}</h3>
+                            <Box
+                              className="rating-box"
+                              sx={{ display: "none" }}
+                            >
+                              <Box
+                                sx={{ display: "flex", alignItems: "center" }}
                               >
-                                5.0
-                              </h4>
-                              <Rating
-                                className="rating-star"
-                                name="read-only"
-                                value={ratingValue}
-                                readOnly
+                                <h4
+                                  style={{
+                                    color: "#888888",
+                                    fontWeight: "400",
+                                  }}
+                                >
+                                  5.0
+                                </h4>
+                                <Rating
+                                  className="rating-star"
+                                  name="read-only"
+                                  value={ratingValue}
+                                  readOnly
+                                />
+                              </Box>
+                              <Chip
+                                className="chip-badge"
+                                label="$120"
+                                color="secondary"
                               />
                             </Box>
-                            <Chip
-                              className="chip-badge"
-                              label="$120"
-                              color="secondary"
-                            />
-                          </Box>
-                          <Box>
-                            <Typography color="inherit" component="span">
-                              {ReactHtmlParser(truncatedText)}
-                            </Typography>
-                          </Box>
-                          <h4 style={{ color: "#888888", fontWeight: "400" }}>
-                            <strong>Author: </strong>{course.created_by}
-                          </h4>
-                          <Button
-                            variant="contained"
-                            component={Link}
-                            to={`/course/manage/${course.guid}`}
-                            fullWidth
-                          >
-                            Manage Course
-                          </Button>
+                            <Box>
+                              <Typography color="inherit" component="span">
+                                {ReactHtmlParser(truncatedText)}
+                              </Typography>
+                            </Box>
+                            <h4 style={{ color: "#888888", fontWeight: "400" }}>
+                              <strong>Author: </strong>
+                              {course.created_by}
+                            </h4>
+                            <Button
+                              className="custom-button"
+                              variant="contained"
+                              component={Link}
+                              to={`/course/manage/${course.guid}`}
+                              fullWidth
+                              sx={{ maxHeight: "45px" }}
+                            >
+                              Manage Course
+                            </Button>
+                          </Grid>
                         </Grid>
-                      </Grid>
-                        </SwiperSlide>
-                        )
-})
+                      </SwiperSlide>
+                    );
+                  })
                 ) : (
                   <Alert sx={{ mt: 5 }} severity="error">
                     Course not found!

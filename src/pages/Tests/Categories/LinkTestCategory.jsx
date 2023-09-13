@@ -193,7 +193,7 @@ const LinkTestCategory = () => {
       if (result.success === true) {
         showSnackbar("success", "Test linked Successfully");
         setTimeout(() => {
-          navigate(`/category/tests/${guid}`);
+          navigate(`/test/category/tests/${guid}`);
         }, 1000);
       } else {
         showSnackbar(
@@ -240,7 +240,7 @@ const LinkTestCategory = () => {
             <Grid item xs={6} sx={{ textAlign: "right" }}>
               <Button variant="contained" className="custom-button">
                 <Link
-                  href={`/category/list`}
+                  href={`/test/category/list`}
                   color="inherit"
                   underline="none"
                 >

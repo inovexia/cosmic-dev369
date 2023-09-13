@@ -60,14 +60,14 @@ const CreateMeeting = () => {
     };
     const content = editorRef.current.getContent();
     if (content.trim() === "") {
-      alert("Meeting details field should not be empty!");
+      alert("Class details field should not be empty!");
     } else {
       try {
         const response = await fetch(`${BASE_URL}/zoom/create`, requestOptions);
         const result = await response.json();
         setAlertOpen(true);
         if (result.success === true) {
-          setErrorMessage("Meeting created successfully.");
+          setErrorMessage("Class created successfully.");
           setIsMeetingCreated(true);
           setTimeout(() => {
             setAlertOpen(false);
@@ -88,7 +88,7 @@ const CreateMeeting = () => {
   return (
     <>
       <Helmet>
-        <title>Create Meeting</title>
+        <title>Create Class</title>
       </Helmet>
       <Box sx={{ display: "flex" }}>
         <SidebarLeft />
@@ -117,7 +117,7 @@ const CreateMeeting = () => {
           <Grid container spacing={2} sx={{ mt: 3 }}>
             <Grid item xs={6}>
               <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 600 }}>
-                Create Meeting
+                Create Class
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
@@ -156,7 +156,7 @@ const CreateMeeting = () => {
                       marginBottom: "10px",
                     }}
                   >
-                    Meeting Details
+                    Class Details
                   </label>
                   <FormEditorField
                     control={control}
@@ -170,7 +170,7 @@ const CreateMeeting = () => {
                   type="submit"
                   className="custom-button"
                 >
-                  Save Meeting
+                  Save
                 </Button>
               </form>
             </Grid>

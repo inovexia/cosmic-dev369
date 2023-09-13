@@ -64,8 +64,8 @@
     line-height:var(--title-lineheight-xsmall);
   }
   p{
-    font-size: var(--body-font-size-xsmall);
-    line-height: var(--body-lineheight-xsmall);
+    font-size: var(--body-font-size-small);
+    line-height: var(--body-lineheight-small);
   }
 }
 @media (min-width:576px){

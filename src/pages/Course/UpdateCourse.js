@@ -26,7 +26,6 @@ import { serialize } from "object-to-formdata";
 import FormTextField from "../../components/Common/formTextField";
 import FormEditorField from "../../components/Common/formEditorField"
 import SidebarLeft from "../../components/Sidebar/SidebarLeft";
-import CurrentUser from "../../Utils/CurrentUserGuid";
 
 const StyledFormControl = styled(FormControl)({
   marginBottom: "16px",
@@ -48,7 +47,7 @@ const UpdateCourse = () => {
       title: "",
       description: "",
       status: "",
-      updated_by: CurrentUser
+      updated_by: CreatedBy
     },
   });
 

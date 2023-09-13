@@ -176,15 +176,15 @@ const AddCourseMeeting = () => {
     };
     try {
       const res = await fetch(
-        `${BASE_URL}/course/zoom/add_meeting/${courseGuid}`,
+        `${BASE_URL}/course/zoom/add_class/${courseGuid}`,
         requestOptions
       );
       const result = await res.json();
       setSnackbarSuccess(result.success)
       if (result.success === true) {
-        showSnackbar("success", "Meeting added Successfully");
+        showSnackbar("success", "Class added Successfully");
         setTimeout(() => {
-          navigate(`/course/${courseGuid}/meeting/list`);
+          navigate(`/course/${courseGuid}/class/list`);
         }, 1000);
       } else {
         showSnackbar(
@@ -203,7 +203,7 @@ const AddCourseMeeting = () => {
   return (
     <>
       <Helmet>
-        <title>Add Existing Meetings</title>
+        <title>Add Existing Classes</title>
       </Helmet>
       <Box sx={{ display: "flex" }}>
         <SidebarLeft />
@@ -219,7 +219,7 @@ const AddCourseMeeting = () => {
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 600 }}>
-                Meetings
+                Classes
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} sx={{ display: { xs: "flex", md: "block" }, justifyContent: { xs: "space-between" }, textAlign: { md: "right" } }}>
@@ -458,7 +458,7 @@ const AddCourseMeeting = () => {
                 </>
               ) : (
                 <Alert sx={{ mt: 5 }} severity="error">
-                  Meeting not found or added earlier!
+                  Class not found or added earlier!
                 </Alert>
               )}
             </>

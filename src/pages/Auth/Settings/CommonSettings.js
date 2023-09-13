@@ -226,13 +226,13 @@ const CommonSettings = () => {
           /> */}
         </FormGroup>
         <FormControl fullWidth sx={{ mt: 2 }}>
-          <InputLabel id="user-role">User Role</InputLabel>
+          <InputLabel id="user-role">Default User Role</InputLabel>
           <Select
             labelId="user-role"
             id="user-role-select"
             {...register("default_user_role")}
             value={userRole}
-            label="User Role"
+            label="Default User Role"
             onChange={handleChangeRole}
             autoFocus
           >

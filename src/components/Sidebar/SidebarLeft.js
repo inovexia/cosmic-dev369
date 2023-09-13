@@ -35,7 +35,10 @@ import Network from "../../Utils/network";
 import BASE_URL from "../../Utils/baseUrl";
 import ProfileMenu from "./ProfileMenu";
 import CosmicBrand from "../../assets/images/CosmicBrand.jpg";
-import CategoryIcon from '@mui/icons-material/Category';
+import CategoryIcon from "@mui/icons-material/Category";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Collapse from "@mui/material/Collapse";
 
 const drawerWidth = 240;
 
@@ -112,6 +115,7 @@ export default function SidebarLeft() {
   const navigate = useNavigate();
   const theme = useTheme();
   const [open, setOpen] = useState(true);
+  const [openSubmenus, setOpenSubmenus] = useState({});
   const isLinkActive = (link) => {
     return location.pathname === link;
   };
@@ -121,8 +125,17 @@ export default function SidebarLeft() {
   };
 
   const handleDrawerClose = () => {
+    setOpenSubmenus(false);
     setOpen(false);
   };
+  // Submenu
+  const toggleSubmenu = (index) => {
+    setOpenSubmenus((prevState) => ({
+      ...prevState,
+      [index]: !prevState[index],
+    }));
+  };
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth <= 1024) {
@@ -140,11 +153,11 @@ export default function SidebarLeft() {
     };
   }, []);
   const [sidebarMenu, setSidebarMenu] = useState([
-    // {
-    //   label: "Dashboard",
-    //   link: "/",
-    //   menuIcon: <DashboardIcon />,
-    // },
+    {
+      label: "Dashboard",
+      link: "/dashboard",
+      menuIcon: <DashboardIcon />,
+    },
     {
       label: "Courses",
       link: "/course/list",
@@ -154,11 +167,18 @@ export default function SidebarLeft() {
       label: "Tests",
       link: "/test/list",
       menuIcon: <LaptopChromebookIcon />,
-    },
-    {
-      label: "Test Categories",
-      link: "/category/list",
-      menuIcon: <CategoryIcon />,
+      submenus: [
+        {
+          label: "All Test",
+          link: "/test/list",
+          menuIcon: <LaptopChromebookIcon />,
+        },
+        {
+          label: "Category",
+          link: "/test/category/list",
+          menuIcon: <CategoryIcon />,
+        },
+      ],
     },
     {
       label: "Online Classes",
@@ -197,7 +217,14 @@ export default function SidebarLeft() {
               >
                 <MenuIcon />
               </IconButton>
-              <Box sx={{width:"200px", display:"flex", alignItems:"center", height:"100%"}}>
+              <Box
+                sx={{
+                  width: "200px",
+                  display: "flex",
+                  alignItems: "center",
+                  height: "100%",
+                }}
+              >
                 <img
                   style={{
                     width: "100%",
@@ -238,36 +265,12 @@ export default function SidebarLeft() {
         </DrawerHeader>
         <Divider />
         <List>
-          <ListItem disablePadding sx={{ display: "block" }}>
-            <ListItemButton
-              to="/"
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? "initial" : "center",
-                px: 2.5,
-                backgroundColor: firstPath === "" ? "#f1f1f1" : "transparent",
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : "auto",
-                  justifyContent: "center",
-                }}
-              >
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="Dashboard"
-                sx={{ opacity: open ? 1 : 0 }}
-              />
-            </ListItemButton>
-          </ListItem>
+        
           {sidebarMenu.map((item, index) => (
-            <ListItem key={index} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
-                to={item.link}
-                sx={{
+            <React.Fragment key={index}>
+              {item.submenus ? (
+                <>
+                  <ListItemButton onClick={() => toggleSubmenu(index)} sx={{
                   minHeight: 48,
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
@@ -275,45 +278,56 @@ export default function SidebarLeft() {
                     firstPath != "" && item.link.includes(firstPath)
                       ? "#f1f1f1"
                       : "transparent",
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  {item.menuIcon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.label}
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
-              </ListItemButton>
-            </ListItem>
+                }}>
+                    <ListItemIcon>{item.menuIcon}</ListItemIcon>
+                    <ListItemText primary={item.label} />
+                    {openSubmenus[index] ? (
+                      <ExpandLessIcon />
+                    ) : (
+                      <ExpandMoreIcon />
+                    )}
+                  </ListItemButton>
+                  <Collapse
+                    className="demo"
+                    sx={{ pl: "35px" }}
+                    in={openSubmenus[index]}
+                    timeout="auto"
+                    unmountOnExit
+                  >
+                    <List component="div" disablePadding>
+                      {item.submenus.map((submenuItem, submenuIndex) => (
+                        <ListItemButton key={submenuIndex} onClick={() => toggleSubmenu(index)} component="a" href={submenuItem.link} sx={{
+                          minHeight: 48,
+                          justifyContent: open ? "initial" : "center",
+                          px: 2.5,
+                          backgroundColor:
+                            firstPath != "" && item.link.includes(firstPath)
+                              ? "#f1f1f1"
+                              : "transparent",
+                        }}>
+                          <ListItemIcon>{submenuItem.menuIcon}</ListItemIcon>
+                          <ListItemText primary={submenuItem.label} />
+                        </ListItemButton>
+                      ))}
+                    </List>
+                  </Collapse>
+                </>
+              ) : (
+                <ListItemButton component="a" href={item.link} sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                  backgroundColor:
+                    firstPath != "" && item.link.includes(firstPath)
+                      ? "#f1f1f1"
+                      : "transparent",
+                }}>
+                  <ListItemIcon>{item.menuIcon}</ListItemIcon>
+                  <ListItemText primary={item.label} />
+                </ListItemButton>
+              )}
+            </React.Fragment>
           ))}
-          {/* <ListItem disablePadding sx={{ display: "block" }}>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? "initial" : "center",
-                px: 2.5,
-              }}
-              onClick={submitLogoutForm}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : "auto",
-                  justifyContent: "center",
-                }}
-              >
-                <LogoutIcon />
-              </ListItemIcon>
-              <ListItemText primary="Logout" sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
-          </ListItem> */}
         </List>
       </Drawer>
     </Box>

@@ -1,13 +1,13 @@
 import React from "react";
 import {
-  Grid
+  Grid,Box
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ReactHtmlParser from "react-html-parser";
 
-const DetailsReport = ({ testResult }) => {
-  //console.log(testResult);
+const DetailsReport = ({ testResult, testDetails }) => {
+  console.log(testDetails);
   const formatedResult = [...testResult.answers].sort((a, b) => a.guid.localeCompare(b.guid));
   return (
     <>
@@ -29,6 +29,28 @@ const DetailsReport = ({ testResult }) => {
               <Grid item xs={10} sx={{display:"flex", fontSize:"20px"}}>
                 ({index + 1}). <span>{ReactHtmlParser(item.question)}</span>
               </Grid>
+              {(item && item.file_hash !== null) ||
+                                  (item &&
+                                    item.file_url_path !== null) ? (
+                                    <Box
+                                      sx={{ width: "100%", maxWidth: "500px" }}
+                                    >
+                                      <img
+                                          style={{
+                                          maxWidth:"100%",
+                                          height: "auto",
+                                        }}
+                                        src={
+                                          item &&
+                                          item.file_url_path &&
+                                          item.file_hash &&
+                                          item.file_url_path + "/" + item.file_hash
+                                        } 
+                                      />
+                                    </Box>
+                                  ) : (
+                                    ""
+                                  )}
               <Grid item xs={1}>
                 {item.response === "CORRECT" ? (
                   <CheckCircleIcon style={{ color: "#A6CD4E" }} />
