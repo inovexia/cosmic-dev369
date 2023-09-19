@@ -28,7 +28,8 @@ const UpdateSubject = () => {
   const { courseGuid } = useParams();
   const { subjectGuid } = useParams();
   const [alertOpen, setAlertOpen] = useState(null);
-  const [isCourseCreated, setIsCourseCreated] = useState(null);
+  const [isSubjectCreated, setIsSubjectCreated] = useState(null);
+  const [isSubjectUpdated, setIsSubjectUpdated] = useState(null)
   const [inputValue, setInputValue] = useState("");
   const [valueLength, setValueLength] = useState("");
   const [isInputValid, setInputValid] = useState(true);
@@ -127,26 +128,24 @@ const UpdateSubject = () => {
       setIsTitleLengthValid(false);
       try {
         const response = await fetch(
-          `${BASE_URL}/course/${courseGuid}/subject/edit/${subjectGuid}`,
+          `${BASE_URL}/course/${courseGuid}/subject/${subjectGuid}/edit`,
           requestOptions
         );
         const result = await response.json();
         setAlertOpen(true);
         if (result.success === true) {
-          console.log(result);
-          //setIsCourseUpdated(true);
+          setIsSubjectUpdated(true);
           setTimeout(() => {
             setAlertOpen(false);
-            //navigate(`/course/manage/${courseGuid}`);
           }, 3000);
         } else {
-          //setIsCourseUpdated(false);
+          setIsSubjectUpdated(false);
           setTimeout(() => {
             setAlertOpen(false);
           }, 3000);
         }
       } catch (error) {
-        //setIsCourseUpdated(false);
+        setIsSubjectUpdated(false);
       }
     }
   };
@@ -158,6 +157,18 @@ const UpdateSubject = () => {
       </Helmet>
       <Box sx={{ display: "flex" }}>
         <SidebarLeft />
+        <Snackbar
+          open={alertOpen}
+          autoHideDuration={3000}
+          onClose={() => setIsSubjectCreated(false)}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert severity={isSubjectUpdated === true ? "success" : "warning"}>
+            {isSubjectUpdated === true
+              ? "Subject updatedd Successfully"
+              : "Subject updation failled!"}
+          </Alert>
+        </Snackbar>
         <Box sx={{ flexGrow: 1, p: 3 }}>
           <Grid
             container

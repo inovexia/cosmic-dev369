@@ -9,6 +9,7 @@ import "./assets/css/meeting.css";
 import "./assets/css/styleGuide.css";
 import "./assets/css/dashboard.css";
 import "./assets/css/course.css";
+import "./assets/css/singleSubject.css";
 
 function App() {
   return (

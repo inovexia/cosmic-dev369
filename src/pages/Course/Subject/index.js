@@ -54,7 +54,7 @@ const Subjects = () => {
   const ITEM_HEIGHT = 48;
   // State Manage
   const [filterOption, setFilterOption] = useState("all");
-  const [courses, setCourses] = useState("");
+  const [subjects, setSubjects] = useState("");
   const [loading, setLoading] = useState(true);
   const [searchTitle, setSearchTitle] = useState("");
   // Authorization
@@ -68,7 +68,7 @@ const Subjects = () => {
 
   // Fetch Course list
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchSubjects = async () => {
       const requestOptions = {
         method: "POST",
         headers: myHeaders,
@@ -80,35 +80,35 @@ const Subjects = () => {
           requestOptions
         );
         const result = await response.json();
-        setCourses(result.payload.data);
+        setSubjects(result.payload.data);
         setLoading(false);
       } catch (error) {
         console.log("error", error);
         setLoading(false);
       }
     };
-    fetchCourses();
+    fetchSubjects();
   }, []);
 
-  const filteredCourse =
-    courses &&
-    courses.filter((course) => {
-      const searchVal = `${course.title} ${course.description}`.toLowerCase();
+  const filteredItems =
+    subjects &&
+    subjects.filter((item) => {
+      const searchVal = `${item.title} ${item.description}`.toLowerCase();
       const searchValue = searchTitle.toLowerCase();
 
       if (filterOption === "all") {
         return searchVal.includes(searchValue);
       } else if (filterOption === "published") {
         return (
-          searchVal.includes(searchValue) && course.status === "1" // Published courses
+          searchVal.includes(searchValue) && item.status === "1" // Published courses
         );
       } else if (filterOption === "unpublished") {
         return (
-          searchVal.includes(searchValue) && course.status === "0" // Unpublished courses
+          searchVal.includes(searchValue) && item.status === "0" // Unpublished courses
         );
       } else if (filterOption === "archive") {
         return (
-          searchVal.includes(searchValue) && course.status === "2" // Archived courses
+          searchVal.includes(searchValue) && item.status === "2" // Archived courses
         );
       }
 
@@ -117,12 +117,12 @@ const Subjects = () => {
 
   // Pagination here
   const [currentPage, setCurrentPage] = useState(1);
-  const [coursePerPage] = useState(10);
-  const lastIndex = currentPage * coursePerPage;
-  const firstIndex = lastIndex - coursePerPage;
-  const currentCourse = filteredCourse.slice(firstIndex, lastIndex);
+  const [itemPerPage] = useState(10);
+  const lastIndex = currentPage * itemPerPage;
+  const firstIndex = lastIndex - itemPerPage;
+  const currentItem = filteredItems.slice(firstIndex, lastIndex);
   const totalPages = Math.ceil(
-    filteredCourse && filteredCourse.length / coursePerPage
+    filteredItems && filteredItems.length / itemPerPage
   );
   const numbers = [...Array(totalPages + 1).keys()].slice(1);
 
@@ -144,10 +144,20 @@ const Subjects = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [subjectGuid, setSubjectGuid] = useState(null);
   const open = Boolean(anchorEl);
+  const [currStatus, setCurrStatus] = useState("");
+  const [changeStatus, setChangeStatus] = useState("");
 
-  const handleClick = (event, id) => {
+  const handleClick = (event, id, status) => {
     setAnchorEl(event.currentTarget);
     setSubjectGuid(id);
+    setCurrStatus(status)
+    if (status === "1") {
+      setChangeStatus("0")
+    }
+    else {
+      setChangeStatus("1");
+    }
+    
   };
 
   const handleClose = () => {
@@ -158,8 +168,11 @@ const Subjects = () => {
   const [alertOpen, setAlertOpen] = useState(null);
   const [isActionSuccess, setIsActionSuccess] = useState(null);
   const [actionConfirmOpen, setActionConfirmOpen] = useState(false);
-  const handleConfirmOpen = () => {
+  const [actionValue, setActionValue] = useState("")
+  const [newStatus, setNewStatus] = useState("");
+  const handleConfirmOpen = (action) => {
     setActionConfirmOpen(true);
+    setActionValue(action)
   };
   const actionConfirmClose = () => {
     setActionConfirmOpen(false);
@@ -197,12 +210,15 @@ const Subjects = () => {
     }
   };
 
+
   // Delete function on submit
   const handleChangeStatus = async () => {
+    var formdata = new FormData();
+    formdata.append("status", changeStatus);
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
-      
+      body: formdata,
       redirect: "follow",
     };
     try {
@@ -229,7 +245,6 @@ const Subjects = () => {
       throw new Error(`Failed to post status: ${error.message}`);
     }
   };
-  console.log(currentCourse);
   return (
     <>
       <CheckTokenValid />
@@ -244,19 +259,41 @@ const Subjects = () => {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">Confirm Delete</DialogTitle>
+          <DialogTitle id="alert-dialog-title">
+            {actionValue && actionValue === "Publish"
+              ? "Confirm Publish"
+              : actionValue && actionValue === "Unpublish"
+              ? "Confirm Unpublish"
+              : "Confirm Delete"}
+          </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              Are you sure you want to delete this Subject?
+              Are you sure you want to{" "}
+              {actionValue && actionValue === "Publish"
+                ? "Publish"
+                : actionValue && actionValue === "Unpublish"
+                ? "Unpublish"
+                : "Delete"}{" "}
+              this Subject?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={actionConfirmClose} color="primary">
               Cancel
             </Button>
-            <Button onClick={handleBulkDeleteUser} color="primary" autoFocus>
-              Confirm
-            </Button>
+            {actionValue && actionValue === "Publish" ? (
+              <Button onClick={handleChangeStatus} color="primary" autoFocus>
+                Confirm
+              </Button>
+            ) : actionValue && actionValue === "Unpublish" ? (
+              <Button onClick={handleChangeStatus} color="primary" autoFocus>
+                Confirm
+              </Button>
+            ) : (
+              <Button onClick={handleBulkDeleteUser} color="primary" autoFocus>
+                Confirm
+              </Button>
+            )}
           </DialogActions>
         </Dialog>
         <Snackbar
@@ -265,11 +302,25 @@ const Subjects = () => {
           onClose={() => setIsActionSuccess(false)}
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
-          <Alert severity={isActionSuccess === true ? "success" : "warning"}>
-            {isActionSuccess === true
-              ? "Subject Deleted Successfully"
-              : "Subject not deleted."}
-          </Alert>
+          {actionValue && actionValue === "Publish" ? (
+            <Alert severity={isActionSuccess === true ? "success" : "warning"}>
+              {isActionSuccess === true
+                ? "Subject Published Successfully"
+                : "Subject not published."}
+            </Alert>
+          ) : actionValue && actionValue === "Unpublish" ? (
+            <Alert severity={isActionSuccess === true ? "success" : "warning"}>
+              {isActionSuccess === true
+                ? "Subject Unpublished Successfully"
+                : "Subject not Unpublished."}
+            </Alert>
+          ) : (
+            <Alert severity={isActionSuccess === true ? "success" : "warning"}>
+              {isActionSuccess === true
+                ? "Subject Deleted Successfully"
+                : "Subject not deleted."}
+            </Alert>
+          )}
         </Snackbar>
 
         <Box sx={{ flexGrow: 1, p: 3, mt: 3 }}>
@@ -291,7 +342,7 @@ const Subjects = () => {
             <Box sx={{ textAlign: "center", mt: 5 }}>
               <CircularProgress />
             </Box>
-          ) : courses && courses.length !== 0 ? (
+          ) : subjects && subjects.length !== 0 ? (
             <>
               <Grid
                 container
@@ -332,10 +383,10 @@ const Subjects = () => {
                 className="manage-course"
               >
                 <Grid item xs={12}>
-                  {currentCourse && currentCourse.length !== 0 ? (
+                  {currentItem && currentItem.length !== 0 ? (
                     <Card>
-                      {currentCourse &&
-                        currentCourse.map((course, index) => (
+                      {currentItem &&
+                        currentItem.map((item, index) => (
                           <Box sx={{ px: 3 }} key={index}>
                             <Grid
                               container
@@ -358,7 +409,7 @@ const Subjects = () => {
                                 <Box className="course-image">
                                   <img
                                     src={Course}
-                                    alt={course.title}
+                                    alt={item.title}
                                     loading="lazy"
                                   />
                                 </Box>
@@ -375,7 +426,7 @@ const Subjects = () => {
                                     aria-expanded={open ? "true" : undefined}
                                     aria-haspopup="true"
                                     onClick={(event) =>
-                                      handleClick(event, course.guid)
+                                      handleClick(event, item.guid, item.status)
                                     }
                                     className="no-pd"
                                   >
@@ -418,22 +469,28 @@ const Subjects = () => {
                                       );
                                     })}
                                     <MenuItem
-                                      value="Publish"
+                                      value={
+                                        currStatus === "1"
+                                          ? "Unpublish"
+                                          : "Publish"
+                                      }
                                       onClick={() =>
-                                        handleChangeStatus("Publish")
+                                        handleConfirmOpen(
+                                          currStatus === "1"
+                                            ? "Unpublish"
+                                            : "Publish"
+                                        )
                                       }
                                     >
-                                      Publish
-                                    </MenuItem>
-                                    <MenuItem
-                                      value="Archive"
-                                      onClick={handleConfirmOpen}
-                                    >
-                                      Archive
+                                      {currStatus === "1"
+                                        ? "Unpublish"
+                                        : "Publish"}
                                     </MenuItem>
                                     <MenuItem
                                       value="delete"
-                                      onClick={handleConfirmOpen}
+                                      onClick={() =>
+                                        handleConfirmOpen("delete")
+                                      }
                                     >
                                       Delete
                                     </MenuItem>
@@ -443,21 +500,21 @@ const Subjects = () => {
                               <Grid item xs={12} md={4}>
                                 <h3>
                                   <Link
-                                    href={`/course/manage/${course.guid}`}
+                                    href={`/course/manage/${item.guid}`}
                                     sx={{
                                       textDecoration: "none",
                                       color: "inherit",
                                     }}
                                   >
-                                    {course.title}
+                                    {item.title}
                                   </Link>
                                 </h3>
                               </Grid>
                               <Grid item xs={12} md={3}>
-                                <h4>{course.created_by}</h4>
+                                <h4>{item.created_by}</h4>
                               </Grid>
                               <Grid item xs={12} md={2}>
-                                {course.status === "0" ? (
+                                {item.status === "0" ? (
                                   <Typography
                                     variant="span"
                                     component="span"
@@ -465,7 +522,7 @@ const Subjects = () => {
                                   >
                                     Unpublished
                                   </Typography>
-                                ) : course.status === "1" ? (
+                                ) : item.status === "1" ? (
                                   <Typography
                                     variant="span"
                                     component="span"
@@ -497,7 +554,7 @@ const Subjects = () => {
                                     aria-expanded={open ? "true" : undefined}
                                     aria-haspopup="true"
                                     onClick={(event) =>
-                                      handleClick(event, course.guid)
+                                      handleClick(event, item.guid, item.status)
                                     }
                                     className="no-pd"
                                   >
@@ -536,22 +593,28 @@ const Subjects = () => {
                                       );
                                     })}
                                     <MenuItem
-                                      value="Publish"
+                                      value={
+                                        currStatus === "1"
+                                          ? "Unpublish"
+                                          : "Publish"
+                                      }
                                       onClick={() =>
-                                        handleChangeStatus("Publish")
+                                        handleConfirmOpen(
+                                          currStatus === "1"
+                                            ? "Unpublish"
+                                            : "Publish"
+                                        )
                                       }
                                     >
-                                      Publish
-                                    </MenuItem>
-                                    <MenuItem
-                                      value="Archive"
-                                      onClick={handleConfirmOpen}
-                                    >
-                                      Archive
+                                      {currStatus === "1"
+                                        ? "Unpublish"
+                                        : "Publish"}
                                     </MenuItem>
                                     <MenuItem
                                       value="delete"
-                                      onClick={handleConfirmOpen}
+                                      onClick={() =>
+                                        handleConfirmOpen("delete")
+                                      }
                                     >
                                       Delete
                                     </MenuItem>
@@ -564,7 +627,7 @@ const Subjects = () => {
                     </Card>
                   ) : (
                     <Alert sx={{ mt: 5 }} severity="error">
-                      Course not found!
+                      Subject not found!
                     </Alert>
                   )}
                 </Grid>
@@ -575,7 +638,7 @@ const Subjects = () => {
                 sx={{ mt: 5, justifyContent: "center" }}
               >
                 <Grid item>
-                  {filteredCourse && filteredCourse.length > coursePerPage ? (
+                  {filteredItems && filteredItems.length > itemPerPage ? (
                     <Grid container spacing={2}>
                       <Grid
                         item
@@ -627,7 +690,7 @@ const Subjects = () => {
             </>
           ) : (
             <Alert sx={{ mt: 5 }} severity="error">
-              Course not found!
+              Subject not found!
             </Alert>
           )}
         </Box>

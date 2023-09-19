@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -20,17 +20,16 @@ import Network from "../../../../Utils/network";
 import CreatedBy from "../../../../Utils/createdBy";
 import { serialize } from "object-to-formdata";
 import FormTextField from "../../../../components/Common/formTextField";
-import FormHiddenField from "../../../../components/Common/formHiddenField";
 import FormEditorField from "../../../../components/Common/formEditorField";
 import SidebarLeft from "../../../../components/Sidebar/SidebarLeft";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 
-const CreateLesson = () => {
+const UpdateLesson = () => {
   const { courseGuid } = useParams();
   const { subjectGuid } = useParams();
   const [alertOpen, setAlertOpen] = useState(null);
-  const [isSuccess, setIsSuccess] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [isSubjectCreated, setIsSubjectCreated] = useState(null);
+  const [isSubjectUpdated, setIsSubjectUpdated] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [valueLength, setValueLength] = useState("");
   const [isInputValid, setInputValid] = useState(true);
@@ -45,14 +44,15 @@ const CreateLesson = () => {
     control,
     setValue,
     watch,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm({
     defaultValues: {
       title: "",
       description: "",
-      subject_guid:subjectGuid,
-      userfile: undefined
+      userfile: undefined,
+      created_by: CreatedBy,
     },
   });
   const { title } = watch();
@@ -88,6 +88,24 @@ const CreateLesson = () => {
     }
   };
 
+  // Get current course details
+  useEffect(() => {
+    const fetchCurrentSubject = async () => {
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        redirect: "follow",
+      };
+      const response = await fetch(
+        `${BASE_URL}/course/${courseGuid}/subject/${subjectGuid}/view`,
+        requestOptions
+      );
+      const result = await response.json();
+      reset(result.payload);
+    };
+    fetchCurrentSubject();
+  }, [reset]);
+
   // Authentication
   var myHeaders = new Headers();
   myHeaders.append("Authorization", `Bearer ${token}`);
@@ -103,34 +121,34 @@ const CreateLesson = () => {
     };
     if (data.description.length >= 107) {
       setTextareaValid(true);
-    } else if (titleValid < 3 || titleValid > 35) {
+    } else if (
+      (titleValid && titleValid < 3) ||
+      (titleValid && titleValid > 35)
+    ) {
       setIsTitleLengthValid(true);
     } else {
+      setTextareaValid(false);
+      setIsTitleLengthValid(false);
       try {
         const response = await fetch(
-          `${BASE_URL}/lesson/create`,
+          `${BASE_URL}/course/${courseGuid}/subject/${subjectGuid}/edit`,
           requestOptions
         );
         const result = await response.json();
         setAlertOpen(true);
         if (result.success === true) {
-          setIsSuccess(true);
+          setIsSubjectUpdated(true);
           setTimeout(() => {
             setAlertOpen(false);
-            navigate(`/course/${courseGuid}/subject/${subjectGuid}/preview`);
-          }, 1000);
+          }, 3000);
         } else {
-          setIsSuccess(false);
-          setErrorMessage(
-            (result.message.description && result.message.description) ||
-              (result.message.title && result.message.title)
-          );
+          setIsSubjectUpdated(false);
           setTimeout(() => {
             setAlertOpen(false);
           }, 3000);
         }
       } catch (error) {
-        setIsSuccess(false);
+        setIsSubjectUpdated(false);
       }
     }
   };
@@ -138,18 +156,20 @@ const CreateLesson = () => {
   return (
     <>
       <Helmet>
-        <title>Create Lesson</title>
+        <title>Edit Lesson</title>
       </Helmet>
       <Box sx={{ display: "flex" }}>
         <SidebarLeft />
         <Snackbar
           open={alertOpen}
-          autoHideDuration={2000}
-          onClose={() => setIsSuccess(false)}
+          autoHideDuration={3000}
+          onClose={() => setIsSubjectCreated(false)}
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
-          <Alert severity={isSuccess === true ? "success" : "warning"}>
-            {isSuccess === true ? "Lesson created Successfully" : errorMessage}
+          <Alert severity={isSubjectUpdated === true ? "success" : "warning"}>
+            {isSubjectUpdated === true
+              ? "Subject updatedd Successfully"
+              : "Subject updation failled!"}
           </Alert>
         </Snackbar>
         <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -162,14 +182,14 @@ const CreateLesson = () => {
           <Grid container spacing={2} sx={{ my: 1 }}>
             <Grid item xs={6}>
               <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 600 }}>
-                Create Lesson
+                Edit Lesson
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
               <Button
                 variant="contained"
                 className="custom-button"
-                href={`/course/${courseGuid}/subject/${subjectGuid}/preview`}
+                href={`/course/${courseGuid}/subjects`}
                 component={Link}
               >
                 Cancel
@@ -255,7 +275,7 @@ const CreateLesson = () => {
                   sx={{ mt: 5 }}
                   className="custom-button"
                 >
-                  Create
+                  Update
                 </Button>
               </form>
             </Grid>
@@ -265,4 +285,4 @@ const CreateLesson = () => {
     </>
   );
 };
-export default CreateLesson;
+export default UpdateLesson;

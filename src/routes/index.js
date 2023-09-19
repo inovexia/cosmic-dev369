@@ -70,6 +70,7 @@ import CreateSubject from '../pages/Course/Subject/CreateSubject';
 import UpdateSubject from '../pages/Course/Subject/UpdateSubject';
 import SingleSubject from '../pages/Course/Subject/SingleSubject';
 import CreateContent from 'pages/Course/Subject/Content/CreateContent';
+import UpdateLesson from 'pages/Course/Subject/Lesson/UpdateLesson';
 
 const AppRouter = () => {
   return (
@@ -158,20 +159,20 @@ const AppRouter = () => {
         />
         <Route path={"/course/update/:courseGuid"} element={<UpdateCourse />} />
         <Route
-          path={"/course/:courseGuid/lesson/create"}
+          path={"/course/:courseGuid/subject/:subjectGuid/lesson/create"}
           element={<CreateLesson />}
+        />
+        <Route
+          path={"/course/subject/lesson/edit/:lessonGuid"}
+          element={<UpdateLesson />}
         />
         <Route
           path={"/course/:courseGuid/:subjectId/lessons"}
           element={<Lessons />}
         />
         <Route
-          path={"/course/:courseGuid/subject/:subjectID/preview"}
+          path={"/course/:courseGuid/subject/:subjectGuid/preview"}
           element={<SingleSubject />}
-        />
-        <Route
-          path={"/course/:courseGuid/:subjectId/lesson/create"}
-          element={<CreateLesson />}
         />
         <Route
           path={"/course/:courseGuid/subject/:subjectID/content/create"}
