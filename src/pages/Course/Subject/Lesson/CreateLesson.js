@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -11,19 +11,19 @@ import {
   IconButton,
   Snackbar,
   Alert,
-} from "@mui/material";
-import { Helmet } from "react-helmet";
-import { useForm } from "react-hook-form";
-import BASE_URL from "../../../../Utils/baseUrl";
-import token from "../../../../Utils/token";
-import Network from "../../../../Utils/network";
-import CreatedBy from "../../../../Utils/createdBy";
-import { serialize } from "object-to-formdata";
-import FormTextField from "../../../../components/Common/formTextField";
-import FormHiddenField from "../../../../components/Common/formHiddenField";
-import FormEditorField from "../../../../components/Common/formEditorField";
-import SidebarLeft from "../../../../components/Sidebar/SidebarLeft";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
+} from '@mui/material';
+import { Helmet } from 'react-helmet';
+import { useForm } from 'react-hook-form';
+import BASE_URL from '../../../../Utils/baseUrl';
+import token from '../../../../Utils/token';
+import Network from '../../../../Utils/network';
+import CreatedBy from '../../../../Utils/createdBy';
+import { serialize } from 'object-to-formdata';
+import FormTextField from '../../../../components/Common/formTextField';
+import FormHiddenField from '../../../../components/Common/formHiddenField';
+import FormEditorField from '../../../../components/Common/formEditorField';
+import SidebarLeft from '../../../../components/Sidebar/SidebarLeft';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 
 const CreateLesson = () => {
   const { courseGuid } = useParams();
@@ -31,10 +31,10 @@ const CreateLesson = () => {
   const [alertOpen, setAlertOpen] = useState(null);
   const [isSuccess, setIsSuccess] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [inputValue, setInputValue] = useState("");
-  const [valueLength, setValueLength] = useState("");
+  const [inputValue, setInputValue] = useState('');
+  const [valueLength, setValueLength] = useState('');
   const [isInputValid, setInputValid] = useState(true);
-  const [titleValid, setTitleValid] = useState("");
+  const [titleValid, setTitleValid] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [isTextareaValid, setTextareaValid] = useState(false);
   const [isTitleLengthValid, setIsTitleLengthValid] = useState(false);
@@ -49,10 +49,10 @@ const CreateLesson = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      title: "",
-      description: "",
-      subject_guid:subjectGuid,
-      userfile: undefined
+      title: '',
+      description: '',
+      subject_guid: subjectGuid,
+      userfile: undefined,
     },
   });
   const { title } = watch();
@@ -65,7 +65,7 @@ const CreateLesson = () => {
     }
     const truncatedValue = newValue.slice(0, 35);
     setInputValue(truncatedValue);
-    setValue("title", truncatedValue);
+    setValue('title', truncatedValue);
     setValueLength(truncatedValue.length);
     const isValid = truncatedValue.length >= 3 && truncatedValue.length <= 35;
     setInputValid(isValid);
@@ -78,28 +78,28 @@ const CreateLesson = () => {
     const [selectedFile] = e.target.files;
     if (selectedFile) {
       if (selectedFile.size > 300 * 1024 * 1024) {
-        setFileError("File size should be less than 300MB.");
+        setFileError('File size should be less than 300MB.');
         setFilename(null);
       } else {
-        setFileError("");
+        setFileError('');
         setFilename(selectedFile.name);
-        setValue("userfile", selectedFile);
+        setValue('userfile', selectedFile);
       }
     }
   };
 
   // Authentication
   var myHeaders = new Headers();
-  myHeaders.append("Authorization", `Bearer ${token}`);
-  myHeaders.append("Network", `${Network}`);
+  myHeaders.append('Authorization', `Bearer ${token}`);
+  myHeaders.append('Network', `${Network}`);
 
   const handleFormSubmit = async (data) => {
     const formData = serialize(data);
     const requestOptions = {
-      method: "POST",
+      method: 'POST',
       headers: myHeaders,
       body: formData,
-      redirect: "follow",
+      redirect: 'follow',
     };
     if (data.description.length >= 107) {
       setTextareaValid(true);
@@ -112,12 +112,13 @@ const CreateLesson = () => {
           requestOptions
         );
         const result = await response.json();
+        const newSubID = result.payload.guid;
         setAlertOpen(true);
         if (result.success === true) {
           setIsSuccess(true);
           setTimeout(() => {
             setAlertOpen(false);
-            navigate(`/course/${courseGuid}/subject/${subjectGuid}/preview`);
+            navigate(`/course/subject/lesson/${newSubID}/section/create`);
           }, 1000);
         } else {
           setIsSuccess(false);
@@ -140,36 +141,36 @@ const CreateLesson = () => {
       <Helmet>
         <title>Create Lesson</title>
       </Helmet>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: 'flex' }}>
         <SidebarLeft />
         <Snackbar
           open={alertOpen}
           autoHideDuration={2000}
           onClose={() => setIsSuccess(false)}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
-          <Alert severity={isSuccess === true ? "success" : "warning"}>
-            {isSuccess === true ? "Lesson created Successfully" : errorMessage}
+          <Alert severity={isSuccess === true ? 'success' : 'warning'}>
+            {isSuccess === true ? 'Lesson created Successfully' : errorMessage}
           </Alert>
         </Snackbar>
         <Box sx={{ flexGrow: 1, p: 3 }}>
           <Grid
             container
             spacing={2}
-            sx={{ width: "100%" }}
-            alignItems="center"
+            sx={{ width: '100%' }}
+            alignItems='center'
           ></Grid>
           <Grid container spacing={2} sx={{ my: 1 }}>
             <Grid item xs={6}>
-              <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 600 }}>
+              <Typography variant='h1' sx={{ fontSize: 30, fontWeight: 600 }}>
                 Create Lesson
               </Typography>
             </Grid>
-            <Grid item xs={6} sx={{ textAlign: "right" }}>
+            <Grid item xs={6} sx={{ textAlign: 'right' }}>
               <Button
-                variant="contained"
-                className="custom-button"
-                href={`/course/${courseGuid}/subject/${subjectGuid}/preview`}
+                variant='contained'
+                className='custom-button'
+                href={`/course/subject/${subjectGuid}/lessons`}
                 component={Link}
               >
                 Cancel
@@ -184,76 +185,76 @@ const CreateLesson = () => {
                   <Grid item xs={12} md={12} sx={{ mt: 3 }}>
                     <FormTextField
                       control={control}
-                      label="Title"
-                      variant="outlined"
-                      name="title"
-                      pattern="[A-Za-z]{1,}"
-                      style={{ width: "100%" }}
+                      label='Title'
+                      variant='outlined'
+                      name='title'
+                      pattern='[A-Za-z]{1,}'
+                      style={{ width: '100%' }}
                       onChange={handleInputChange}
                       required
                       value={title}
                       error={!isInputValid}
                       helperText={
                         !isInputValid
-                          ? "Title must be between 3 and 35 characters"
-                          : ""
+                          ? 'Title must be between 3 and 35 characters'
+                          : ''
                       }
                     />
                     {isTitleLengthValid && (
-                      <Typography sx={{ mt: 2 }} color="error">
+                      <Typography sx={{ mt: 2 }} color='error'>
                         Title must have allowed min 3 and max 35 characters
                       </Typography>
                     )}
                   </Grid>
                   <Grid item xs={12}>
-                    <InputLabel htmlFor="course-desc" sx={{ my: 1 }}>
+                    <InputLabel htmlFor='course-desc' sx={{ my: 1 }}>
                       Description
                     </InputLabel>
                     <FormEditorField
-                      id="course-desc"
+                      id='course-desc'
                       control={control}
-                      name="description"
+                      name='description'
                     />
                     {isTextareaValid && (
-                      <Typography sx={{ mt: 2 }} color="error">
+                      <Typography sx={{ mt: 2 }} color='error'>
                         Description must be at least 100 characters
                       </Typography>
                     )}
                   </Grid>
                   <Grid item xs={12}>
-                    <Box className="add-file">
+                    <Box className='add-file'>
                       <input
-                        name="userfile"
-                        id="file-input"
-                        type="file"
+                        name='userfile'
+                        id='file-input'
+                        type='file'
                         onChange={handleFileChange}
-                        style={{ display: "none" }}
+                        style={{ display: 'none' }}
                       />
                       <strong>Upload File</strong>
-                      <label htmlFor="file-input">
-                        <IconButton component="span">
+                      <label htmlFor='file-input'>
+                        <IconButton component='span'>
                           <FileUploadIcon
                             sx={{
-                              color: "#EAC43D",
-                              width: "50px",
-                              height: "50px",
-                              cursor: "pointer",
+                              color: '#EAC43D',
+                              width: '50px',
+                              height: '50px',
+                              cursor: 'pointer',
                             }}
                           />
                         </IconButton>
                       </label>
-                      <span>{filename ? filename : "No file selected"}</span>
-                      {fileError && <p style={{ color: "red" }}>{fileError}</p>}
+                      <span>{filename ? filename : 'No file selected'}</span>
+                      {fileError && <p style={{ color: 'red' }}>{fileError}</p>}
                     </Box>
                   </Grid>
                 </Grid>
 
                 <Button
-                  variant="contained"
-                  size="medium"
-                  type="submit"
+                  variant='contained'
+                  size='medium'
+                  type='submit'
                   sx={{ mt: 5 }}
-                  className="custom-button"
+                  className='custom-button'
                 >
                   Create
                 </Button>

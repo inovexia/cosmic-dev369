@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -23,108 +23,101 @@ import {
   DialogContent,
   DialogContentText,
   Typography,
-} from "@mui/material";
-import { Helmet } from "react-helmet";
-import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
-import SidebarLeft from "../../../components/Sidebar/SidebarLeft";
-import Course from "../../../assets/images/Course.jpg";
-import BASE_URL from "../../../Utils/baseUrl";
-import token from "../../../Utils/token";
-import Network from "../../../Utils/network";
-import { useTheme } from "@mui/material/styles";
-import CheckTokenValid from "../../../components/Redirect/CheckTokenValid";
+  Switch,
+  FormGroup,
+  FormControlLabel,
+} from '@mui/material';
+import { Helmet } from 'react-helmet';
+import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
+import SidebarLeft from '../../../components/Sidebar/SidebarLeft';
+import Course from '../../../assets/images/Course.jpg';
+import BASE_URL from '../../../Utils/baseUrl';
+import token from '../../../Utils/token';
+import Network from '../../../Utils/network';
+import { useTheme } from '@mui/material/styles';
+import CheckTokenValid from '../../../components/Redirect/CheckTokenValid';
 
 const Subjects = () => {
+  const options = [
+    {
+      label: 'Preview',
+      link: 'course/subject/MYN18/lesson/PHP22/preview',
+    },
+    {
+      label: 'Update',
+      link: '/lesson/update',
+    },
+  ];
+  const ITEM_HEIGHT = 48;
   const { courseGuid } = useParams();
+  // const { subjectGuid } = useParams();
+  // const { lessonGuid } = useParams();
+  const [subjectGuid, setSubjectGuid] = useState('');
+  const [subjectId, setSubjectId] = useState('');
   const theme = useTheme();
+
   const primaryColor = theme.palette.primary.main;
   const successColor = theme.palette.success.main;
 
-  const options = [
-    {
-      label: "View",
-      link: `/course/${courseGuid}/subject/edit`,
-    },
-    {
-      label: "Update",
-      link: `/course/${courseGuid}/subject/edit`,
-    },
-  ];
-
-  const ITEM_HEIGHT = 48;
-  // State Manage
-  const [filterOption, setFilterOption] = useState("all");
-  const [subjects, setSubjects] = useState("");
+  // State Management
+  const [filterOption, setFilterOption] = useState('all');
+  const [searchTitle, setSearchTitle] = useState('');
+  const [subject, setSubject] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [searchTitle, setSearchTitle] = useState("");
-  // Authorization
-  const myHeaders = new Headers();
-  myHeaders.append("Authorization", `Bearer ${token}`);
-  myHeaders.append("Network", `${Network}`);
+  const [subjects, setSubjects] = useState([]);
+  const [currentSubject, setCurrentSubject] = useState();
+
+  // publish and unpublish
+  const [isPublished, setIsPublished] = useState(false);
+  const handlePublishToggle = () => {
+    setIsPublished(!isPublished);
+  };
 
   const handleFilterChange = (event) => {
     setFilterOption(event.target.value);
   };
+  // Authorization
+  const myHeaders = new Headers();
+  myHeaders.append('Authorization', `Bearer ${token}`);
+  myHeaders.append('Network', `${Network}`);
 
-  // Fetch Course list
-  useEffect(() => {
-    const fetchSubjects = async () => {
-      const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        redirect: "follow",
-      };
-      try {
-        const response = await fetch(
-          `${BASE_URL}/course/${courseGuid}/subject/list`,
-          requestOptions
-        );
-        const result = await response.json();
-        setSubjects(result.payload.data);
-        setLoading(false);
-      } catch (error) {
-        console.log("error", error);
-        setLoading(false);
-      }
-    };
-    fetchSubjects();
-  }, []);
-
+  // search and filter functionality
   const filteredItems =
     subjects &&
     subjects.filter((item) => {
       const searchVal = `${item.title} ${item.description}`.toLowerCase();
       const searchValue = searchTitle.toLowerCase();
 
-      if (filterOption === "all") {
+      if (filterOption === 'all') {
         return searchVal.includes(searchValue);
-      } else if (filterOption === "published") {
+      } else if (filterOption === 'published') {
         return (
-          searchVal.includes(searchValue) && item.status === "1" // Published courses
+          searchVal.includes(searchValue) && item.status === '1' // Published courses
         );
-      } else if (filterOption === "unpublished") {
+      } else if (filterOption === 'unpublished') {
         return (
-          searchVal.includes(searchValue) && item.status === "0" // Unpublished courses
+          searchVal.includes(searchValue) && item.status === '0' // Unpublished courses
         );
-      } else if (filterOption === "archive") {
+      } else if (filterOption === 'archive') {
         return (
-          searchVal.includes(searchValue) && item.status === "2" // Archived courses
+          searchVal.includes(searchValue) && item.status === '2' // Archived courses
         );
       }
 
       return true; // By default, show all courses
     });
-
+  // console.log(filteredItems);
   // Pagination here
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
   const lastIndex = currentPage * itemPerPage;
   const firstIndex = lastIndex - itemPerPage;
-  const currentItem = filteredItems.slice(firstIndex, lastIndex);
+  const currentItem =
+    filteredItems && filteredItems.slice(firstIndex, lastIndex);
   const totalPages = Math.ceil(
     filteredItems && filteredItems.length / itemPerPage
   );
-  const numbers = [...Array(totalPages + 1).keys()].slice(1);
+  const numbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   function prePage() {
     if (currentPage !== firstIndex) {
@@ -140,39 +133,70 @@ const Subjects = () => {
     }
   }
 
+  // Get subject list
+  useEffect(() => {
+    const fetchCurrentSubject = async () => {
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        redirect: 'follow',
+      };
+      const response = await fetch(
+        `${BASE_URL}/course/${courseGuid}/subjects`,
+        requestOptions
+      );
+      const result = await response.json();
+      console.log(result.payload);
+      if (result.success === true) {
+        setLoading(false);
+        setCurrentSubject(result.payload.data);
+        setSubjects(result.payload.data);
+      }
+    };
+    fetchCurrentSubject();
+  }, []);
+
+  // Add subjectGuid to the dependency array
+  // console.log(lessons);
+  // dropdown menu
   // Action Button
   const [anchorEl, setAnchorEl] = useState(null);
-  const [subjectGuid, setSubjectGuid] = useState(null);
+
   const open = Boolean(anchorEl);
-  const [currStatus, setCurrStatus] = useState("");
-  const [changeStatus, setChangeStatus] = useState("");
+  const [currStatus, setCurrStatus] = useState('');
+  const [changeStatus, setChangeStatus] = useState('');
 
   const handleClick = (event, id, status) => {
     setAnchorEl(event.currentTarget);
     setSubjectGuid(id);
-    setCurrStatus(status)
-    if (status === "1") {
-      setChangeStatus("0")
-    }
-    else {
-      setChangeStatus("1");
-    }
-    
+    setSubjectId(id);
+    setCurrStatus(status);
+    // if (status === '1') {
+    //   setChangeStatus('0');
+    // } else {
+    //   setChangeStatus('1');
+    // }
   };
 
   const handleClose = () => {
     setAnchorEl(null);
   };
-
+  console.log(subjectGuid);
   // Delete
   const [alertOpen, setAlertOpen] = useState(null);
   const [isActionSuccess, setIsActionSuccess] = useState(null);
   const [actionConfirmOpen, setActionConfirmOpen] = useState(false);
-  const [actionValue, setActionValue] = useState("")
-  const [newStatus, setNewStatus] = useState("");
-  const handleConfirmOpen = (action) => {
+  const [actionValue, setActionValue] = useState('');
+  const [newStatus, setNewStatus] = useState('');
+  const handleConfirmOpen = (action, id) => {
     setActionConfirmOpen(true);
-    setActionValue(action)
+    setActionValue(action);
+    setSubjectGuid(id);
+    if (action === '1') {
+      setChangeStatus('0');
+    } else {
+      setChangeStatus('1');
+    }
   };
   const actionConfirmClose = () => {
     setActionConfirmOpen(false);
@@ -181,13 +205,13 @@ const Subjects = () => {
   const handleBulkDeleteUser = async () => {
     setActionConfirmOpen(false);
     const requestOptions = {
-      method: "DELETE",
+      method: 'DELETE',
       headers: myHeaders,
-      redirect: "follow",
+      redirect: 'follow',
     };
     try {
       const res = await fetch(
-        `${BASE_URL}/course/${courseGuid}/subject/${subjectGuid}/delete`,
+        `${BASE_URL}/course/subject/${subjectId}/delete`,
         requestOptions
       );
       const result = await res.json();
@@ -209,24 +233,26 @@ const Subjects = () => {
       throw new Error(`Failed to post status: ${error.message}`);
     }
   };
-
-
-  // Delete function on submit
+  console.log(changeStatus);
+  // publish and unpublish function
   const handleChangeStatus = async () => {
     var formdata = new FormData();
-    formdata.append("status", changeStatus);
+    formdata.append('status', changeStatus);
+
+    // return;
     const requestOptions = {
-      method: "POST",
+      method: 'POST',
       headers: myHeaders,
       body: formdata,
-      redirect: "follow",
+      redirect: 'follow',
     };
     try {
       const res = await fetch(
-        `${BASE_URL}/course/${courseGuid}/subject/${subjectGuid}/change_status`,
+        `${BASE_URL}/course/subject/${subjectGuid}/change_status`,
         requestOptions
       );
       const result = await res.json();
+      console.log(result);
       setAlertOpen(true);
       if (result.success === true) {
         setIsActionSuccess(true);
@@ -251,46 +277,46 @@ const Subjects = () => {
       <Helmet>
         <title>All Subjects</title>
       </Helmet>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: 'flex' }}>
         <SidebarLeft />
         <Dialog
           open={actionConfirmOpen}
           onClose={actionConfirmClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
+          aria-labelledby='alert-dialog-title'
+          aria-describedby='alert-dialog-description'
         >
-          <DialogTitle id="alert-dialog-title">
-            {actionValue && actionValue === "Publish"
-              ? "Confirm Publish"
-              : actionValue && actionValue === "Unpublish"
-              ? "Confirm Unpublish"
-              : "Confirm Delete"}
+          <DialogTitle id='alert-dialog-title'>
+            {actionValue && actionValue === '0'
+              ? 'Confirm Publish'
+              : actionValue && actionValue === '1'
+              ? 'Confirm Unpublish'
+              : 'Confirm Delete'}
           </DialogTitle>
           <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              Are you sure you want to{" "}
-              {actionValue && actionValue === "Publish"
-                ? "Publish"
-                : actionValue && actionValue === "Unpublish"
-                ? "Unpublish"
-                : "Delete"}{" "}
+            <DialogContentText id='alert-dialog-description'>
+              Are you sure you want to{' '}
+              {actionValue && actionValue === '0'
+                ? 'Publish'
+                : actionValue && actionValue === '1'
+                ? 'Unpublish'
+                : 'Delete'}{' '}
               this Subject?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={actionConfirmClose} color="primary">
+            <Button onClick={actionConfirmClose} color='primary'>
               Cancel
             </Button>
-            {actionValue && actionValue === "Publish" ? (
-              <Button onClick={handleChangeStatus} color="primary" autoFocus>
+            {actionValue && actionValue === '0' ? (
+              <Button onClick={handleChangeStatus} color='primary' autoFocus>
                 Confirm
               </Button>
-            ) : actionValue && actionValue === "Unpublish" ? (
-              <Button onClick={handleChangeStatus} color="primary" autoFocus>
+            ) : actionValue && actionValue === '1' ? (
+              <Button onClick={handleChangeStatus} color='primary' autoFocus>
                 Confirm
               </Button>
             ) : (
-              <Button onClick={handleBulkDeleteUser} color="primary" autoFocus>
+              <Button onClick={handleBulkDeleteUser} color='primary' autoFocus>
                 Confirm
               </Button>
             )}
@@ -300,46 +326,45 @@ const Subjects = () => {
           open={alertOpen}
           autoHideDuration={3000}
           onClose={() => setIsActionSuccess(false)}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
-          {actionValue && actionValue === "Publish" ? (
-            <Alert severity={isActionSuccess === true ? "success" : "warning"}>
+          {actionValue && actionValue === '0' ? (
+            <Alert severity={isActionSuccess === true ? 'success' : 'warning'}>
               {isActionSuccess === true
-                ? "Subject Published Successfully"
-                : "Subject not published."}
+                ? 'Subject Published Successfully'
+                : 'Subject not published.'}
             </Alert>
-          ) : actionValue && actionValue === "Unpublish" ? (
-            <Alert severity={isActionSuccess === true ? "success" : "warning"}>
+          ) : actionValue && actionValue === '1' ? (
+            <Alert severity={isActionSuccess === true ? 'success' : 'warning'}>
               {isActionSuccess === true
-                ? "Subject Unpublished Successfully"
-                : "Subject not Unpublished."}
+                ? 'Subject Unpublished Successfully'
+                : 'Subject not Unpublished.'}
             </Alert>
           ) : (
-            <Alert severity={isActionSuccess === true ? "success" : "warning"}>
+            <Alert severity={isActionSuccess === true ? 'success' : 'warning'}>
               {isActionSuccess === true
-                ? "Subject Deleted Successfully"
-                : "Subject not deleted."}
+                ? 'Subject Deleted Successfully'
+                : 'Subject not deleted.'}
             </Alert>
           )}
         </Snackbar>
-
         <Box sx={{ flexGrow: 1, p: 3, mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <h1>All Subjects</h1>
             </Grid>
-            <Grid item xs={6} sx={{ display: "flex", justifyContent: "right" }}>
+            <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'right' }}>
               <Button
                 component={Link}
                 href={`/course/${courseGuid}/subject/create`}
-                variant="contained"
+                variant='contained'
               >
                 Create Subject
               </Button>
             </Grid>
           </Grid>
           {loading ? (
-            <Box sx={{ textAlign: "center", mt: 5 }}>
+            <Box sx={{ textAlign: 'center', mt: 5 }}>
               <CircularProgress />
             </Box>
           ) : subjects && subjects.length !== 0 ? (
@@ -347,31 +372,31 @@ const Subjects = () => {
               <Grid
                 container
                 spacing={2}
-                sx={{ mt: 3, justifyContent: "space-between" }}
+                sx={{ mt: 3, justifyContent: 'space-between' }}
               >
                 <Grid item xs={12} md={4}>
                   <TextField
-                    label="Search by title and description"
-                    placeholder="Search by title"
+                    label='Search by title and description'
+                    placeholder='Search by title'
                     value={searchTitle}
                     onChange={(e) => setSearchTitle(e.target.value)}
-                    sx={{ width: "100%" }}
+                    sx={{ width: '100%' }}
                   />
                 </Grid>
                 <Grid item xs={12} md={2}>
                   <FormControl fullWidth>
-                    <InputLabel id="filter-label">Filter by Status</InputLabel>
+                    <InputLabel id='filter-label'>Filter by Status</InputLabel>
                     <Select
-                      labelId="filter-label"
-                      label="Filter by Status"
-                      id="filter-select"
+                      labelId='filter-label'
+                      label='Filter by Status'
+                      id='filter-select'
                       value={filterOption}
                       onChange={handleFilterChange}
                     >
-                      <MenuItem value="all">All</MenuItem>
-                      <MenuItem value="published">Published</MenuItem>
-                      <MenuItem value="unpublished">Unpublished</MenuItem>
-                      <MenuItem value="archive">Archive</MenuItem>
+                      <MenuItem value='all'>All</MenuItem>
+                      <MenuItem value='published'>Published</MenuItem>
+                      <MenuItem value='unpublished'>Unpublished</MenuItem>
+                      <MenuItem value='archive'>Archive</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -380,21 +405,21 @@ const Subjects = () => {
                 container
                 spacing={2}
                 sx={{ mt: 2 }}
-                className="manage-course"
+                className='manage-course'
               >
                 <Grid item xs={12}>
                   {currentItem && currentItem.length !== 0 ? (
-                    <Card>
+                    <Card sx={{ px: 3 }}>
                       {currentItem &&
                         currentItem.map((item, index) => (
-                          <Box sx={{ px: 3 }} key={index}>
+                          <div key={index}>
                             <Grid
                               container
                               sx={{
-                                borderBottom: "1px solid #B8B8B8",
+                                borderBottom: '1px solid #B8B8B8',
                                 py: 2,
-                                alignItems: "center",
-                                justifyContent: "space-between",
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
                               }}
                             >
                               <Grid
@@ -402,168 +427,83 @@ const Subjects = () => {
                                 xs={12}
                                 md={1}
                                 sx={{
-                                  display: { xs: "flex", md: "block" },
-                                  justifyContent: { xs: "space-between" },
+                                  display: { xs: 'flex', md: 'block' },
+                                  justifyContent: { xs: 'space-between' },
                                 }}
                               >
-                                <Box className="course-image">
+                                <Box className='course-image'>
                                   <img
                                     src={Course}
                                     alt={item.title}
-                                    loading="lazy"
+                                    loading='lazy'
                                   />
                                 </Box>
-                                <Grid
-                                  item
-                                  sx={{ display: { xs: "block", md: "none" } }}
-                                >
-                                  <IconButton
-                                    aria-label="more"
-                                    id="long-button1"
-                                    aria-controls={
-                                      open ? "long-menu" : undefined
-                                    }
-                                    aria-expanded={open ? "true" : undefined}
-                                    aria-haspopup="true"
-                                    onClick={(event) =>
-                                      handleClick(event, item.guid, item.status)
-                                    }
-                                    className="no-pd"
-                                  >
-                                    <MoreVertOutlinedIcon />
-                                  </IconButton>
-                                  <Menu
-                                    sx={{
-                                      boxShadow:
-                                        "0px 0px 7px -5px rgba(0,0,0,0.1)",
-                                    }}
-                                    id="long-menu1"
-                                    MenuListProps={{
-                                      "aria-labelledby": "long-button1",
-                                    }}
-                                    anchorEl={anchorEl}
-                                    open={open}
-                                    onClose={handleClose}
-                                    PaperProps={{
-                                      style: {
-                                        maxHeight: ITEM_HEIGHT * 4.5,
-                                        width: "10ch",
-                                      },
-                                    }}
-                                  >
-                                    {options.map((option, index) => {
-                                      const linkUrl = `${option.link}/${subjectGuid}`;
-                                      return (
-                                        <MenuItem
-                                          key={index}
-                                          onClick={handleClose}
-                                        >
-                                          <Link
-                                            href={linkUrl}
-                                            underline="none"
-                                            color="inherit"
-                                          >
-                                            {option.label}
-                                          </Link>
-                                        </MenuItem>
-                                      );
-                                    })}
-                                    <MenuItem
-                                      value={
-                                        currStatus === "1"
-                                          ? "Unpublish"
-                                          : "Publish"
-                                      }
-                                      onClick={() =>
-                                        handleConfirmOpen(
-                                          currStatus === "1"
-                                            ? "Unpublish"
-                                            : "Publish"
-                                        )
-                                      }
-                                    >
-                                      {currStatus === "1"
-                                        ? "Unpublish"
-                                        : "Publish"}
-                                    </MenuItem>
-                                    <MenuItem
-                                      value="delete"
-                                      onClick={() =>
-                                        handleConfirmOpen("delete")
-                                      }
-                                    >
-                                      Delete
-                                    </MenuItem>
-                                  </Menu>
-                                </Grid>
                               </Grid>
                               <Grid item xs={12} md={4}>
                                 <h3>
                                   <Link
-                                    href={`/course/manage/${item.guid}`}
+                                    href={`/course/subject/${item.guid}/lessons`}
                                     sx={{
-                                      textDecoration: "none",
-                                      color: "inherit",
+                                      textDecoration: 'none',
+                                      color: 'inherit',
                                     }}
                                   >
                                     {item.title}
                                   </Link>
                                 </h3>
                               </Grid>
-                              <Grid item xs={12} md={3}>
-                                <h4>{item.created_by}</h4>
-                              </Grid>
                               <Grid item xs={12} md={2}>
-                                {item.status === "0" ? (
-                                  <Typography
-                                    variant="span"
-                                    component="span"
-                                    color="secondary"
-                                  >
-                                    Unpublished
-                                  </Typography>
-                                ) : item.status === "1" ? (
-                                  <Typography
-                                    variant="span"
-                                    component="span"
-                                    color={successColor}
-                                  >
-                                    Published
-                                  </Typography>
-                                ) : (
-                                  <Typography
-                                    variant="span"
-                                    component="span"
-                                    color="primary"
-                                  >
-                                    Archived
-                                  </Typography>
-                                )}
+                                <p>{item.created_by}</p>
+                              </Grid>
+                              <Grid item xs={12} md={3}>
+                                <label>
+                                  <FormControlLabel
+                                    control={
+                                      <Switch
+                                        checked={
+                                          item.status === '1' ? true : false
+                                        }
+                                        // onChange={handlePublishToggle}
+                                        onClick={() =>
+                                          handleConfirmOpen(
+                                            item.status === '0' ? '0' : '1',
+                                            item.guid
+                                          )
+                                        }
+                                        name='publishSwitch'
+                                      />
+                                    }
+                                    label=''
+                                  />
+                                  {item.status === '1'
+                                    ? 'Published'
+                                    : 'Unpublished'}
+                                </label>
                               </Grid>
                               <Grid item xs={12} md={1}>
                                 <Grid
                                   item
-                                  sx={{ display: { xs: "none", md: "block" } }}
+                                  sx={{ display: { xs: 'none', md: 'block' } }}
                                 >
                                   <IconButton
-                                    aria-label="more"
-                                    id="long-button"
+                                    aria-label='more'
+                                    id='long-button'
                                     aria-controls={
-                                      open ? "long-menu" : undefined
+                                      open ? 'long-menu' : undefined
                                     }
-                                    aria-expanded={open ? "true" : undefined}
-                                    aria-haspopup="true"
+                                    aria-expanded={open ? 'true' : undefined}
+                                    aria-haspopup='true'
                                     onClick={(event) =>
                                       handleClick(event, item.guid, item.status)
                                     }
-                                    className="no-pd"
+                                    className='no-pd'
                                   >
                                     <MoreVertOutlinedIcon />
                                   </IconButton>
                                   <Menu
-                                    id="long-menu"
+                                    id='long-menu'
                                     MenuListProps={{
-                                      "aria-labelledby": "long-button",
+                                      'aria-labelledby': 'long-button',
                                     }}
                                     anchorEl={anchorEl}
                                     open={open}
@@ -571,49 +511,32 @@ const Subjects = () => {
                                     PaperProps={{
                                       style: {
                                         maxHeight: ITEM_HEIGHT * 4.5,
-                                        width: "10ch",
+                                        width: '10ch',
                                       },
                                     }}
                                   >
-                                    {options.map((option, index) => {
-                                      const linkUrl = `${option.link}/${subjectGuid}`;
-                                      return (
-                                        <MenuItem
-                                          key={index}
-                                          onClick={handleClose}
-                                        >
-                                          <Link
-                                            href={linkUrl}
-                                            underline="none"
-                                            color="inherit"
-                                          >
-                                            {option.label}
-                                          </Link>
-                                        </MenuItem>
-                                      );
-                                    })}
-                                    <MenuItem
-                                      value={
-                                        currStatus === "1"
-                                          ? "Unpublish"
-                                          : "Publish"
-                                      }
-                                      onClick={() =>
-                                        handleConfirmOpen(
-                                          currStatus === "1"
-                                            ? "Unpublish"
-                                            : "Publish"
-                                        )
-                                      }
-                                    >
-                                      {currStatus === "1"
-                                        ? "Unpublish"
-                                        : "Publish"}
+                                    <MenuItem onClick={handleClose}>
+                                      <Link
+                                        href={`/course/${courseGuid}/subject/${subjectGuid}/preview`}
+                                        underline='none'
+                                        color='inherit'
+                                      >
+                                        Preview
+                                      </Link>
+                                    </MenuItem>
+                                    <MenuItem onClick={handleClose}>
+                                      <Link
+                                        href={`/course/${courseGuid}/subject/edit/${subjectGuid}`}
+                                        underline='none'
+                                        color='inherit'
+                                      >
+                                        Update
+                                      </Link>
                                     </MenuItem>
                                     <MenuItem
-                                      value="delete"
+                                      value='delete'
                                       onClick={() =>
-                                        handleConfirmOpen("delete")
+                                        handleConfirmOpen('delete')
                                       }
                                     >
                                       Delete
@@ -622,75 +545,20 @@ const Subjects = () => {
                                 </Grid>
                               </Grid>
                             </Grid>
-                          </Box>
+                          </div>
                         ))}
                     </Card>
                   ) : (
-                    <Alert sx={{ mt: 5 }} severity="error">
+                    <Alert sx={{ mt: 5 }} severity='error'>
                       Subject not found!
                     </Alert>
                   )}
                 </Grid>
               </Grid>
-              <Grid
-                container
-                spacing={2}
-                sx={{ mt: 5, justifyContent: "center" }}
-              >
-                <Grid item>
-                  {filteredItems && filteredItems.length > itemPerPage ? (
-                    <Grid container spacing={2}>
-                      <Grid
-                        item
-                        sx={{
-                          textAlign: "center",
-                          display: "flex",
-                          justifyContent: "center",
-                          width: "100%",
-                        }}
-                      >
-                        <ButtonGroup
-                          color="primary"
-                          aria-label="outlined primary button group"
-                          className="pagination-button"
-                        >
-                          <Button
-                            onClick={prePage}
-                            disabled={currentPage === 1}
-                          >
-                            PREV
-                          </Button>
-                          {numbers.map((n, i) => (
-                            <Button
-                              className={currentPage === n ? "active" : ""}
-                              key={i}
-                              onClick={() => changeCPage(n)}
-                              style={{
-                                backgroundColor:
-                                  currentPage === n ? primaryColor : "",
-                              }}
-                            >
-                              {n}
-                            </Button>
-                          ))}
-                          <Button
-                            onClick={nextPage}
-                            disabled={currentPage === totalPages}
-                          >
-                            NEXT
-                          </Button>
-                        </ButtonGroup>
-                      </Grid>
-                    </Grid>
-                  ) : (
-                    ""
-                  )}
-                </Grid>
-              </Grid>
             </>
           ) : (
-            <Alert sx={{ mt: 5 }} severity="error">
-              Subject not found!
+            <Alert sx={{ mt: 5 }} severity='error'>
+              Lesson not found!
             </Alert>
           )}
         </Box>

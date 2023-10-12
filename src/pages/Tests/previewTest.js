@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -11,23 +11,23 @@ import {
   Alert,
   ButtonGroup,
   Link,
-} from "@mui/material";
-import { useForm } from "react-hook-form";
-import { Helmet } from "react-helmet";
-import ReactHtmlParser from "react-html-parser";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import CachedIcon from "@mui/icons-material/Cached";
-import BASE_URL from "../../Utils/baseUrl";
-import CreatedBy from "../../Utils/createdBy";
-import token from "../../Utils/token";
-import Network from "../../Utils/network";
-import SidebarLeft from "../../components/Sidebar/SidebarLeft";
+} from '@mui/material';
+import { useForm } from 'react-hook-form';
+import { Helmet } from 'react-helmet';
+import ReactHtmlParser from 'react-html-parser';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import CachedIcon from '@mui/icons-material/Cached';
+import BASE_URL from '../../Utils/baseUrl';
+import CreatedBy from '../../Utils/createdBy';
+import token from '../../Utils/token';
+import Network from '../../Utils/network';
+import SidebarLeft from '../../components/Sidebar/SidebarLeft';
 
 const PreviewTest = () => {
   // State variables for Snackbar
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSuccess, setSnackbarSuccess] = useState(null);
 
   // Function to show the Snackbar
@@ -59,26 +59,26 @@ const PreviewTest = () => {
   const { guid } = useParams();
   const { control } = useForm({
     defaultValues: {
-      title: "",
-      details: "",
-      status: "0",
+      title: '',
+      details: '',
+      status: '0',
       created_by: { CreatedBy },
     },
   });
 
   // Authorization Setup
   var myHeaders = new Headers();
-  myHeaders.append("Authorization", `Bearer ${token}`);
-  myHeaders.append("Network", `${Network}`);
+  myHeaders.append('Authorization', `Bearer ${token}`);
+  myHeaders.append('Network', `${Network}`);
 
   // Get current test details
   const [test, setTest] = useState([]);
   const [questions, setQuestions] = useState([]);
   useEffect(() => {
     const requestOption = {
-      method: "GET",
+      method: 'GET',
       headers: myHeaders,
-      redirect: "follow",
+      redirect: 'follow',
     };
     const fetchTest = async () => {
       const res = await fetch(`${BASE_URL}/tests/view/${guid}`, requestOption);
@@ -91,9 +91,9 @@ const PreviewTest = () => {
 
   useEffect(() => {
     const requestOption = {
-      method: "GET",
+      method: 'GET',
       headers: myHeaders,
-      redirect: "follow",
+      redirect: 'follow',
     };
     const fetchQuestion = async () => {
       const response = await fetch(
@@ -107,12 +107,16 @@ const PreviewTest = () => {
     fetchQuestion();
   }, []);
 
-  const totalMarks = questions.reduce((acc, curr) => {
-    return acc + parseInt(curr.marks);
-  }, 0);
-  const duration = questions.reduce((acc, curr) => {
-    return acc + parseInt(curr.time);
-  }, 0);
+  const totalMarks =
+    questions &&
+    questions.reduce((acc, curr) => {
+      return acc + parseInt(curr.marks);
+    }, 0);
+  const duration =
+    questions &&
+    questions.reduce((acc, curr) => {
+      return acc + parseInt(curr.time);
+    }, 0);
   const testTime = duration / 60;
   const formattedTime = parseFloat(testTime.toFixed(0));
 
@@ -151,13 +155,13 @@ const PreviewTest = () => {
   function handleDelete(id) {
     setIsDeleting(id);
     var formdata = new FormData();
-    formdata.append("questions[0]", id);
-    formdata.append("updated_by", CreatedBy);
+    formdata.append('questions[0]', id);
+    formdata.append('updated_by', CreatedBy);
     const deleteOption = {
-      method: "POST",
+      method: 'POST',
       headers: myHeaders,
       body: formdata,
-      redirect: "follow",
+      redirect: 'follow',
     };
     fetch(`${BASE_URL}/tests/remove_question/${guid}`, deleteOption)
       .then((response) => {
@@ -175,12 +179,12 @@ const PreviewTest = () => {
     selected.forEach((item, index) => {
       formdata.append(`questions[${index}]`, item);
     });
-    formdata.append("updated_by", CreatedBy);
+    formdata.append('updated_by', CreatedBy);
     const requestOptions = {
-      method: "POST",
+      method: 'POST',
       headers: myHeaders,
       body: formdata,
-      redirect: "follow",
+      redirect: 'follow',
     };
     try {
       const res = await fetch(
@@ -190,7 +194,7 @@ const PreviewTest = () => {
       const result = await res.json();
       setSnackbarSuccess(result.success);
       if (result.success === true) {
-        showSnackbar("success", "Question deleted Successfully");
+        showSnackbar('success', 'Question deleted Successfully');
         setQuestions((prevQuestions) =>
           prevQuestions.filter((question) => {
             if (!selected.includes(question.guid)) {
@@ -201,8 +205,8 @@ const PreviewTest = () => {
         );
       } else {
         showSnackbar(
-          "warning",
-          "Question not deleted, At least 1 item should be selected!"
+          'warning',
+          'Question not deleted, At least 1 item should be selected!'
         );
         setTimeout(() => {}, 3000);
       }
@@ -217,19 +221,19 @@ const PreviewTest = () => {
       <Helmet>
         <title>Preview Test</title>
       </Helmet>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: 'flex' }}>
         <SidebarLeft />
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={3000}
           onClose={hideSnackbar}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
           <Alert
             severity={
               snackbarSuccess && snackbarSuccess === true
-                ? "success"
-                : "warning"
+                ? 'success'
+                : 'warning'
             }
           >
             {snackbarMessage}
@@ -239,14 +243,14 @@ const PreviewTest = () => {
           <Grid container spacing={0} sx={{ mt: 5 }}>
             <Grid container spacing={2}>
               <Grid item xs={6}>
-                <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 600 }}>
+                <Typography variant='h1' sx={{ fontSize: 30, fontWeight: 600 }}>
                   {test && test.title}
                 </Typography>
               </Grid>
-              <Grid item xs={6} sx={{ textAlign: "right" }}>
+              <Grid item xs={6} sx={{ textAlign: 'right' }}>
                 <Button
-                  className="custom-button"
-                  variant="contained"
+                  className='custom-button'
+                  variant='contained'
                   component={Link}
                   href={`/test/manage/${guid}`}
                 >
@@ -258,35 +262,35 @@ const PreviewTest = () => {
           <Grid container spacing={0} sx={{ mt: 5 }}>
             <Grid item xs={6}>
               <Typography
-                variant="h5"
-                sx={{ fontSize: 18, lineHeight: "22px", fontWeight: 400 }}
+                variant='h5'
+                sx={{ fontSize: 18, lineHeight: '22px', fontWeight: 400 }}
               >
                 Test Duration:{formattedTime}min
               </Typography>
             </Grid>
-            <Grid item xs={6} sx={{ textAlign: "right" }}>
+            <Grid item xs={6} sx={{ textAlign: 'right' }}>
               <Typography
-                variant="h5"
-                sx={{ fontSize: 18, lineHeight: "22px", fontWeight: 400 }}
+                variant='h5'
+                sx={{ fontSize: 18, lineHeight: '22px', fontWeight: 400 }}
               >
                 Test Marks:{totalMarks}
               </Typography>
             </Grid>
           </Grid>
           {isLoading ? (
-            <Grid item xs={12} sx={{ textAlign: "center", py: 5 }}>
+            <Grid item xs={12} sx={{ textAlign: 'center', py: 5 }}>
               <CachedIcon />
             </Grid>
           ) : (
             <>
               <Grid container spacing={2} sx={{ mt: 5 }}>
-                {questions.length > 0 ? (
+                {questions && questions.length > 0 ? (
                   <>
                     <Grid item xs={12}>
                       <ButtonGroup
-                        variant="contained"
-                        color="primary"
-                        aria-label="contained primary button group"
+                        variant='contained'
+                        color='primary'
+                        aria-label='contained primary button group'
                       >
                         <FormControlLabel
                           control={
@@ -297,10 +301,10 @@ const PreviewTest = () => {
                               }
                               checked={selected.length === questions.length}
                               onChange={handleSelectAll}
-                              inputProps={{ "aria-label": "select all rows" }}
+                              inputProps={{ 'aria-label': 'select all rows' }}
                             />
                           }
-                          label="Check All"
+                          label='Check All'
                         />
                         <Button
                           onClick={deleteBulkQuestion}
@@ -313,41 +317,41 @@ const PreviewTest = () => {
                     {questions.map((question, index) => (
                       <Grid item xs={12} key={index} sx={{ mt: 2, ml: 1 }}>
                         <Box
-                          className="ques-list"
-                          sx={{ display: "flex", alignItems: "flex-start" }}
+                          className='ques-list'
+                          sx={{ display: 'flex', alignItems: 'flex-start' }}
                         >
                           <FormControlLabel
-                            className="question-label"
+                            className='question-label'
                             sx={{
-                              display: "flex",
-                              alignItems: "flex-start",
-                              width: "100%",
+                              display: 'flex',
+                              alignItems: 'flex-start',
+                              width: '100%',
                             }}
                             control={
                               <Checkbox
                                 checked={selected.indexOf(question.guid) !== -1}
                                 onChange={() => handleSelect(question.guid)}
                                 inputProps={{
-                                  "aria-labelledby": `select ${question.question}`,
+                                  'aria-labelledby': `select ${question.question}`,
                                 }}
-                                sx={{ padding: "0", mr: 1 }}
+                                sx={{ padding: '0', mr: 1 }}
                               />
                             }
                             label={
                               <Box
                                 sx={{
-                                  display: "flex",
-                                  fontSize: "20px",
-                                  width: "100%",
+                                  display: 'flex',
+                                  fontSize: '20px',
+                                  width: '100%',
                                 }}
                               >
-                                ({index + 1}).{" "}
-                                <Box sx={{ mb: 1, width: "100%" }}>
+                                ({index + 1}).{' '}
+                                <Box sx={{ mb: 1, width: '100%' }}>
                                   {question.parent_question ? (
                                     <span
                                       style={{
-                                        display: "block",
-                                        width: "100%",
+                                        display: 'block',
+                                        width: '100%',
                                       }}
                                     >
                                       {ReactHtmlParser(
@@ -355,17 +359,17 @@ const PreviewTest = () => {
                                       )}
                                     </span>
                                   ) : (
-                                    ""
+                                    ''
                                   )}
                                   <span
                                     style={{
-                                      display: "block",
-                                      width: "100%",
+                                      display: 'block',
+                                      width: '100%',
                                       marginLeft:
                                         question.parent_question &&
                                         question.parent_question
-                                          ? "-20"
-                                          : "0",
+                                          ? '-20'
+                                          : '0',
                                     }}
                                   >
                                     {ReactHtmlParser(question.question)}
@@ -374,23 +378,25 @@ const PreviewTest = () => {
                                   (question &&
                                     question.file_url_path !== null) ? (
                                     <Box
-                                      sx={{ width: "100%", maxWidth: "500px" }}
+                                      sx={{ width: '100%', maxWidth: '500px' }}
                                     >
                                       <img
-                                          style={{
-                                          maxWidth:"100%",
-                                          height: "auto",
+                                        style={{
+                                          maxWidth: '100%',
+                                          height: 'auto',
                                         }}
                                         src={
                                           question &&
                                           question.file_url_path &&
                                           question.file_hash &&
-                                          question.file_url_path + "/" + question.file_hash
-                                        } 
+                                          question.file_url_path +
+                                            '/' +
+                                            question.file_hash
+                                        }
                                       />
                                     </Box>
                                   ) : (
-                                    ""
+                                    ''
                                   )}
                                 </Box>
                               </Box>
@@ -404,7 +410,7 @@ const PreviewTest = () => {
                           </Button>
                           <Button onClick={() => handleDelete(question.guid)}>
                             {isDeleting === question.guid ? (
-                              <CachedIcon size={20} color="#fff" />
+                              <CachedIcon size={20} color='#fff' />
                             ) : (
                               <DeleteOutlineOutlinedIcon />
                             )}
@@ -412,19 +418,19 @@ const PreviewTest = () => {
                         </Box>
                         <ol
                           style={{
-                            listStyleType: "lower-alpha",
-                            paddingLeft: "45px",
+                            listStyleType: 'lower-alpha',
+                            paddingLeft: '45px',
                           }}
                         >
                           {question.choices.map((choice, index) => {
-                            return question.question_type === "tf" ? (
+                            return question.question_type === 'tf' ? (
                               index < 2 && (
                                 <li
                                   style={{
                                     color:
-                                      choice.correct_answer === "1"
-                                        ? "#A6CD4E"
-                                        : "",
+                                      choice.correct_answer === '1'
+                                        ? '#A6CD4E'
+                                        : '',
                                   }}
                                   key={index}
                                 >
@@ -435,9 +441,9 @@ const PreviewTest = () => {
                               <li
                                 style={{
                                   color:
-                                    choice.correct_answer === "1"
-                                      ? "#A6CD4E"
-                                      : "",
+                                    choice.correct_answer === '1'
+                                      ? '#A6CD4E'
+                                      : '',
                                 }}
                                 key={index}
                               >
@@ -451,7 +457,7 @@ const PreviewTest = () => {
                   </>
                 ) : (
                   <Grid item xs={12}>
-                    <Alert severity="info">Questions not found!</Alert>
+                    <Alert severity='info'>Questions not found!</Alert>
                   </Grid>
                 )}
               </Grid>

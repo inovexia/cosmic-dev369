@@ -26,19 +26,18 @@ import {
   Switch,
   FormGroup,
   FormControlLabel,
-  Checkbox,
 } from '@mui/material';
 import { Helmet } from 'react-helmet';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
-import SidebarLeft from '../../../../components/Sidebar/SidebarLeft';
-import Course from '../../../../assets/images/Course.jpg';
-import BASE_URL from '../../../../Utils/baseUrl';
-import token from '../../../../Utils/token';
-import Network from '../../../../Utils/network';
+import SidebarLeft from '../../../../../components/Sidebar/SidebarLeft';
+import Course from '../../../../../assets/images/Course.jpg';
+import BASE_URL from '../../../../../Utils/baseUrl';
+import token from '../../../../../Utils/token';
+import Network from '../../../../../Utils/network';
 import { useTheme } from '@mui/material/styles';
-import CheckTokenValid from '../../../../components/Redirect/CheckTokenValid';
+import CheckTokenValid from '../../../../../components/Redirect/CheckTokenValid';
 
-const Lessons = () => {
+const Sections = () => {
   const options = [
     {
       label: 'Preview',
@@ -52,9 +51,11 @@ const Lessons = () => {
   const ITEM_HEIGHT = 48;
   const { courseGuid } = useParams();
   const { subjectGuid } = useParams();
+  const { lessonGuid } = useParams();
   // const { lessonGuid } = useParams();
-  const [lessonGuid, setLessonGuid] = useState('');
-  const [lessonId, setLessonId] = useState('');
+  const [sectionGuid, setSectionGuid] = useState('');
+  // const [lessonId, setLessonId] = useState('');
+  const [sectionId, setSectionId] = useState('');
   const theme = useTheme();
 
   const primaryColor = theme.palette.primary.main;
@@ -62,15 +63,11 @@ const Lessons = () => {
 
   // State Management
   const [filterOption, setFilterOption] = useState('all');
-  const [filterAction, setFilterAction] = useState('published');
-  const [currAction, setCurrAction] = useState('');
   const [searchTitle, setSearchTitle] = useState('');
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [lessons, setLessons] = useState([]);
+  const [sections, setSections] = useState([]);
   const [currentSubject, setCurrentSubject] = useState();
-  // for bulk deletion
-  const [selectedLessons, setSelectedLessons] = useState([]);
 
   // publish and unpublish
   const [isPublished, setIsPublished] = useState(false);
@@ -81,10 +78,6 @@ const Lessons = () => {
   const handleFilterChange = (event) => {
     setFilterOption(event.target.value);
   };
-  const handleAction = (event) => {
-    setCurrAction(event.target.value);
-  };
-  console.log(currAction);
   // Authorization
   const myHeaders = new Headers();
   myHeaders.append('Authorization', `Bearer ${token}`);
@@ -92,8 +85,8 @@ const Lessons = () => {
 
   // search and filter functionality
   const filteredItems =
-    lessons &&
-    lessons.filter((item) => {
+    sections &&
+    sections.filter((item) => {
       const searchVal = `${item.title} ${item.description}`.toLowerCase();
       const searchValue = searchTitle.toLowerCase();
 
@@ -115,7 +108,7 @@ const Lessons = () => {
 
       return true; // By default, show all courses
     });
-
+  // console.log(filteredItems);
   // Pagination here
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
@@ -144,29 +137,29 @@ const Lessons = () => {
 
   // Get current course details
   useEffect(() => {
-    const fetchCurrentSubject = async () => {
+    const fetchCurrentSection = async () => {
       const requestOptions = {
         method: 'POST',
         headers: myHeaders,
         redirect: 'follow',
       };
       const response = await fetch(
-        `${BASE_URL}/course/subject/${subjectGuid}/preview`,
+        `${BASE_URL}/course/lesson/${lessonGuid}/sections`,
         requestOptions
       );
       const result = await response.json();
-
+      console.log(result.payload);
       if (result.success === true) {
         setLoading(false);
         setCurrentSubject(result.payload);
-        setLessons(result.payload.lessons);
+        setSections(result.payload);
       }
     };
-    fetchCurrentSubject();
+    fetchCurrentSection();
   }, []);
 
   // Add subjectGuid to the dependency array
-
+  // console.log(lessons);
   // dropdown menu
   // Action Button
   const [anchorEl, setAnchorEl] = useState(null);
@@ -177,8 +170,8 @@ const Lessons = () => {
 
   const handleClick = (event, id, status) => {
     setAnchorEl(event.currentTarget);
-    setLessonGuid(id);
-    setLessonId(id);
+    setSectionGuid(id);
+    setSectionId(id);
     setCurrStatus(status);
     // if (status === '1') {
     //   setChangeStatus('0');
@@ -190,6 +183,7 @@ const Lessons = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  // console.log(lessonGuid);
   // Delete
   const [alertOpen, setAlertOpen] = useState(null);
   const [isActionSuccess, setIsActionSuccess] = useState(null);
@@ -199,7 +193,7 @@ const Lessons = () => {
   const handleConfirmOpen = (action, id) => {
     setActionConfirmOpen(true);
     setActionValue(action);
-    setLessonGuid(id);
+    setSectionGuid(id);
     if (action === '1') {
       setChangeStatus('0');
     } else {
@@ -210,7 +204,6 @@ const Lessons = () => {
     setActionConfirmOpen(false);
   };
   // Delete function on submit
-
   const handleBulkDeleteUser = async () => {
     setActionConfirmOpen(false);
     const requestOptions = {
@@ -220,7 +213,7 @@ const Lessons = () => {
     };
     try {
       const res = await fetch(
-        `${BASE_URL}/course/lesson/${lessonId}/delete`,
+        `${BASE_URL}/course/section/${sectionId}/delete`,
         requestOptions
       );
       const result = await res.json();
@@ -242,7 +235,7 @@ const Lessons = () => {
       throw new Error(`Failed to post status: ${error.message}`);
     }
   };
-
+  // console.log(changeStatus);
   // publish and unpublish function
   const handleChangeStatus = async () => {
     var formdata = new FormData();
@@ -257,47 +250,11 @@ const Lessons = () => {
     };
     try {
       const res = await fetch(
-        `${BASE_URL}/course/lesson/${lessonGuid}/change_status`,
+        `${BASE_URL}/course/section/${sectionGuid}/change_status`,
         requestOptions
       );
       const result = await res.json();
-      setAlertOpen(true);
-      if (result.success === true) {
-        setIsActionSuccess(true);
-        setTimeout(() => {
-          setAlertOpen(false);
-          window.location.reload(true);
-        }, 1000);
-      } else {
-        setTimeout(() => {
-          setAlertOpen(false);
-        }, 3000);
-      }
-      setActionConfirmOpen(false);
-    } catch (error) {
-      console.error(error);
-      throw new Error(`Failed to post status: ${error.message}`);
-    }
-  };
-  // bulk deleted
-  const bulkLessonDelete = async () => {
-    var formdata = new FormData();
-    setActionConfirmOpen(false);
-    selectedLessons.forEach((item, index) => {
-      formdata.append(`lesson[${index}]`, item);
-    });
-    const requestOptions = {
-      method: 'POST',
-      headers: myHeaders,
-      body: formdata,
-      redirect: 'follow',
-    };
-    try {
-      const res = await fetch(
-        `${BASE_URL}/course/lessons/delete`,
-        requestOptions
-      );
-      const result = await res.json();
+
       setAlertOpen(true);
       if (result.success === true) {
         setIsActionSuccess(true);
@@ -317,26 +274,11 @@ const Lessons = () => {
     }
   };
 
-  // bulk action for delete
-  const handleLessonSelection = (lessonGuid) => {
-    if (selectedLessons.includes(lessonGuid)) {
-      setSelectedLessons(selectedLessons.filter((guid) => guid !== lessonGuid));
-    } else {
-      setSelectedLessons([...selectedLessons, lessonGuid]);
-    }
-  };
-  const handleDelete = () => {
-    if (selectedLessons.length > 0) {
-      setActionValue('delete');
-      setActionConfirmOpen(true);
-    }
-  };
-  // alert(actionValue);
   return (
     <>
       <CheckTokenValid />
       <Helmet>
-        <title>All Lessons</title>
+        <title>All Sections</title>
       </Helmet>
       <Box sx={{ display: 'flex' }}>
         <SidebarLeft />
@@ -361,7 +303,7 @@ const Lessons = () => {
                 : actionValue && actionValue === '1'
                 ? 'Unpublish'
                 : 'Delete'}{' '}
-              this Lesson?
+              this Section?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -376,12 +318,8 @@ const Lessons = () => {
               <Button onClick={handleChangeStatus} color='primary' autoFocus>
                 Confirm
               </Button>
-            ) : currAction && currAction === 'delete' ? (
-              <Button onClick={bulkLessonDelete} color='primary' autoFocus>
-                Confirm
-              </Button>
             ) : (
-              <Button onClick={bulkLessonDelete} color='primary' autoFocus>
+              <Button onClick={handleBulkDeleteUser} color='primary' autoFocus>
                 Confirm
               </Button>
             )}
@@ -396,35 +334,35 @@ const Lessons = () => {
           {actionValue && actionValue === '0' ? (
             <Alert severity={isActionSuccess === true ? 'success' : 'warning'}>
               {isActionSuccess === true
-                ? 'Lesson Published Successfully'
-                : 'Lesson not published.'}
+                ? 'Section Published Successfully'
+                : 'Section not published.'}
             </Alert>
           ) : actionValue && actionValue === '1' ? (
             <Alert severity={isActionSuccess === true ? 'success' : 'warning'}>
               {isActionSuccess === true
-                ? 'Lesson Unpublished Successfully'
-                : 'Lesson not Unpublished.'}
+                ? 'Section Unpublished Successfully'
+                : 'Section not Unpublished.'}
             </Alert>
           ) : (
             <Alert severity={isActionSuccess === true ? 'success' : 'warning'}>
               {isActionSuccess === true
-                ? 'Lesson Deleted Successfully'
-                : 'Lesson not deleted.'}
+                ? 'Section Deleted Successfully'
+                : 'Section not deleted.'}
             </Alert>
           )}
         </Snackbar>
         <Box sx={{ flexGrow: 1, p: 3, mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={6}>
-              <h1>All Lessons</h1>
+              <h1>All Sections</h1>
             </Grid>
             <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'right' }}>
               <Button
                 component={Link}
-                href={`/course/${courseGuid}/subject/${subjectGuid}/lesson/create`}
+                href={`/course/subject/lesson/${lessonGuid}/section/create`}
                 variant='contained'
               >
-                Create Lesson
+                Create Section
               </Button>
             </Grid>
           </Grid>
@@ -432,7 +370,7 @@ const Lessons = () => {
             <Box sx={{ textAlign: 'center', mt: 5 }}>
               <CircularProgress />
             </Box>
-          ) : lessons && lessons.length !== 0 ? (
+          ) : sections && sections.length !== 0 ? (
             <>
               <Grid
                 container
@@ -469,37 +407,6 @@ const Lessons = () => {
               <Grid
                 container
                 spacing={2}
-                sx={{ mt: 1, justifyContent: 'space-between' }}
-              >
-                <Grid item xs={12} md={4}>
-                  <FormControlLabel control={<Checkbox />} label='Select All' />
-                </Grid>
-                <Grid item xs={12} md={2}>
-                  <FormControl fullWidth>
-                    <InputLabel id='filter-label'>Action</InputLabel>
-                    <Select
-                      labelId='filter-label'
-                      label='Action'
-                      id='filter-select'
-                      value={filterAction}
-                      onChange={handleAction}
-                    >
-                      <MenuItem
-                        value='delete'
-                        variant='contained'
-                        color='secondary'
-                        disabled={selectedLessons.length === 0}
-                        onClick={handleDelete}
-                      >
-                        Delete
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-              </Grid>
-              <Grid
-                container
-                spacing={2}
                 sx={{ mt: 2 }}
                 className='manage-course'
               >
@@ -518,20 +425,6 @@ const Lessons = () => {
                                 justifyContent: 'space-between',
                               }}
                             >
-                              <Grid item xs={12} md={0.5}>
-                                <FormControlLabel
-                                  control={
-                                    <Checkbox
-                                      checked={selectedLessons.includes(
-                                        item.guid
-                                      )}
-                                      onChange={() =>
-                                        handleLessonSelection(item.guid)
-                                      }
-                                    />
-                                  }
-                                />
-                              </Grid>
                               <Grid
                                 item
                                 xs={12}
@@ -549,10 +442,10 @@ const Lessons = () => {
                                   />
                                 </Box>
                               </Grid>
-                              <Grid item xs={12} md={4.5}>
+                              <Grid item xs={12} md={4}>
                                 <h3>
                                   <Link
-                                    href={`/course/subject/lessons/${item.guid}/sections`}
+                                    href={`/course/subject/lessons/section/${item.guid}/content`}
                                     sx={{
                                       textDecoration: 'none',
                                       color: 'inherit',
@@ -565,7 +458,7 @@ const Lessons = () => {
                               <Grid item xs={12} md={2}>
                                 <p>{item.created_by}</p>
                               </Grid>
-                              <Grid item xs={12} md={2}>
+                              <Grid item xs={12} md={3}>
                                 <label>
                                   <FormControlLabel
                                     control={
@@ -627,7 +520,7 @@ const Lessons = () => {
                                   >
                                     <MenuItem onClick={handleClose}>
                                       <Link
-                                        href={`/course/subject/${subjectGuid}/lesson/${lessonGuid}/preview`}
+                                        href={`/course/subject/lesson/section/${sectionGuid}/preview`}
                                         underline='none'
                                         color='inherit'
                                       >
@@ -636,7 +529,7 @@ const Lessons = () => {
                                     </MenuItem>
                                     <MenuItem onClick={handleClose}>
                                       <Link
-                                        href={`/course/subject/lesson/edit/${lessonGuid}`}
+                                        href={`/course/subject/lesson/section/edit/${sectionGuid}`}
                                         underline='none'
                                         color='inherit'
                                       >
@@ -660,7 +553,7 @@ const Lessons = () => {
                     </Card>
                   ) : (
                     <Alert sx={{ mt: 5 }} severity='error'>
-                      Lesson not found!
+                      Section not found!
                     </Alert>
                   )}
                 </Grid>
@@ -668,7 +561,7 @@ const Lessons = () => {
             </>
           ) : (
             <Alert sx={{ mt: 5 }} severity='error'>
-              Lesson not found!
+              Section not found!
             </Alert>
           )}
         </Box>
@@ -677,4 +570,4 @@ const Lessons = () => {
   );
 };
 
-export default Lessons;
+export default Sections;

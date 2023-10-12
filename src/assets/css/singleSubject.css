@@ -3,4 +3,9 @@
     margin-bottom: 0;
     margin-top: 0;
   }
+  .single-subject-content p a {
+    display: inline-block;
+    width: 100%;
+    word-wrap: break-word;
+}
 }
