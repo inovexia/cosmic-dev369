@@ -21,7 +21,7 @@ const CheckTokenValid = () => {
     };
     try {
       const response = await fetch(
-        `${BASE_URL}/users/token_details`,
+        `${BASE_URL}/auth/token_details`,
         requestOptions
       );
       const result = await response.json();
